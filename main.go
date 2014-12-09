@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,16 @@ var (
 	accessToken = flag.String("accessToken", "", "Access Token")
 	clientID    = flag.String("clientID", "", "Client ID")
 )
+
+type User struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	CreatedAt  string `json:"created_at"`
+	UpdatedAt  string `json:"updated_at"`
+	Revision   int    `json:"revision"`
+	TypeString string `json:"type"`
+}
 
 func main() {
 	flag.Parse()
@@ -37,8 +48,13 @@ func main() {
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Printf("Error reading response body: %s\n", resp.Body)
+			log.Printf("Error reading response body: %s\n", err.Error())
 		}
-		fmt.Printf("%s\n", string(body))
+		var u User
+		err = json.Unmarshal(body, &u)
+		if err != nil {
+			log.Printf("Error unmarshalling response body: %s\n", err.Error())
+		}
+		fmt.Printf("%+v\n", u)
 	}
 }
