@@ -7,22 +7,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/robdimsdale/wundergo"
 )
 
 var (
 	accessToken = flag.String("accessToken", "", "Access Token")
 	clientID    = flag.String("clientID", "", "Client ID")
 )
-
-type User struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	CreatedAt  string `json:"created_at"`
-	UpdatedAt  string `json:"updated_at"`
-	Revision   int    `json:"revision"`
-	TypeString string `json:"type"`
-}
 
 func main() {
 	flag.Parse()
@@ -50,7 +42,7 @@ func main() {
 		if err != nil {
 			log.Printf("Error reading response body: %s\n", err.Error())
 		}
-		var u User
+		var u wundergo.User
 		err = json.Unmarshal(body, &u)
 		if err != nil {
 			log.Printf("Error unmarshalling response body: %s\n", err.Error())
