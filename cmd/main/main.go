@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 
 	"github.com/robdimsdale/wundergo"
 )
@@ -27,26 +24,10 @@ func main() {
 		log.Fatal("Client ID must be provided")
 	}
 
-	client := &http.Client{}
-	userRequest, err := http.NewRequest("GET", "https://a.wunderlist.com/api/v1/user", nil)
-	userRequest.Header.Add("X-Access-Token", *accessToken)
-	userRequest.Header.Add("X-Client-ID", *clientID)
-
-	resp, err := client.Do(userRequest)
+	client := wundergo.NewClient(*accessToken, *clientID)
+	user, err := client.User()
 	if err != nil {
-		log.Printf("Error making request: %s\n", err.Error())
+		log.Printf("Error getting user: %s\n", err.Error())
 	}
-	if resp != nil {
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Error reading response body: %s\n", err.Error())
-		}
-		var u wundergo.User
-		err = json.Unmarshal(body, &u)
-		if err != nil {
-			log.Printf("Error unmarshalling response body: %s\n", err.Error())
-		}
-		fmt.Printf("%+v\n", u)
-	}
+	fmt.Printf("%+v\n", user)
 }
