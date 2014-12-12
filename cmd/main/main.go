@@ -1,30 +1,31 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/robdimsdale/wundergo"
 )
 
-var (
-	accessToken = flag.String("accessToken", "", "Access Token")
-	clientID    = flag.String("clientID", "", "Client ID")
+const (
+	WL_CLIENT_ID    = "WL_CLIENT_ID"
+	WL_ACCESS_TOKEN = "WL_ACCESS_TOKEN"
 )
 
 func main() {
-	flag.Parse()
+	accessToken := os.Getenv(WL_ACCESS_TOKEN)
+	clientID := os.Getenv(WL_CLIENT_ID)
 
-	if *accessToken == "" {
+	if accessToken == "" {
 		log.Fatal("Access Token must be provided")
 	}
 
-	if *clientID == "" {
+	if clientID == "" {
 		log.Fatal("Client ID must be provided")
 	}
 
-	client := wundergo.NewClient(*accessToken, *clientID)
+	client := wundergo.NewClient(accessToken, clientID)
 	user, err := client.User()
 	if err != nil {
 		log.Printf("Error getting user: %s\n", err.Error())
