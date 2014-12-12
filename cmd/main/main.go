@@ -30,4 +30,12 @@ func main() {
 		log.Printf("Error getting user: %s\n", err.Error())
 	}
 	fmt.Printf("%+v\n", user)
+
+	user = wundergo.User{}
+	user.Name = "te1"
+	user, err = client.UpdateUser(user)
+	if err != nil {
+		log.Printf("Error writing user: %s\n", err.Error())
+	}
+	fmt.Printf("%+v\n", user)
 }
