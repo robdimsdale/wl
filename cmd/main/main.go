@@ -39,4 +39,11 @@ func main() {
 		log.Printf("Error updating user: %s\n", err.Error())
 	}
 	fmt.Printf("%+v\n", user)
+
+	var users = []wundergo.User{}
+	users, err = client.Users()
+	if err != nil {
+		log.Printf("Error getting list of users: %s\n", err.Error())
+	}
+	fmt.Printf("%+v\n", users)
 }
