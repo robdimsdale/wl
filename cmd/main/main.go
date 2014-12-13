@@ -25,7 +25,7 @@ func main() {
 		log.Fatal("Client ID must be provided")
 	}
 
-	client := wundergo.NewClient(accessToken, clientID)
+	client := wundergo.NewOauthClient(accessToken, clientID)
 	user, err := client.User()
 	if err != nil {
 		log.Printf("Error getting user: %s\n", err.Error())
@@ -36,7 +36,7 @@ func main() {
 	user.Name = "te1"
 	user, err = client.UpdateUser(user)
 	if err != nil {
-		log.Printf("Error writing user: %s\n", err.Error())
+		log.Printf("Error updating user: %s\n", err.Error())
 	}
 	fmt.Printf("%+v\n", user)
 }
