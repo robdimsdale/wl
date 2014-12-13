@@ -1,6 +1,7 @@
 package wundergo_test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -80,7 +81,7 @@ var _ = Describe("Client", func() {
 					Expect(user).To(Equal(wundergo.User{}))
 				})
 
-				It("forwards the error", func() {
+				It("returns an error", func() {
 					_, err := client.User()
 
 					Expect(err).ToNot(BeNil())
@@ -88,17 +89,20 @@ var _ = Describe("Client", func() {
 			})
 
 			Context("when valid response is received", func() {
-				validResponse := []byte(`{"name": "newName"}`)
-				expectedUser := wundergo.User{
-					Name: "newName",
-				}
+				var expectedUser wundergo.User
+
 				BeforeEach(func() {
+					validResponse := []byte(`{"name": "newName"}`)
 					fakeHTTPHelper.GetReturns(validResponse, nil)
+
+					err := json.Unmarshal(validResponse, &expectedUser)
+					Expect(err).To(BeNil())
 				})
 
-				It("returns the unmarshalled user", func() {
-					user, _ := client.User()
+				It("returns the unmarshalled user without error", func() {
+					user, err := client.User()
 
+					Expect(err).To(BeNil())
 					Expect(user).To(Equal(expectedUser))
 				})
 			})
@@ -151,7 +155,7 @@ var _ = Describe("Client", func() {
 					Expect(user).To(Equal(wundergo.User{}))
 				})
 
-				It("forwards the error", func() {
+				It("returns an error", func() {
 					_, err := client.UpdateUser(user)
 
 					Expect(err).ToNot(BeNil())
@@ -159,29 +163,29 @@ var _ = Describe("Client", func() {
 			})
 
 			Context("when valid response is received", func() {
-				validResponse := []byte(`{"name": "newName"}`)
-				expectedUser := wundergo.User{
-					Name: "newName",
-				}
+				var expectedUser wundergo.User
+
 				BeforeEach(func() {
+					validResponse := []byte(`{"name": "newName"}`)
 					fakeHTTPHelper.PutReturns(validResponse, nil)
+
+					err := json.Unmarshal(validResponse, &expectedUser)
+					Expect(err).To(BeNil())
 				})
 
-				It("returns the unmarshalled user", func() {
-					user, _ := client.UpdateUser(user)
+				It("returns the unmarshalled user without error", func() {
+					user, err := client.UpdateUser(user)
 
+					Expect(err).To(BeNil())
 					Expect(user).To(Equal(expectedUser))
 				})
 			})
 		})
-	})
-
-	Describe("Users operations", func() {
 
 		Describe("getting users", func() {
-			expectedUrl := fmt.Sprintf("%s/users", apiUrl)
-
 			Context("when ListID is not provided", func() {
+				expectedUrl := fmt.Sprintf("%s/users", apiUrl)
+
 				It("performs GET requests to /users", func() {
 					client.Users()
 
@@ -220,7 +224,7 @@ var _ = Describe("Client", func() {
 						Expect(user).To(Equal([]wundergo.User{}))
 					})
 
-					It("forwards the error", func() {
+					It("returns an error", func() {
 						_, err := client.Users()
 
 						Expect(err).ToNot(BeNil())
@@ -228,19 +232,19 @@ var _ = Describe("Client", func() {
 				})
 
 				Context("when valid response is received", func() {
-					validResponse := []byte(`[{"name": "newName"}]`)
-					expectedUsers := []wundergo.User{
-						wundergo.User{
-							Name: "newName",
-						},
-					}
+					var expectedUsers []wundergo.User
 					BeforeEach(func() {
+						validResponse := []byte(`[{"name": "newName"}]`)
 						fakeHTTPHelper.GetReturns(validResponse, nil)
+
+						err := json.Unmarshal(validResponse, &expectedUsers)
+						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users", func() {
-						users, _ := client.Users()
+					It("returns the unmarshalled list of users without error", func() {
+						users, err := client.Users()
 
+						Expect(err).To(BeNil())
 						Expect(users).To(Equal(expectedUsers))
 					})
 				})
@@ -288,7 +292,7 @@ var _ = Describe("Client", func() {
 						Expect(user).To(Equal([]wundergo.User{}))
 					})
 
-					It("forwards the error", func() {
+					It("returns an error", func() {
 						_, err := client.UsersForListID(ListID)
 
 						Expect(err).ToNot(BeNil())
@@ -296,19 +300,19 @@ var _ = Describe("Client", func() {
 				})
 
 				Context("when valid response is received", func() {
-					validResponse := []byte(`[{"name": "newName"}]`)
-					expectedUsers := []wundergo.User{
-						wundergo.User{
-							Name: "newName",
-						},
-					}
+					var expectedUsers []wundergo.User
 					BeforeEach(func() {
+						validResponse := []byte(`[{"name": "newName"}]`)
 						fakeHTTPHelper.GetReturns(validResponse, nil)
+
+						err := json.Unmarshal(validResponse, &expectedUsers)
+						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users", func() {
-						users, _ := client.UsersForListID(ListID)
+					It("returns the unmarshalled list of users without error", func() {
+						users, err := client.UsersForListID(ListID)
 
+						Expect(err).To(BeNil())
 						Expect(users).To(Equal(expectedUsers))
 					})
 				})
@@ -356,7 +360,7 @@ var _ = Describe("Client", func() {
 						Expect(user).To(Equal([]wundergo.User{}))
 					})
 
-					It("forwards the error", func() {
+					It("returns an error", func() {
 						_, err := client.UsersForListID(ListID)
 
 						Expect(err).ToNot(BeNil())
@@ -364,19 +368,20 @@ var _ = Describe("Client", func() {
 				})
 
 				Context("when valid response is received", func() {
-					validResponse := []byte(`[{"name": "newName"}]`)
-					expectedUsers := []wundergo.User{
-						wundergo.User{
-							Name: "newName",
-						},
-					}
+					var expectedUsers []wundergo.User
+
 					BeforeEach(func() {
+						validResponse := []byte(`[{"name": "newName"}]`)
 						fakeHTTPHelper.GetReturns(validResponse, nil)
+
+						err := json.Unmarshal(validResponse, &expectedUsers)
+						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users", func() {
-						users, _ := client.UsersForListID(ListID)
+					It("returns the unmarshalled list of users without error", func() {
+						users, err := client.UsersForListID(ListID)
 
+						Expect(err).To(BeNil())
 						Expect(users).To(Equal(expectedUsers))
 					})
 				})
