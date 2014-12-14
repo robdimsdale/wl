@@ -23,6 +23,7 @@ type Client interface {
 	Users() ([]User, error)
 	UsersForListID(listId uint) ([]User, error)
 	Lists() ([]List, error)
+	List(listID uint) (List, error)
 }
 
 type OauthClient struct {
@@ -110,6 +111,22 @@ func (c OauthClient) Lists() ([]List, error) {
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return []List{}, err
+	}
+	return l, nil
+}
+
+func (c OauthClient) List(listID uint) (List, error) {
+	b, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiUrl, listID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		return List{}, err
+	}
+
+	var l List
+	err = json.Unmarshal(b, &l)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		return List{}, err
 	}
 	return l, nil
 }
