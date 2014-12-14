@@ -25,6 +25,7 @@ type Client interface {
 	Lists() ([]List, error)
 	List(listID uint) (List, error)
 	ListTaskCount(listID uint) (ListTaskCount, error)
+	CreateList(listTitle string) (List, error)
 }
 
 type OauthClient struct {
@@ -144,6 +145,25 @@ func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return ListTaskCount{}, err
+	}
+	return l, nil
+}
+
+func (c OauthClient) CreateList(listTitle string) (List, error) {
+	body := fmt.Sprintf(`{"title":"%s"}`, listTitle)
+	c.logger.LogLine(fmt.Sprintf("request body: %s", string(body)))
+	b, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
+	c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		return List{}, err
+	}
+
+	var l List
+	err = json.Unmarshal(b, &l)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		return List{}, err
 	}
 	return l, nil
 }

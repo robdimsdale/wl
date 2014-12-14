@@ -2,9 +2,9 @@
 package fakes
 
 import (
-	"github.com/robdimsdale/wundergo"
-
 	"sync"
+
+	"github.com/robdimsdale/wundergo"
 )
 
 type FakeHTTPHelper struct {
@@ -14,6 +14,16 @@ type FakeHTTPHelper struct {
 		url string
 	}
 	getReturns struct {
+		result1 []byte
+		result2 error
+	}
+	PostStub        func(url string, body string) ([]byte, error)
+	postMutex       sync.RWMutex
+	postArgsForCall []struct {
+		url  string
+		body string
+	}
+	postReturns struct {
 		result1 []byte
 		result2 error
 	}
@@ -31,10 +41,10 @@ type FakeHTTPHelper struct {
 
 func (fake *FakeHTTPHelper) Get(url string) ([]byte, error) {
 	fake.getMutex.Lock()
-	defer fake.getMutex.Unlock()
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		url string
 	}{url})
+	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
 		return fake.GetStub(url)
 	} else {
@@ -62,13 +72,47 @@ func (fake *FakeHTTPHelper) GetReturns(result1 []byte, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *FakeHTTPHelper) Post(url string, body string) ([]byte, error) {
+	fake.postMutex.Lock()
+	fake.postArgsForCall = append(fake.postArgsForCall, struct {
+		url  string
+		body string
+	}{url, body})
+	fake.postMutex.Unlock()
+	if fake.PostStub != nil {
+		return fake.PostStub(url, body)
+	} else {
+		return fake.postReturns.result1, fake.postReturns.result2
+	}
+}
+
+func (fake *FakeHTTPHelper) PostCallCount() int {
+	fake.postMutex.RLock()
+	defer fake.postMutex.RUnlock()
+	return len(fake.postArgsForCall)
+}
+
+func (fake *FakeHTTPHelper) PostArgsForCall(i int) (string, string) {
+	fake.postMutex.RLock()
+	defer fake.postMutex.RUnlock()
+	return fake.postArgsForCall[i].url, fake.postArgsForCall[i].body
+}
+
+func (fake *FakeHTTPHelper) PostReturns(result1 []byte, result2 error) {
+	fake.PostStub = nil
+	fake.postReturns = struct {
+		result1 []byte
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeHTTPHelper) Put(url string, body string) ([]byte, error) {
 	fake.putMutex.Lock()
-	defer fake.putMutex.Unlock()
 	fake.putArgsForCall = append(fake.putArgsForCall, struct {
 		url  string
 		body string
 	}{url, body})
+	fake.putMutex.Unlock()
 	if fake.PutStub != nil {
 		return fake.PutStub(url, body)
 	} else {

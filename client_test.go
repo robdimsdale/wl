@@ -611,6 +611,83 @@ var _ = Describe("Client", func() {
 					Expect(listTaskCount).To(Equal(expectedListTaskCount))
 				})
 			})
+
+			Describe("creating a new list", func() {
+				expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
+				listTitle := "newListTitle"
+				expectedBody := fmt.Sprintf(`{"title":"%s"}`, listTitle)
+
+				It("performs POST requests to /lists with new list title in body", func() {
+					client.CreateList(listTitle)
+
+					Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+					arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+					Expect(arg0).To(Equal(expectedUrl))
+					Expect(arg1).To(Equal(expectedBody))
+				})
+
+				Context("when httpHelper.Get returns an error", func() {
+					expectedError := errors.New("httpHelper GET error")
+					BeforeEach(func() {
+						fakeHTTPHelper.PostReturns(nil, expectedError)
+					})
+
+					It("returns an empty list", func() {
+						list, _ := client.CreateList(listTitle)
+
+						Expect(list).To(Equal(wundergo.List{}))
+					})
+
+					It("forwards the error", func() {
+						_, err := client.CreateList(listTitle)
+
+						Expect(err).To(Equal(expectedError))
+					})
+				})
+
+				Context("when unmarshalling json response returns an error", func() {
+					badResponse := []byte("invalid json response")
+					BeforeEach(func() {
+						fakeHTTPHelper.PostReturns(badResponse, nil)
+					})
+
+					It("returns an empty list", func() {
+						list, _ := client.CreateList(listTitle)
+
+						Expect(list).To(Equal(wundergo.List{}))
+					})
+
+					It("returns an error", func() {
+						_, err := client.CreateList(listTitle)
+
+						Expect(err).ToNot(BeNil())
+					})
+				})
+
+				Context("when valid response is received", func() {
+					validResponse := []byte(`{
+            "id": 83526310,
+            "created_at": "2013-08-30T08:29:46.203Z",
+            "title": "Read Later",
+            "revision": 1000,
+            "type": "list"
+            }`)
+					var expectedList wundergo.List
+					BeforeEach(func() {
+						fakeHTTPHelper.PostReturns(validResponse, nil)
+
+						err := json.Unmarshal(validResponse, &expectedList)
+						Expect(err).To(BeNil())
+					})
+
+					It("returns the unmarshalled list task count without error", func() {
+						list, err := client.CreateList(listTitle)
+
+						Expect(err).To(BeNil())
+						Expect(list).To(Equal(expectedList))
+					})
+				})
+			})
 		})
 	})
 })

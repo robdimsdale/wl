@@ -10,6 +10,7 @@ import (
 
 type HTTPHelper interface {
 	Get(url string) ([]byte, error)
+	Post(url string, body string) ([]byte, error)
 	Put(url string, body string) ([]byte, error)
 }
 
@@ -26,17 +27,37 @@ func newOauthClientHTTPHelper(accessToken string, clientID string) *oauthClientH
 }
 
 func (h oauthClientHTTPHelper) Get(url string) ([]byte, error) {
-	return h.performHTTPAction(url, "GET", "")
+	return h.performHTTPAction(
+		url,
+		"GET",
+		"",
+		nil,
+	)
 }
 
 func (h oauthClientHTTPHelper) Put(url string, body string) ([]byte, error) {
-	return h.performHTTPAction(url, "PUT", body)
+	return h.performHTTPAction(
+		url,
+		"PUT",
+		body,
+		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+	)
+}
+
+func (h oauthClientHTTPHelper) Post(url string, body string) ([]byte, error) {
+	return h.performHTTPAction(
+		url,
+		"POST",
+		body,
+		map[string]string{"Content-Type": "application/json"})
 }
 
 func (h oauthClientHTTPHelper) performHTTPAction(
 	url string,
 	action string,
-	body string) ([]byte, error) {
+	body string,
+	headers map[string]string,
+) ([]byte, error) {
 
 	req, err := http.NewRequest(action, url, nil)
 	if err != nil {
@@ -47,8 +68,11 @@ func (h oauthClientHTTPHelper) performHTTPAction(
 	req.Header.Add("X-Access-Token", h.accessToken)
 	req.Header.Add("X-Client-ID", h.clientID)
 
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
+
 	if body != "" {
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Body = ioutil.NopCloser(strings.NewReader(body))
 	}
 
