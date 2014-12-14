@@ -26,24 +26,10 @@ func main() {
 	}
 
 	client := wundergo.NewOauthClient(accessToken, clientID)
+
 	user, err := client.User()
 	if err != nil {
 		log.Printf("Error getting user: %s\n", err.Error())
 	}
 	fmt.Printf("%+v\n", user)
-
-	user = wundergo.User{}
-	user.Name = "te1"
-	user, err = client.UpdateUser(user)
-	if err != nil {
-		log.Printf("Error updating user: %s\n", err.Error())
-	}
-	fmt.Printf("%+v\n", user)
-
-	var users = []wundergo.User{}
-	users, err = client.Users()
-	if err != nil {
-		log.Printf("Error getting list of users: %s\n", err.Error())
-	}
-	fmt.Printf("%+v\n", users)
 }
