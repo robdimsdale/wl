@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -82,13 +81,16 @@ func (h OauthClientHTTPHelper) performHTTPAction(
 		req.Body = ioutil.NopCloser(strings.NewReader(body))
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := h.httpTransport.DoRequest(req)
 	if err != nil {
-		log.Printf("Error making request: %s\n", err.Error())
+		return nil, err
 	}
 	if resp == nil {
-		return nil, errors.New("Nil body returned")
+		return nil, errors.New("Nil response returned")
+	}
+
+	if resp.Body == nil {
+		return []byte{}, nil
 	}
 
 	defer resp.Body.Close()
