@@ -37,6 +37,16 @@ type FakeHTTPHelper struct {
 		result1 []byte
 		result2 error
 	}
+	PatchStub        func(url string, body string) ([]byte, error)
+	patchMutex       sync.RWMutex
+	patchArgsForCall []struct {
+		url  string
+		body string
+	}
+	patchReturns struct {
+		result1 []byte
+		result2 error
+	}
 }
 
 func (fake *FakeHTTPHelper) Get(url string) ([]byte, error) {
@@ -135,6 +145,40 @@ func (fake *FakeHTTPHelper) PutArgsForCall(i int) (string, string) {
 func (fake *FakeHTTPHelper) PutReturns(result1 []byte, result2 error) {
 	fake.PutStub = nil
 	fake.putReturns = struct {
+		result1 []byte
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeHTTPHelper) Patch(url string, body string) ([]byte, error) {
+	fake.patchMutex.Lock()
+	fake.patchArgsForCall = append(fake.patchArgsForCall, struct {
+		url  string
+		body string
+	}{url, body})
+	fake.patchMutex.Unlock()
+	if fake.PatchStub != nil {
+		return fake.PatchStub(url, body)
+	} else {
+		return fake.patchReturns.result1, fake.patchReturns.result2
+	}
+}
+
+func (fake *FakeHTTPHelper) PatchCallCount() int {
+	fake.patchMutex.RLock()
+	defer fake.patchMutex.RUnlock()
+	return len(fake.patchArgsForCall)
+}
+
+func (fake *FakeHTTPHelper) PatchArgsForCall(i int) (string, string) {
+	fake.patchMutex.RLock()
+	defer fake.patchMutex.RUnlock()
+	return fake.patchArgsForCall[i].url, fake.patchArgsForCall[i].body
+}
+
+func (fake *FakeHTTPHelper) PatchReturns(result1 []byte, result2 error) {
+	fake.PatchStub = nil
+	fake.patchReturns = struct {
 		result1 []byte
 		result2 error
 	}{result1, result2}
