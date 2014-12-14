@@ -199,7 +199,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(nil, expectedError)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.Users()
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -218,7 +218,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(badResponse, nil)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.Users()
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -241,7 +241,7 @@ var _ = Describe("Client", func() {
 						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users without error", func() {
+					It("returns the unmarshalled array of users without error", func() {
 						users, err := client.Users()
 
 						Expect(err).To(BeNil())
@@ -267,7 +267,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(nil, expectedError)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.UsersForListID(ListID)
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -286,7 +286,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(badResponse, nil)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.UsersForListID(ListID)
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -309,7 +309,7 @@ var _ = Describe("Client", func() {
 						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users without error", func() {
+					It("returns the unmarshalled array of users without error", func() {
 						users, err := client.UsersForListID(ListID)
 
 						Expect(err).To(BeNil())
@@ -335,7 +335,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(nil, expectedError)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.UsersForListID(ListID)
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -354,7 +354,7 @@ var _ = Describe("Client", func() {
 						fakeHTTPHelper.GetReturns(badResponse, nil)
 					})
 
-					It("returns an empty list of users", func() {
+					It("returns an empty array of users", func() {
 						user, _ := client.UsersForListID(ListID)
 
 						Expect(user).To(Equal([]wundergo.User{}))
@@ -378,7 +378,7 @@ var _ = Describe("Client", func() {
 						Expect(err).To(BeNil())
 					})
 
-					It("returns the unmarshalled list of users without error", func() {
+					It("returns the unmarshalled array of users without error", func() {
 						users, err := client.UsersForListID(ListID)
 
 						Expect(err).To(BeNil())
@@ -463,79 +463,152 @@ var _ = Describe("Client", func() {
 					Expect(lists).To(Equal(expectedLists))
 				})
 			})
+		})
 
-			Describe("getting list by ID", func() {
-				listID := uint(1)
-				expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, listID)
+		Describe("getting list by ID", func() {
+			listID := uint(1)
+			expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, listID)
 
-				It("performs GET requests to /lists/:id", func() {
-					client.List(listID)
+			It("performs GET requests to /lists/:id", func() {
+				client.List(listID)
 
-					Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
-					Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
+				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
+				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
+			})
+
+			Context("when httpHelper.Get returns an error", func() {
+				expectedError := errors.New("httpHelper GET error")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(nil, expectedError)
 				})
 
-				Context("when httpHelper.Get returns an error", func() {
-					expectedError := errors.New("httpHelper GET error")
-					BeforeEach(func() {
-						fakeHTTPHelper.GetReturns(nil, expectedError)
-					})
+				It("returns an empty list", func() {
+					list, _ := client.List(listID)
 
-					It("returns an empty list", func() {
-						list, _ := client.List(listID)
-
-						Expect(list).To(Equal(wundergo.List{}))
-					})
-
-					It("forwards the error", func() {
-						_, err := client.List(listID)
-
-						Expect(err).To(Equal(expectedError))
-					})
+					Expect(list).To(Equal(wundergo.List{}))
 				})
 
-				Context("when unmarshalling json response returns an error", func() {
-					badResponse := []byte("invalid json response")
-					BeforeEach(func() {
-						fakeHTTPHelper.GetReturns(badResponse, nil)
-					})
+				It("forwards the error", func() {
+					_, err := client.List(listID)
 
-					It("returns an empty list", func() {
-						list, _ := client.List(listID)
+					Expect(err).To(Equal(expectedError))
+				})
+			})
 
-						Expect(list).To(Equal(wundergo.List{}))
-					})
-
-					It("returns an error", func() {
-						_, err := client.List(listID)
-
-						Expect(err).ToNot(BeNil())
-					})
+			Context("when unmarshalling json response returns an error", func() {
+				badResponse := []byte("invalid json response")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(badResponse, nil)
 				})
 
-				Context("when valid response is received", func() {
-					validResponse := []byte(`{
-                                  "id": 83526310,
-                                  "created_at": "2013-08-30T08:29:46.203Z",
-                                  "title": "Read Later",
-                                  "list_type": "list",
-                                  "type": "list",
-                                  "revision": 10
-                                  }`)
-					var expectedList wundergo.List
-					BeforeEach(func() {
-						fakeHTTPHelper.GetReturns(validResponse, nil)
+				It("returns an empty list", func() {
+					list, _ := client.List(listID)
 
-						err := json.Unmarshal(validResponse, &expectedList)
-						Expect(err).To(BeNil())
-					})
+					Expect(list).To(Equal(wundergo.List{}))
+				})
 
-					It("returns the unmarshalled array of lists without error", func() {
-						list, err := client.List(listID)
+				It("returns an error", func() {
+					_, err := client.List(listID)
 
-						Expect(err).To(BeNil())
-						Expect(list).To(Equal(expectedList))
-					})
+					Expect(err).ToNot(BeNil())
+				})
+			})
+
+			Context("when valid response is received", func() {
+				validResponse := []byte(`{
+                                "id": 83526310,
+                                "created_at": "2013-08-30T08:29:46.203Z",
+                                "title": "Read Later",
+                                "list_type": "list",
+                                "type": "list",
+                                "revision": 10
+                                }`)
+				var expectedList wundergo.List
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(validResponse, nil)
+
+					err := json.Unmarshal(validResponse, &expectedList)
+					Expect(err).To(BeNil())
+				})
+
+				It("returns the unmarshalled array of lists without error", func() {
+					list, err := client.List(listID)
+
+					Expect(err).To(BeNil())
+					Expect(list).To(Equal(expectedList))
+				})
+			})
+		})
+
+		Describe("getting a list's task count", func() {
+			listID := uint(1)
+			expectedUrl := fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID)
+
+			It("performs GET requests to /lists/tasks_count?list_id=:id", func() {
+				client.ListTaskCount(listID)
+
+				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
+				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
+			})
+
+			Context("when httpHelper.Get returns an error", func() {
+				expectedError := errors.New("httpHelper GET error")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(nil, expectedError)
+				})
+
+				It("returns an empty list task count", func() {
+					listTaskCount, _ := client.ListTaskCount(listID)
+
+					Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.ListTaskCount(listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when unmarshalling json response returns an error", func() {
+				badResponse := []byte("invalid json response")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(badResponse, nil)
+				})
+
+				It("returns an empty list task count", func() {
+					listTaskCount, _ := client.ListTaskCount(listID)
+
+					Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
+				})
+
+				It("returns an error", func() {
+					_, err := client.ListTaskCount(listID)
+
+					Expect(err).ToNot(BeNil())
+				})
+			})
+
+			Context("when valid response is received", func() {
+				validResponse := []byte(`{
+          "id": 83526310,
+          "completed_count": 100,
+          "uncompleted_count": 200,
+          "type": "tasks_count"
+          }`)
+				var expectedListTaskCount wundergo.ListTaskCount
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(validResponse, nil)
+
+					err := json.Unmarshal(validResponse, &expectedListTaskCount)
+					Expect(err).To(BeNil())
+				})
+
+				It("returns the unmarshalled list task count without error", func() {
+					listTaskCount, err := client.ListTaskCount(listID)
+
+					Expect(err).To(BeNil())
+					Expect(listTaskCount).To(Equal(expectedListTaskCount))
 				})
 			})
 		})
