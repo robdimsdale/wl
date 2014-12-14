@@ -155,13 +155,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("returns nil byte array", func() {
-				b, _ := httpHelper.Post("someUrl", "someRequestBody")
+				b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 				Expect(b).To(BeNil())
 			})
 
 			It("forwards the error", func() {
-				_, err := httpHelper.Post("someUrl", "someRequestBody")
+				_, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -173,13 +173,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("adds authentication authorization headers to request", func() {
-				httpHelper.Post("someUrl", "someRequestBody")
+				httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 				verifyAuthHeaders()
 			})
 
 			It("adds 'Content-Type: application/json' header", func() {
-				httpHelper.Post("someUrl", "someRequestBody")
+				httpHelper.Post("someUrl", []byte("someRequestBody"))
 				contentTypeHeader := dummyRequest.Header.Get("Content-Type")
 
 				Expect(contentTypeHeader).To(Equal("application/json"))
@@ -187,18 +187,27 @@ var _ = Describe("Client", func() {
 
 			Context("when body is not empty", func() {
 				It("adds body to request", func() {
-					httpHelper.Post("someUrl", "someRequestBody")
+					httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 					body := dummyRequest.Body
 					bodyContent, err := ioutil.ReadAll(body)
 					Expect(err).To(BeNil())
-					Expect(bodyContent).To(Equal([]byte("someRequestBody")))
+					Expect(bodyContent).To(Equal([]byte([]byte("someRequestBody"))))
+				})
+			})
+
+			Context("when body is nil", func() {
+				It("does not add body to request", func() {
+					httpHelper.Post("someUrl", nil)
+
+					body := dummyRequest.Body
+					Expect(body).To(BeNil())
 				})
 			})
 
 			Context("when body is empty", func() {
 				It("does not add body to request", func() {
-					httpHelper.Post("someUrl", "")
+					httpHelper.Post("someUrl", []byte(""))
 
 					body := dummyRequest.Body
 					Expect(body).To(BeNil())
@@ -213,13 +222,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Post("someUrl", "someRequestBody")
+					b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("forwards the error", func() {
-					_, err := httpHelper.Post("someUrl", "someRequestBody")
+					_, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -231,13 +240,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Post("someUrl", "someRequestBody")
+					b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("returns an error", func() {
-					_, err := httpHelper.Post("someUrl", "someRequestBody")
+					_, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 					Expect(err).ToNot(BeNil())
 				})
@@ -253,7 +262,7 @@ var _ = Describe("Client", func() {
 
 				Context("when the response body is nil", func() {
 					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Post("someUrl", "someRequestBody")
+						b, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal([]byte{}))
@@ -268,7 +277,7 @@ var _ = Describe("Client", func() {
 					})
 
 					It("returns the body wihout error", func() {
-						b, err := httpHelper.Post("someUrl", "someRequestBody")
+						b, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal(expectedResponseBody))
@@ -287,13 +296,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("returns nil byte array", func() {
-				b, _ := httpHelper.Put("someUrl", "someRequestBody")
+				b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 				Expect(b).To(BeNil())
 			})
 
 			It("forwards the error", func() {
-				_, err := httpHelper.Put("someUrl", "someRequestBody")
+				_, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -305,13 +314,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("adds authentication authorization headers to request", func() {
-				httpHelper.Put("someUrl", "someRequestBody")
+				httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 				verifyAuthHeaders()
 			})
 
 			It("adds 'Content-Type: application/x-www-form-urlencoded' header", func() {
-				httpHelper.Put("someUrl", "someRequestBody")
+				httpHelper.Put("someUrl", []byte("someRequestBody"))
 				contentTypeHeader := dummyRequest.Header.Get("Content-Type")
 
 				Expect(contentTypeHeader).To(Equal("application/x-www-form-urlencoded"))
@@ -319,18 +328,27 @@ var _ = Describe("Client", func() {
 
 			Context("when body is not empty", func() {
 				It("adds body to request", func() {
-					httpHelper.Put("someUrl", "someRequestBody")
+					httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 					body := dummyRequest.Body
 					bodyContent, err := ioutil.ReadAll(body)
 					Expect(err).To(BeNil())
-					Expect(bodyContent).To(Equal([]byte("someRequestBody")))
+					Expect(bodyContent).To(Equal([]byte([]byte("someRequestBody"))))
+				})
+			})
+
+			Context("when body is nil", func() {
+				It("does not add body to request", func() {
+					httpHelper.Put("someUrl", nil)
+
+					body := dummyRequest.Body
+					Expect(body).To(BeNil())
 				})
 			})
 
 			Context("when body is empty", func() {
 				It("does not add body to request", func() {
-					httpHelper.Put("someUrl", "")
+					httpHelper.Put("someUrl", []byte(""))
 
 					body := dummyRequest.Body
 					Expect(body).To(BeNil())
@@ -345,13 +363,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Put("someUrl", "someRequestBody")
+					b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("forwards the error", func() {
-					_, err := httpHelper.Put("someUrl", "someRequestBody")
+					_, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -363,13 +381,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Put("someUrl", "someRequestBody")
+					b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("returns an error", func() {
-					_, err := httpHelper.Put("someUrl", "someRequestBody")
+					_, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 					Expect(err).ToNot(BeNil())
 				})
@@ -385,7 +403,7 @@ var _ = Describe("Client", func() {
 
 				Context("when the response body is nil", func() {
 					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Put("someUrl", "someRequestBody")
+						b, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal([]byte{}))
@@ -400,7 +418,7 @@ var _ = Describe("Client", func() {
 					})
 
 					It("returns the body wihout error", func() {
-						b, err := httpHelper.Put("someUrl", "someRequestBody")
+						b, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal(expectedResponseBody))
@@ -419,13 +437,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("returns nil byte array", func() {
-				b, _ := httpHelper.Patch("someUrl", "someRequestBody")
+				b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 				Expect(b).To(BeNil())
 			})
 
 			It("forwards the error", func() {
-				_, err := httpHelper.Patch("someUrl", "someRequestBody")
+				_, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -437,13 +455,13 @@ var _ = Describe("Client", func() {
 			})
 
 			It("adds authentication authorization headers to request", func() {
-				httpHelper.Patch("someUrl", "someRequestBody")
+				httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 				verifyAuthHeaders()
 			})
 
 			It("adds 'Content-Type: application/json' header", func() {
-				httpHelper.Patch("someUrl", "someRequestBody")
+				httpHelper.Patch("someUrl", []byte("someRequestBody"))
 				contentTypeHeader := dummyRequest.Header.Get("Content-Type")
 
 				Expect(contentTypeHeader).To(Equal("application/json"))
@@ -451,18 +469,27 @@ var _ = Describe("Client", func() {
 
 			Context("when body is not empty", func() {
 				It("adds body to request", func() {
-					httpHelper.Patch("someUrl", "someRequestBody")
+					httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 					body := dummyRequest.Body
 					bodyContent, err := ioutil.ReadAll(body)
 					Expect(err).To(BeNil())
-					Expect(bodyContent).To(Equal([]byte("someRequestBody")))
+					Expect(bodyContent).To(Equal([]byte([]byte("someRequestBody"))))
+				})
+			})
+
+			Context("when body is nil", func() {
+				It("does not add body to request", func() {
+					httpHelper.Patch("someUrl", nil)
+
+					body := dummyRequest.Body
+					Expect(body).To(BeNil())
 				})
 			})
 
 			Context("when body is empty", func() {
 				It("does not add body to request", func() {
-					httpHelper.Patch("someUrl", "")
+					httpHelper.Patch("someUrl", []byte(""))
 
 					body := dummyRequest.Body
 					Expect(body).To(BeNil())
@@ -477,13 +504,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Patch("someUrl", "someRequestBody")
+					b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("forwards the error", func() {
-					_, err := httpHelper.Patch("someUrl", "someRequestBody")
+					_, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -495,13 +522,13 @@ var _ = Describe("Client", func() {
 				})
 
 				It("returns nil byte array", func() {
-					b, _ := httpHelper.Patch("someUrl", "someRequestBody")
+					b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 					Expect(b).To(BeNil())
 				})
 
 				It("returns an error", func() {
-					_, err := httpHelper.Patch("someUrl", "someRequestBody")
+					_, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 					Expect(err).ToNot(BeNil())
 				})
@@ -517,7 +544,7 @@ var _ = Describe("Client", func() {
 
 				Context("when the response body is nil", func() {
 					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Patch("someUrl", "someRequestBody")
+						b, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal([]byte{}))
@@ -532,7 +559,7 @@ var _ = Describe("Client", func() {
 					})
 
 					It("returns the body wihout error", func() {
-						b, err := httpHelper.Patch("someUrl", "someRequestBody")
+						b, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
 						Expect(err).To(BeNil())
 						Expect(b).To(Equal(expectedResponseBody))

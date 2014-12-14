@@ -58,7 +58,7 @@ func (c OauthClient) User() (User, error) {
 }
 
 func (c OauthClient) UpdateUser(user User) (User, error) {
-	body := fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name)
+	body := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
 	b, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiUrl), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
@@ -151,7 +151,7 @@ func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
 }
 
 func (c OauthClient) CreateList(listTitle string) (List, error) {
-	body := fmt.Sprintf(`{"title":"%s"}`, listTitle)
+	body := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 	c.logger.LogLine(fmt.Sprintf("request body: %s", string(body)))
 	b, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
 	c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
@@ -174,7 +174,7 @@ func (c OauthClient) UpdateList(list List) (List, error) {
 	if err != nil {
 
 	}
-	b, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), string(body))
+	b, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return List{}, err

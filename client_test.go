@@ -114,7 +114,7 @@ var _ = Describe("Client", func() {
 				Revision: 12,
 			}
 			It("performs PUT requests with new username to /user", func() {
-				expectedBody := fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name)
+				expectedBody := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
 
 				client.UpdateUser(user)
 
@@ -615,7 +615,7 @@ var _ = Describe("Client", func() {
 			Describe("creating a new list", func() {
 				expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
 				listTitle := "newListTitle"
-				expectedBody := fmt.Sprintf(`{"title":"%s"}`, listTitle)
+				expectedBody := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 
 				It("performs POST requests to /lists with new list title in body", func() {
 					client.CreateList(listTitle)
@@ -697,12 +697,12 @@ var _ = Describe("Client", func() {
 				Title:    "newTitle",
 			}
 			expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, list.ID)
-			var expectedBody string
+			var expectedBody []byte
 
 			BeforeEach(func() {
-				b, err := json.Marshal(list)
+				var err error
+				expectedBody, err = json.Marshal(list)
 
-				expectedBody = string(b)
 				Expect(err).To(BeNil())
 			})
 
