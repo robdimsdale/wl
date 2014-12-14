@@ -2,11 +2,16 @@ package wundergo
 
 import (
 	"errors"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 )
+
+var NewHTTPTransport = func() HTTPTransport {
+	return newDefaultHTTPTransport()
+}
 
 type HTTPHelper interface {
 	Get(url string) ([]byte, error)
@@ -14,19 +19,21 @@ type HTTPHelper interface {
 	Put(url string, body string) ([]byte, error)
 }
 
-type oauthClientHTTPHelper struct {
-	accessToken string
-	clientID    string
+type OauthClientHTTPHelper struct {
+	accessToken   string
+	clientID      string
+	httpTransport HTTPTransport
 }
 
-func newOauthClientHTTPHelper(accessToken string, clientID string) *oauthClientHTTPHelper {
-	return &oauthClientHTTPHelper{
-		accessToken: accessToken,
-		clientID:    clientID,
+func NewOauthClientHTTPHelper(accessToken string, clientID string) *OauthClientHTTPHelper {
+	return &OauthClientHTTPHelper{
+		accessToken:   accessToken,
+		clientID:      clientID,
+		httpTransport: NewHTTPTransport(),
 	}
 }
 
-func (h oauthClientHTTPHelper) Get(url string) ([]byte, error) {
+func (h OauthClientHTTPHelper) Get(url string) ([]byte, error) {
 	return h.performHTTPAction(
 		url,
 		"GET",
@@ -35,7 +42,7 @@ func (h oauthClientHTTPHelper) Get(url string) ([]byte, error) {
 	)
 }
 
-func (h oauthClientHTTPHelper) Put(url string, body string) ([]byte, error) {
+func (h OauthClientHTTPHelper) Put(url string, body string) ([]byte, error) {
 	return h.performHTTPAction(
 		url,
 		"PUT",
@@ -44,7 +51,7 @@ func (h oauthClientHTTPHelper) Put(url string, body string) ([]byte, error) {
 	)
 }
 
-func (h oauthClientHTTPHelper) Post(url string, body string) ([]byte, error) {
+func (h OauthClientHTTPHelper) Post(url string, body string) ([]byte, error) {
 	return h.performHTTPAction(
 		url,
 		"POST",
@@ -52,18 +59,17 @@ func (h oauthClientHTTPHelper) Post(url string, body string) ([]byte, error) {
 		map[string]string{"Content-Type": "application/json"})
 }
 
-func (h oauthClientHTTPHelper) performHTTPAction(
+func (h OauthClientHTTPHelper) performHTTPAction(
 	url string,
 	action string,
 	body string,
 	headers map[string]string,
 ) ([]byte, error) {
 
-	req, err := http.NewRequest(action, url, nil)
+	req, err := h.httpTransport.NewRequest(action, url, nil)
 	if err != nil {
-		log.Printf("Error constructing http request: %s\n", err.Error())
+		return nil, err
 	}
-	client := &http.Client{}
 
 	req.Header.Add("X-Access-Token", h.accessToken)
 	req.Header.Add("X-Client-ID", h.clientID)
@@ -76,6 +82,7 @@ func (h oauthClientHTTPHelper) performHTTPAction(
 		req.Body = ioutil.NopCloser(strings.NewReader(body))
 	}
 
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error making request: %s\n", err.Error())
@@ -86,4 +93,27 @@ func (h oauthClientHTTPHelper) performHTTPAction(
 
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
+}
+
+type HTTPTransport interface {
+	NewRequest(method, urlStr string, body io.Reader) (*http.Request, error)
+	DoRequest(req *http.Request) (resp *http.Response, err error)
+}
+
+type defaultHTTPTransport struct {
+	client http.Client
+}
+
+func newDefaultHTTPTransport() *defaultHTTPTransport {
+	return &defaultHTTPTransport{
+		client: http.Client{},
+	}
+}
+
+func (h defaultHTTPTransport) NewRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+	return http.NewRequest(method, urlStr, body)
+}
+
+func (h defaultHTTPTransport) DoRequest(req *http.Request) (resp *http.Response, err error) {
+	return h.client.Do(req)
 }

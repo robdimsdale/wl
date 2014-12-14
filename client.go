@@ -14,7 +14,7 @@ var NewLogger = func() Logger {
 }
 
 var NewHTTPHelper = func(accessToken string, clientID string) HTTPHelper {
-	return newOauthClientHTTPHelper(accessToken, clientID)
+	return NewOauthClientHTTPHelper(accessToken, clientID)
 }
 
 type Client interface {
