@@ -389,4 +389,80 @@ var _ = Describe("Client", func() {
 
 		})
 	})
+
+	Describe("List operations", func() {
+		expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
+
+		Describe("getting lists", func() {
+			It("performs GET requests to /lists", func() {
+				client.Lists()
+
+				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
+				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
+			})
+
+			Context("when httpHelper.Get returns an error", func() {
+				expectedError := errors.New("httpHelper GET error")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(nil, expectedError)
+				})
+
+				It("returns an empty array of lists", func() {
+					lists, _ := client.Lists()
+
+					Expect(lists).To(Equal([]wundergo.List{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.Lists()
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when unmarshalling json response returns an error", func() {
+				badResponse := []byte("invalid json response")
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(badResponse, nil)
+				})
+
+				It("returns an empty list", func() {
+					lists, _ := client.Lists()
+
+					Expect(lists).To(Equal([]wundergo.List{}))
+				})
+
+				It("returns an error", func() {
+					_, err := client.Lists()
+
+					Expect(err).ToNot(BeNil())
+				})
+			})
+
+			Context("when valid response is received", func() {
+				validResponse := []byte(`[{
+          "id": 83526310,
+          "created_at": "2013-08-30T08:29:46.203Z",
+          "title": "Read Later",
+          "list_type": "list",
+          "type": "list",
+          "revision": 10
+          }]`)
+				var expectedLists []wundergo.List
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(validResponse, nil)
+
+					err := json.Unmarshal(validResponse, &expectedLists)
+					Expect(err).To(BeNil())
+				})
+
+				It("returns the unmarshalled array of lists without error", func() {
+					lists, err := client.Lists()
+
+					Expect(err).To(BeNil())
+					Expect(lists).To(Equal(expectedLists))
+				})
+			})
+		})
+	})
 })
