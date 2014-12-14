@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	accessKey = "accessKey"
-	clientID  = "clientID"
+	dummyAccessToken = "dummyAccessToken"
+	dummyClientID    = "dummyClientID"
 
 	apiUrl = "https://a.wunderlist.com/api/v1"
 )
@@ -36,7 +36,7 @@ var _ = Describe("Client", func() {
 			return &fakeLogger
 		}
 
-		client = wundergo.NewOauthClient(accessKey, clientID)
+		client = wundergo.NewOauthClient(dummyAccessToken, dummyClientID)
 	})
 
 	Describe("User operations", func() {

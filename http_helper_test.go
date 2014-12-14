@@ -21,7 +21,7 @@ var _ = Describe("Client", func() {
 			return &fakeHTTPTransport
 		}
 
-		httpHelper = wundergo.NewOauthClientHTTPHelper(accessKey, clientID)
+		httpHelper = wundergo.NewOauthClientHTTPHelper(dummyAccessToken, dummyClientID)
 	})
 
 	Describe("GET requests", func() {
