@@ -170,7 +170,7 @@ func (c OauthClient) CreateList(listTitle string) (List, error) {
 func (c OauthClient) UpdateList(list List) (List, error) {
 	body, err := c.jsonHelper.Marshal(list)
 	if err != nil {
-
+		return List{}, err
 	}
 	b, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
 	if err != nil {

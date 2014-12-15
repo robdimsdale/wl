@@ -701,8 +701,28 @@ var _ = Describe("Client", func() {
 				Expect(arg1).To(Equal(expectedBody))
 			})
 
+			Context("when marshalling list returns an error", func() {
+				expectedError := errors.New("JSONHelper marshal error")
+
+				BeforeEach(func() {
+					fakeJSONHelper.MarshalReturns(nil, expectedError)
+				})
+
+				It("returns an empty list", func() {
+					list, _ := client.UpdateList(list)
+
+					Expect(list).To(Equal(wundergo.List{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.UpdateList(list)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
 			Context("when httpHelper.Patch returns an error", func() {
-				expectedError := errors.New("httpHelper GET error")
+				expectedError := errors.New("httpHelper PATCH error")
 
 				BeforeEach(func() {
 					fakeHTTPHelper.PatchReturns(nil, expectedError)
