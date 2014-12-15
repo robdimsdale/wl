@@ -1,7 +1,6 @@
 package wundergo
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -15,6 +14,10 @@ var NewLogger = func() Logger {
 
 var NewHTTPHelper = func(accessToken string, clientID string) HTTPHelper {
 	return NewOauthClientHTTPHelper(accessToken, clientID)
+}
+
+var NewJSONHelper = func() JSONHelper {
+	return newDefaultJSONHelper()
 }
 
 type Client interface {
@@ -32,12 +35,14 @@ type Client interface {
 type OauthClient struct {
 	httpHelper HTTPHelper
 	logger     Logger
+	jsonHelper JSONHelper
 }
 
 func NewOauthClient(accessToken string, clientID string) *OauthClient {
 	return &OauthClient{
 		httpHelper: NewHTTPHelper(accessToken, clientID),
 		logger:     NewLogger(),
+		jsonHelper: NewJSONHelper(),
 	}
 }
 
@@ -48,13 +53,12 @@ func (c OauthClient) User() (User, error) {
 		return User{}, err
 	}
 
-	var u User
-	err = json.Unmarshal(b, &u)
+	u, err := c.jsonHelper.Unmarshal(b, &User{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return User{}, err
 	}
-	return u, nil
+	return *(u.(*User)), nil
 }
 
 func (c OauthClient) UpdateUser(user User) (User, error) {
@@ -65,13 +69,12 @@ func (c OauthClient) UpdateUser(user User) (User, error) {
 		return User{}, err
 	}
 
-	var u User
-	err = json.Unmarshal(b, &u)
+	u, err := c.jsonHelper.Unmarshal(b, &User{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return User{}, err
 	}
-	return u, nil
+	return *(u.(*User)), nil
 }
 
 func (c OauthClient) Users() ([]User, error) {
@@ -93,13 +96,12 @@ func (c OauthClient) UsersForListID(listId uint) ([]User, error) {
 		return []User{}, err
 	}
 
-	var u []User
-	err = json.Unmarshal(b, &u)
+	u, err := c.jsonHelper.Unmarshal(b, &([]User{}))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return []User{}, err
 	}
-	return u, nil
+	return *(u.(*[]User)), nil
 }
 
 func (c OauthClient) Lists() ([]List, error) {
@@ -109,13 +111,12 @@ func (c OauthClient) Lists() ([]List, error) {
 		return []List{}, err
 	}
 
-	var l []List
-	err = json.Unmarshal(b, &l)
+	l, err := c.jsonHelper.Unmarshal(b, &([]List{}))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return []List{}, err
 	}
-	return l, nil
+	return *(l.(*[]List)), nil
 }
 
 func (c OauthClient) List(listID uint) (List, error) {
@@ -125,13 +126,12 @@ func (c OauthClient) List(listID uint) (List, error) {
 		return List{}, err
 	}
 
-	var l List
-	err = json.Unmarshal(b, &l)
+	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return List{}, err
 	}
-	return l, nil
+	return *(l.(*List)), nil
 }
 
 func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
@@ -141,13 +141,12 @@ func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
 		return ListTaskCount{}, err
 	}
 
-	var l ListTaskCount
-	err = json.Unmarshal(b, &l)
+	l, err := c.jsonHelper.Unmarshal(b, &ListTaskCount{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return ListTaskCount{}, err
 	}
-	return l, nil
+	return *(l.(*ListTaskCount)), nil
 }
 
 func (c OauthClient) CreateList(listTitle string) (List, error) {
@@ -160,17 +159,16 @@ func (c OauthClient) CreateList(listTitle string) (List, error) {
 		return List{}, err
 	}
 
-	var l List
-	err = json.Unmarshal(b, &l)
+	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return List{}, err
 	}
-	return l, nil
+	return *(l.(*List)), nil
 }
 
 func (c OauthClient) UpdateList(list List) (List, error) {
-	body, err := json.Marshal(list)
+	body, err := c.jsonHelper.Marshal(list)
 	if err != nil {
 
 	}
@@ -180,11 +178,10 @@ func (c OauthClient) UpdateList(list List) (List, error) {
 		return List{}, err
 	}
 
-	var l List
-	err = json.Unmarshal(b, &l)
+	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return List{}, err
 	}
-	return l, nil
+	return *(l.(*List)), nil
 }
