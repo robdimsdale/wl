@@ -17,6 +17,7 @@ type HTTPHelper interface {
 	Post(url string, body []byte) ([]byte, error)
 	Put(url string, body []byte) ([]byte, error)
 	Patch(url string, body []byte) ([]byte, error)
+	Delete(url string) error
 }
 
 type OauthClientHTTPHelper struct {
@@ -65,6 +66,15 @@ func (h OauthClientHTTPHelper) Patch(url string, body []byte) ([]byte, error) {
 		"PATCH",
 		body,
 		map[string]string{"Content-Type": "application/json"})
+}
+
+func (h OauthClientHTTPHelper) Delete(url string) error {
+	_, err := h.performHTTPAction(
+		url,
+		"DELETE",
+		nil,
+		nil)
+	return err
 }
 
 func (h OauthClientHTTPHelper) performHTTPAction(

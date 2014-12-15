@@ -393,4 +393,46 @@ var _ = Describe("Client - List operations", func() {
 			})
 		})
 	})
+
+	Describe("deleting a list", func() {
+		list := wundergo.List{
+			ID:       uint(1),
+			Revision: 3,
+		}
+
+		It("performs DELETE requests to /lists/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision)
+
+			client.DeleteList(list)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteList(list)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil)
+			})
+
+			It("deletes the list without error", func() {
+				err := client.DeleteList(list)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
 })

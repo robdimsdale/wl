@@ -568,4 +568,46 @@ var _ = Describe("Client", func() {
 			})
 		})
 	})
+
+	Describe("DELETE requests", func() {
+		Context("when httpTrasport.NewRequest returns with error", func() {
+			expectedError := errors.New("fakeHTTPTransport error")
+
+			BeforeEach(func() {
+				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := httpHelper.Delete("someUrl")
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when request creation is successful", func() {
+			BeforeEach(func() {
+				fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+			})
+
+			It("adds authentication authorization headers to request", func() {
+				httpHelper.Delete("someUrl")
+
+				verifyAuthHeaders()
+			})
+
+			Context("when httpTrasport.DoRequest returns with error", func() {
+				expectedError := errors.New("fakeHTTPTransport error")
+
+				BeforeEach(func() {
+					fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					err := httpHelper.Delete("someUrl")
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+		})
+	})
 })

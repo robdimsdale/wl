@@ -2,9 +2,9 @@
 package fakes
 
 import (
-	"sync"
-
 	"github.com/robdimsdale/wundergo"
+
+	"sync"
 )
 
 type FakeHTTPHelper struct {
@@ -47,14 +47,22 @@ type FakeHTTPHelper struct {
 		result1 []byte
 		result2 error
 	}
+	DeleteStub        func(url string) error
+	deleteMutex       sync.RWMutex
+	deleteArgsForCall []struct {
+		url string
+	}
+	deleteReturns struct {
+		result1 error
+	}
 }
 
 func (fake *FakeHTTPHelper) Get(url string) ([]byte, error) {
 	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		url string
 	}{url})
-	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
 		return fake.GetStub(url)
 	} else {
@@ -84,11 +92,11 @@ func (fake *FakeHTTPHelper) GetReturns(result1 []byte, result2 error) {
 
 func (fake *FakeHTTPHelper) Post(url string, body []byte) ([]byte, error) {
 	fake.postMutex.Lock()
+	defer fake.postMutex.Unlock()
 	fake.postArgsForCall = append(fake.postArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
-	fake.postMutex.Unlock()
 	if fake.PostStub != nil {
 		return fake.PostStub(url, body)
 	} else {
@@ -118,11 +126,11 @@ func (fake *FakeHTTPHelper) PostReturns(result1 []byte, result2 error) {
 
 func (fake *FakeHTTPHelper) Put(url string, body []byte) ([]byte, error) {
 	fake.putMutex.Lock()
+	defer fake.putMutex.Unlock()
 	fake.putArgsForCall = append(fake.putArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
-	fake.putMutex.Unlock()
 	if fake.PutStub != nil {
 		return fake.PutStub(url, body)
 	} else {
@@ -152,11 +160,11 @@ func (fake *FakeHTTPHelper) PutReturns(result1 []byte, result2 error) {
 
 func (fake *FakeHTTPHelper) Patch(url string, body []byte) ([]byte, error) {
 	fake.patchMutex.Lock()
+	defer fake.patchMutex.Unlock()
 	fake.patchArgsForCall = append(fake.patchArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
-	fake.patchMutex.Unlock()
 	if fake.PatchStub != nil {
 		return fake.PatchStub(url, body)
 	} else {
@@ -182,6 +190,38 @@ func (fake *FakeHTTPHelper) PatchReturns(result1 []byte, result2 error) {
 		result1 []byte
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *FakeHTTPHelper) Delete(url string) error {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
+	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
+		url string
+	}{url})
+	if fake.DeleteStub != nil {
+		return fake.DeleteStub(url)
+	} else {
+		return fake.deleteReturns.result1
+	}
+}
+
+func (fake *FakeHTTPHelper) DeleteCallCount() int {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return len(fake.deleteArgsForCall)
+}
+
+func (fake *FakeHTTPHelper) DeleteArgsForCall(i int) string {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return fake.deleteArgsForCall[i].url
+}
+
+func (fake *FakeHTTPHelper) DeleteReturns(result1 error) {
+	fake.DeleteStub = nil
+	fake.deleteReturns = struct {
+		result1 error
+	}{result1}
 }
 
 var _ wundergo.HTTPHelper = new(FakeHTTPHelper)

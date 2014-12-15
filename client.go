@@ -30,6 +30,7 @@ type Client interface {
 	ListTaskCount(listID uint) (ListTaskCount, error)
 	CreateList(listTitle string) (List, error)
 	UpdateList(list List) (List, error)
+	DeleteList(list List) error
 }
 
 type OauthClient struct {
@@ -184,4 +185,12 @@ func (c OauthClient) UpdateList(list List) (List, error) {
 		return List{}, err
 	}
 	return *(l.(*List)), nil
+}
+
+func (c OauthClient) DeleteList(list List) error {
+	err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision))
+	if err != nil {
+		return err
+	}
+	return nil
 }
