@@ -3,13 +3,11 @@ package wundergo
 import (
 	"bytes"
 	"errors"
-	"io"
 	"io/ioutil"
-	"net/http"
 )
 
-var NewHTTPTransport = func() HTTPTransport {
-	return newDefaultHTTPTransport()
+var NewHTTPTransportHelper = func() HTTPTransportHelper {
+	return NewDefaultHTTPTransportHelper()
 }
 
 type HTTPHelper interface {
@@ -23,14 +21,14 @@ type HTTPHelper interface {
 type OauthClientHTTPHelper struct {
 	accessToken   string
 	clientID      string
-	httpTransport HTTPTransport
+	httpTransport HTTPTransportHelper
 }
 
 func NewOauthClientHTTPHelper(accessToken string, clientID string) *OauthClientHTTPHelper {
 	return &OauthClientHTTPHelper{
 		accessToken:   accessToken,
 		clientID:      clientID,
-		httpTransport: NewHTTPTransport(),
+		httpTransport: NewHTTPTransportHelper(),
 	}
 }
 
@@ -116,25 +114,3 @@ func (h OauthClientHTTPHelper) performHTTPAction(
 	return ioutil.ReadAll(resp.Body)
 }
 
-type HTTPTransport interface {
-	NewRequest(method, urlStr string, body io.Reader) (*http.Request, error)
-	DoRequest(req *http.Request) (resp *http.Response, err error)
-}
-
-type defaultHTTPTransport struct {
-	client http.Client
-}
-
-func newDefaultHTTPTransport() *defaultHTTPTransport {
-	return &defaultHTTPTransport{
-		client: http.Client{},
-	}
-}
-
-func (h defaultHTTPTransport) NewRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
-	return http.NewRequest(method, urlStr, body)
-}
-
-func (h defaultHTTPTransport) DoRequest(req *http.Request) (resp *http.Response, err error) {
-	return h.client.Do(req)
-}

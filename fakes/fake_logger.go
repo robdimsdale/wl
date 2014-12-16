@@ -3,7 +3,6 @@ package fakes
 
 import (
 	"sync"
-
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -17,10 +16,10 @@ type FakeLogger struct {
 
 func (fake *FakeLogger) LogLine(message string) {
 	fake.logLineMutex.Lock()
+	defer fake.logLineMutex.Unlock()
 	fake.logLineArgsForCall = append(fake.logLineArgsForCall, struct {
 		message string
 	}{message})
-	fake.logLineMutex.Unlock()
 	if fake.LogLineStub != nil {
 		fake.LogLineStub(message)
 	}

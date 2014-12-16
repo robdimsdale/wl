@@ -9,7 +9,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-type FakeHTTPTransport struct {
+type FakeHTTPTransportHelper struct {
 	NewRequestStub        func(method, urlStr string, body io.Reader) (*http.Request, error)
 	newRequestMutex       sync.RWMutex
 	newRequestArgsForCall []struct {
@@ -32,14 +32,14 @@ type FakeHTTPTransport struct {
 	}
 }
 
-func (fake *FakeHTTPTransport) NewRequest(method string, urlStr string, body io.Reader) (*http.Request, error) {
+func (fake *FakeHTTPTransportHelper) NewRequest(method string, urlStr string, body io.Reader) (*http.Request, error) {
 	fake.newRequestMutex.Lock()
+	defer fake.newRequestMutex.Unlock()
 	fake.newRequestArgsForCall = append(fake.newRequestArgsForCall, struct {
 		method string
 		urlStr string
 		body   io.Reader
 	}{method, urlStr, body})
-	fake.newRequestMutex.Unlock()
 	if fake.NewRequestStub != nil {
 		return fake.NewRequestStub(method, urlStr, body)
 	} else {
@@ -47,19 +47,19 @@ func (fake *FakeHTTPTransport) NewRequest(method string, urlStr string, body io.
 	}
 }
 
-func (fake *FakeHTTPTransport) NewRequestCallCount() int {
+func (fake *FakeHTTPTransportHelper) NewRequestCallCount() int {
 	fake.newRequestMutex.RLock()
 	defer fake.newRequestMutex.RUnlock()
 	return len(fake.newRequestArgsForCall)
 }
 
-func (fake *FakeHTTPTransport) NewRequestArgsForCall(i int) (string, string, io.Reader) {
+func (fake *FakeHTTPTransportHelper) NewRequestArgsForCall(i int) (string, string, io.Reader) {
 	fake.newRequestMutex.RLock()
 	defer fake.newRequestMutex.RUnlock()
 	return fake.newRequestArgsForCall[i].method, fake.newRequestArgsForCall[i].urlStr, fake.newRequestArgsForCall[i].body
 }
 
-func (fake *FakeHTTPTransport) NewRequestReturns(result1 *http.Request, result2 error) {
+func (fake *FakeHTTPTransportHelper) NewRequestReturns(result1 *http.Request, result2 error) {
 	fake.NewRequestStub = nil
 	fake.newRequestReturns = struct {
 		result1 *http.Request
@@ -67,12 +67,12 @@ func (fake *FakeHTTPTransport) NewRequestReturns(result1 *http.Request, result2 
 	}{result1, result2}
 }
 
-func (fake *FakeHTTPTransport) DoRequest(req *http.Request) (resp *http.Response, err error) {
+func (fake *FakeHTTPTransportHelper) DoRequest(req *http.Request) (resp *http.Response, err error) {
 	fake.doRequestMutex.Lock()
+	defer fake.doRequestMutex.Unlock()
 	fake.doRequestArgsForCall = append(fake.doRequestArgsForCall, struct {
 		req *http.Request
 	}{req})
-	fake.doRequestMutex.Unlock()
 	if fake.DoRequestStub != nil {
 		return fake.DoRequestStub(req)
 	} else {
@@ -80,19 +80,19 @@ func (fake *FakeHTTPTransport) DoRequest(req *http.Request) (resp *http.Response
 	}
 }
 
-func (fake *FakeHTTPTransport) DoRequestCallCount() int {
+func (fake *FakeHTTPTransportHelper) DoRequestCallCount() int {
 	fake.doRequestMutex.RLock()
 	defer fake.doRequestMutex.RUnlock()
 	return len(fake.doRequestArgsForCall)
 }
 
-func (fake *FakeHTTPTransport) DoRequestArgsForCall(i int) *http.Request {
+func (fake *FakeHTTPTransportHelper) DoRequestArgsForCall(i int) *http.Request {
 	fake.doRequestMutex.RLock()
 	defer fake.doRequestMutex.RUnlock()
 	return fake.doRequestArgsForCall[i].req
 }
 
-func (fake *FakeHTTPTransport) DoRequestReturns(result1 *http.Response, result2 error) {
+func (fake *FakeHTTPTransportHelper) DoRequestReturns(result1 *http.Response, result2 error) {
 	fake.DoRequestStub = nil
 	fake.doRequestReturns = struct {
 		result1 *http.Response
@@ -100,4 +100,4 @@ func (fake *FakeHTTPTransport) DoRequestReturns(result1 *http.Response, result2 
 	}{result1, result2}
 }
 
-var _ wundergo.HTTPTransport = new(FakeHTTPTransport)
+var _ wundergo.HTTPTransportHelper = new(FakeHTTPTransportHelper)

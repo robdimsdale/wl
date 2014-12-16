@@ -2,9 +2,8 @@
 package fakes
 
 import (
-	"github.com/robdimsdale/wundergo"
-
 	"sync"
+	"github.com/robdimsdale/wundergo"
 )
 
 type FakeHTTPHelper struct {

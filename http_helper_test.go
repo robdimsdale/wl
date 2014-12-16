@@ -13,17 +13,17 @@ import (
 )
 
 var _ = Describe("HTTPHelper", func() {
-	var fakeHTTPTransport fakes.FakeHTTPTransport
+	var fakeHTTPTransportHelper fakes.FakeHTTPTransportHelper
 
 	var httpHelper wundergo.HTTPHelper
 
 	var dummyRequest *http.Request
 
 	BeforeEach(func() {
-		fakeHTTPTransport = fakes.FakeHTTPTransport{}
+		fakeHTTPTransportHelper = fakes.FakeHTTPTransportHelper{}
 
-		wundergo.NewHTTPTransport = func() wundergo.HTTPTransport {
-			return &fakeHTTPTransport
+		wundergo.NewHTTPTransportHelper = func() wundergo.HTTPTransportHelper {
+			return &fakeHTTPTransportHelper
 		}
 
 		dummyRequest = &http.Request{
@@ -43,10 +43,10 @@ var _ = Describe("HTTPHelper", func() {
 
 	Describe("GET requests", func() {
 		Context("when httpTrasport.NewRequest returns with error", func() {
-			expectedError := errors.New("fakeHTTPTransport error")
+			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
 			It("returns nil byte array", func() {
@@ -63,7 +63,7 @@ var _ = Describe("HTTPHelper", func() {
 
 			Context("when request creation is successful", func() {
 				BeforeEach(func() {
-					fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+					fakeHTTPTransportHelper.NewRequestReturns(dummyRequest, nil)
 				})
 
 				It("adds authentication authorization headers to request", func() {
@@ -73,10 +73,10 @@ var _ = Describe("HTTPHelper", func() {
 				})
 
 				Context("when httpTrasport.DoRequest returns with error", func() {
-					expectedError := errors.New("fakeHTTPTransport error")
+					expectedError := errors.New("fakeHTTPTransportHelper error")
 
 					BeforeEach(func() {
-						fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+						fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 					})
 
 					It("returns nil byte array", func() {
@@ -94,7 +94,7 @@ var _ = Describe("HTTPHelper", func() {
 
 				Context("when httpTrasport.DoRequest returns with nil response", func() {
 					BeforeEach(func() {
-						fakeHTTPTransport.DoRequestReturns(nil, nil)
+						fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 					})
 
 					It("returns nil byte array", func() {
@@ -115,7 +115,7 @@ var _ = Describe("HTTPHelper", func() {
 
 					BeforeEach(func() {
 						validResponse = &http.Response{}
-						fakeHTTPTransport.DoRequestReturns(validResponse, nil)
+						fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 					})
 
 					Context("when the response body is nil", func() {
@@ -148,10 +148,10 @@ var _ = Describe("HTTPHelper", func() {
 
 	Describe("POST requests", func() {
 		Context("when httpTrasport.NewRequest returns with error", func() {
-			expectedError := errors.New("fakeHTTPTransport error")
+			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
 			It("returns nil byte array", func() {
@@ -169,7 +169,7 @@ var _ = Describe("HTTPHelper", func() {
 
 		Context("when request creation is successful", func() {
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+				fakeHTTPTransportHelper.NewRequestReturns(dummyRequest, nil)
 			})
 
 			It("adds authentication authorization headers to request", func() {
@@ -215,10 +215,10 @@ var _ = Describe("HTTPHelper", func() {
 			})
 
 			Context("when httpTrasport.DoRequest returns with error", func() {
-				expectedError := errors.New("fakeHTTPTransport error")
+				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
 				It("returns nil byte array", func() {
@@ -236,7 +236,7 @@ var _ = Describe("HTTPHelper", func() {
 
 			Context("when httpTrasport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
 				It("returns nil byte array", func() {
@@ -257,7 +257,7 @@ var _ = Describe("HTTPHelper", func() {
 
 				BeforeEach(func() {
 					validResponse = &http.Response{}
-					fakeHTTPTransport.DoRequestReturns(validResponse, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
 				Context("when the response body is nil", func() {
@@ -289,10 +289,10 @@ var _ = Describe("HTTPHelper", func() {
 
 	Describe("PUT requests", func() {
 		Context("when httpTrasport.NewRequest returns with error", func() {
-			expectedError := errors.New("fakeHTTPTransport error")
+			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
 			It("returns nil byte array", func() {
@@ -310,7 +310,7 @@ var _ = Describe("HTTPHelper", func() {
 
 		Context("when request creation is successful", func() {
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+				fakeHTTPTransportHelper.NewRequestReturns(dummyRequest, nil)
 			})
 
 			It("adds authentication authorization headers to request", func() {
@@ -356,10 +356,10 @@ var _ = Describe("HTTPHelper", func() {
 			})
 
 			Context("when httpTrasport.DoRequest returns with error", func() {
-				expectedError := errors.New("fakeHTTPTransport error")
+				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
 				It("returns nil byte array", func() {
@@ -377,7 +377,7 @@ var _ = Describe("HTTPHelper", func() {
 
 			Context("when httpTrasport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
 				It("returns nil byte array", func() {
@@ -398,7 +398,7 @@ var _ = Describe("HTTPHelper", func() {
 
 				BeforeEach(func() {
 					validResponse = &http.Response{}
-					fakeHTTPTransport.DoRequestReturns(validResponse, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
 				Context("when the response body is nil", func() {
@@ -430,10 +430,10 @@ var _ = Describe("HTTPHelper", func() {
 
 	Describe("PATCH requests", func() {
 		Context("when httpTrasport.NewRequest returns with error", func() {
-			expectedError := errors.New("fakeHTTPTransport error")
+			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
 			It("returns nil byte array", func() {
@@ -451,7 +451,7 @@ var _ = Describe("HTTPHelper", func() {
 
 		Context("when request creation is successful", func() {
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+				fakeHTTPTransportHelper.NewRequestReturns(dummyRequest, nil)
 			})
 
 			It("adds authentication authorization headers to request", func() {
@@ -497,10 +497,10 @@ var _ = Describe("HTTPHelper", func() {
 			})
 
 			Context("when httpTrasport.DoRequest returns with error", func() {
-				expectedError := errors.New("fakeHTTPTransport error")
+				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
 				It("returns nil byte array", func() {
@@ -518,7 +518,7 @@ var _ = Describe("HTTPHelper", func() {
 
 			Context("when httpTrasport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
 				It("returns nil byte array", func() {
@@ -539,7 +539,7 @@ var _ = Describe("HTTPHelper", func() {
 
 				BeforeEach(func() {
 					validResponse = &http.Response{}
-					fakeHTTPTransport.DoRequestReturns(validResponse, nil)
+					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
 				Context("when the response body is nil", func() {
@@ -571,10 +571,10 @@ var _ = Describe("HTTPHelper", func() {
 
 	Describe("DELETE requests", func() {
 		Context("when httpTrasport.NewRequest returns with error", func() {
-			expectedError := errors.New("fakeHTTPTransport error")
+			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(nil, expectedError)
+				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
 			It("forwards the error", func() {
@@ -586,7 +586,7 @@ var _ = Describe("HTTPHelper", func() {
 
 		Context("when request creation is successful", func() {
 			BeforeEach(func() {
-				fakeHTTPTransport.NewRequestReturns(dummyRequest, nil)
+				fakeHTTPTransportHelper.NewRequestReturns(dummyRequest, nil)
 			})
 
 			It("adds authentication authorization headers to request", func() {
@@ -596,10 +596,10 @@ var _ = Describe("HTTPHelper", func() {
 			})
 
 			Context("when httpTrasport.DoRequest returns with error", func() {
-				expectedError := errors.New("fakeHTTPTransport error")
+				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPTransport.DoRequestReturns(nil, expectedError)
+					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
 				It("forwards the error", func() {

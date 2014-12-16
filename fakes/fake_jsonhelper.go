@@ -27,23 +27,14 @@ type FakeJSONHelper struct {
 		result1 interface{}
 		result2 error
 	}
-	UnmarshalInlineStub        func(data []byte, v interface{}) error
-	unmarshalInlineMutex       sync.RWMutex
-	unmarshalInlineArgsForCall []struct {
-		data []byte
-		v    interface{}
-	}
-	unmarshalInlineReturns struct {
-		result1 error
-	}
 }
 
 func (fake *FakeJSONHelper) Marshal(v interface{}) ([]byte, error) {
 	fake.marshalMutex.Lock()
+	defer fake.marshalMutex.Unlock()
 	fake.marshalArgsForCall = append(fake.marshalArgsForCall, struct {
 		v interface{}
 	}{v})
-	fake.marshalMutex.Unlock()
 	if fake.MarshalStub != nil {
 		return fake.MarshalStub(v)
 	} else {
@@ -73,11 +64,11 @@ func (fake *FakeJSONHelper) MarshalReturns(result1 []byte, result2 error) {
 
 func (fake *FakeJSONHelper) Unmarshal(data []byte, v interface{}) (interface{}, error) {
 	fake.unmarshalMutex.Lock()
+	defer fake.unmarshalMutex.Unlock()
 	fake.unmarshalArgsForCall = append(fake.unmarshalArgsForCall, struct {
 		data []byte
 		v    interface{}
 	}{data, v})
-	fake.unmarshalMutex.Unlock()
 	if fake.UnmarshalStub != nil {
 		return fake.UnmarshalStub(data, v)
 	} else {
@@ -103,39 +94,6 @@ func (fake *FakeJSONHelper) UnmarshalReturns(result1 interface{}, result2 error)
 		result1 interface{}
 		result2 error
 	}{result1, result2}
-}
-
-func (fake *FakeJSONHelper) UnmarshalInline(data []byte, v interface{}) error {
-	fake.unmarshalInlineMutex.Lock()
-	fake.unmarshalInlineArgsForCall = append(fake.unmarshalInlineArgsForCall, struct {
-		data []byte
-		v    interface{}
-	}{data, v})
-	fake.unmarshalInlineMutex.Unlock()
-	if fake.UnmarshalInlineStub != nil {
-		return fake.UnmarshalInlineStub(data, v)
-	} else {
-		return fake.unmarshalInlineReturns.result1
-	}
-}
-
-func (fake *FakeJSONHelper) UnmarshalInlineCallCount() int {
-	fake.unmarshalInlineMutex.RLock()
-	defer fake.unmarshalInlineMutex.RUnlock()
-	return len(fake.unmarshalInlineArgsForCall)
-}
-
-func (fake *FakeJSONHelper) UnmarshalInlineArgsForCall(i int) ([]byte, interface{}) {
-	fake.unmarshalInlineMutex.RLock()
-	defer fake.unmarshalInlineMutex.RUnlock()
-	return fake.unmarshalInlineArgsForCall[i].data, fake.unmarshalInlineArgsForCall[i].v
-}
-
-func (fake *FakeJSONHelper) UnmarshalInlineReturns(result1 error) {
-	fake.UnmarshalInlineStub = nil
-	fake.unmarshalInlineReturns = struct {
-		result1 error
-	}{result1}
 }
 
 var _ wundergo.JSONHelper = new(FakeJSONHelper)
