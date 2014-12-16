@@ -26,42 +26,44 @@ func main() {
 	}
 
 	client := wundergo.NewOauthClient(accessToken, clientID)
+	logger := wundergo.NewPrintlnLogger()
 
-	log.Printf("User info\n")
+	fmt.Printf("----------------------------------\n")
+	logger.LogLine("User info\n")
 	user, err := client.User()
 	if err != nil {
-		log.Printf("Error getting user: %s\n", err.Error())
+		logger.LogLine(fmt.Sprintf("Error getting user: %s\n", err.Error()))
 	}
 	fmt.Printf("%+v\n", user)
 	fmt.Printf("----------------------------------\n")
 
-	log.Printf("Creating new list\n")
+	logger.LogLine("Creating new list\n")
 	newList, err := client.CreateList("newListTitle")
 	if err != nil {
-		log.Printf("Error creating list: %s\n", err.Error())
+		logger.LogLine(fmt.Sprintf("Error creating list: %s\n", err.Error()))
 	}
 	fmt.Printf("%+v\n", newList)
 	fmt.Printf("----------------------------------\n")
 
-	log.Printf("Getting lists\n")
+	logger.LogLine("Getting lists\n")
 	lists, err := client.Lists()
 	if err != nil {
-		log.Printf("Error getting lists: %s\n", err.Error())
+		logger.LogLine(fmt.Sprintf("Error getting lists: %s\n", err.Error()))
 	}
 	fmt.Printf("%+v\n", lists)
 	fmt.Printf("----------------------------------\n")
 
-	log.Printf("Deleting new list\n")
+	logger.LogLine("Deleting new list\n")
 	err = client.DeleteList(newList)
 	if err != nil {
-		log.Printf("Error deleting list: %s\n", err.Error())
+		logger.LogLine(fmt.Sprintf("Error deleting list: %s\n", err.Error()))
 	}
 	fmt.Printf("----------------------------------\n")
 
-	log.Printf("Getting lists\n")
+	logger.LogLine("Getting lists\n")
 	lists, err = client.Lists()
 	if err != nil {
-		log.Printf("Error getting lists: %s\n", err.Error())
+		logger.LogLine(fmt.Sprintf("Error getting lists: %s\n", err.Error()))
 	}
 	fmt.Printf("%+v\n", lists)
 	fmt.Printf("----------------------------------\n")

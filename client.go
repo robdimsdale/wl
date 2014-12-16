@@ -9,7 +9,7 @@ const (
 )
 
 var NewLogger = func() Logger {
-	return newPrintlnLogger()
+	return NewPrintlnLogger()
 }
 
 var NewHTTPHelper = func(accessToken string, clientID string) HTTPHelper {
@@ -152,9 +152,8 @@ func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
 
 func (c OauthClient) CreateList(listTitle string) (List, error) {
 	body := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
-	c.logger.LogLine(fmt.Sprintf("request body: %s", string(body)))
+
 	b, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
-	c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
 		return List{}, err

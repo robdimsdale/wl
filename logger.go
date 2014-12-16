@@ -11,7 +11,7 @@ type Logger interface {
 type PrintlnLogger struct {
 }
 
-func newPrintlnLogger() *PrintlnLogger {
+func NewPrintlnLogger() *PrintlnLogger {
 	return &PrintlnLogger{}
 }
 
