@@ -7,18 +7,18 @@ type JSONHelper interface {
 	Unmarshal(data []byte, v interface{}) (interface{}, error)
 }
 
-type defaultJSONHelper struct {
+type DefaultJSONHelper struct {
 }
 
-func newDefaultJSONHelper() *defaultJSONHelper {
-	return &defaultJSONHelper{}
+func NewDefaultJSONHelper() *DefaultJSONHelper {
+	return &DefaultJSONHelper{}
 }
 
-func (h defaultJSONHelper) Marshal(v interface{}) ([]byte, error) {
+func (h DefaultJSONHelper) Marshal(v interface{}) ([]byte, error) {
 	return json.Marshal(v)
 }
 
-func (h defaultJSONHelper) Unmarshal(data []byte, v interface{}) (interface{}, error) {
+func (h DefaultJSONHelper) Unmarshal(data []byte, v interface{}) (interface{}, error) {
 	err := json.Unmarshal(data, v)
 	return v, err
 }

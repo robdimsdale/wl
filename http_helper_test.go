@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo/fakes"
 )
 
-var _ = Describe("Client", func() {
+var _ = Describe("HTTPHelper", func() {
 	var fakeHTTPTransport fakes.FakeHTTPTransport
 
 	var httpHelper wundergo.HTTPHelper

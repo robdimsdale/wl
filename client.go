@@ -17,7 +17,7 @@ var NewHTTPHelper = func(accessToken string, clientID string) HTTPHelper {
 }
 
 var NewJSONHelper = func() JSONHelper {
-	return newDefaultJSONHelper()
+	return NewDefaultJSONHelper()
 }
 
 type Client interface {
