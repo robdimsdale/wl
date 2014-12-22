@@ -14,6 +14,7 @@ const (
 )
 
 func main() {
+	fmt.Println("Wundergo - wunderlist API client")
 	accessToken := os.Getenv(WL_ACCESS_TOKEN)
 	clientID := os.Getenv(WL_CLIENT_ID)
 
