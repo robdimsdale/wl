@@ -113,4 +113,3 @@ func (h OauthClientHTTPHelper) performHTTPAction(
 	defer resp.Body.Close()
 	return ioutil.ReadAll(resp.Body)
 }
-

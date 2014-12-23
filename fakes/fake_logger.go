@@ -2,8 +2,8 @@
 package fakes
 
 import (
-	"sync"
 	"github.com/robdimsdale/wundergo"
+	"sync"
 )
 
 type FakeLogger struct {
