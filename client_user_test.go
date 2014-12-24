@@ -1,8 +1,11 @@
 package wundergo_test
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -10,13 +13,22 @@ import (
 )
 
 var _ = Describe("Client - User operations", func() {
+	var dummyResponse *http.Response
 
 	BeforeEach(func() {
 		initializeFakes()
 		initializeClient()
+
+		dummyResponse = &http.Response{}
+		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
 	Describe("getting user", func() {
+
+		BeforeEach(func() {
+			fakeHTTPHelper.GetReturns(dummyResponse, nil)
+		})
+
 		It("performs GET requests to /user", func() {
 			expectedUrl := fmt.Sprintf("%s/user", apiUrl)
 
@@ -29,8 +41,50 @@ var _ = Describe("Client - User operations", func() {
 
 		Context("when httpHelper.Get returns an error", func() {
 			expectedError := errors.New("httpHelper GET error")
+
 			BeforeEach(func() {
 				fakeHTTPHelper.GetReturns(nil, expectedError)
+			})
+
+			It("returns an empty user", func() {
+				user, _ := client.User()
+
+				Expect(user).To(Equal(wundergo.User{}))
+			})
+
+			It("forwards the error", func() {
+				_, err := client.User()
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.GetReturns(dummyResponse, nil)
+			})
+
+			It("returns an empty user", func() {
+				user, _ := client.User()
+
+				Expect(user).To(Equal(wundergo.User{}))
+			})
+
+			It("returns an error", func() {
+				_, err := client.User()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.GetReturns(dummyResponse, nil)
 			})
 
 			It("returns an empty user", func() {
@@ -50,7 +104,6 @@ var _ = Describe("Client - User operations", func() {
 			expectedError := errors.New("jsonHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPHelper.GetReturns([]byte("invalid json response"), nil)
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
 			})
 
@@ -71,7 +124,6 @@ var _ = Describe("Client - User operations", func() {
 			expectedUser := wundergo.User{Name: "testy"}
 
 			BeforeEach(func() {
-				fakeHTTPHelper.GetReturns([]byte(""), nil)
 				fakeJSONHelper.UnmarshalReturns(&expectedUser, nil)
 			})
 
@@ -89,6 +141,11 @@ var _ = Describe("Client - User operations", func() {
 			Name:     "username",
 			Revision: 12,
 		}
+
+		BeforeEach(func() {
+			fakeHTTPHelper.PutReturns(dummyResponse, nil)
+		})
+
 		It("performs PUT requests with new username to /user", func() {
 			expectedUrl := fmt.Sprintf("%s/user", apiUrl)
 
@@ -123,11 +180,51 @@ var _ = Describe("Client - User operations", func() {
 			})
 		})
 
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PutReturns(dummyResponse, nil)
+			})
+
+			It("returns an empty user", func() {
+				user, _ := client.UpdateUser(user)
+
+				Expect(user).To(Equal(wundergo.User{}))
+			})
+
+			It("returns an error", func() {
+				_, err := client.UpdateUser(user)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PutReturns(dummyResponse, nil)
+			})
+
+			It("returns an empty user", func() {
+				user, _ := client.UpdateUser(user)
+
+				Expect(user).To(Equal(wundergo.User{}))
+			})
+
+			It("forwards the error", func() {
+				_, err := client.UpdateUser(user)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
 		Context("when unmarshalling json response returns an error", func() {
 			expectedError := errors.New("jsonHelper error")
 
 			BeforeEach(func() {
-				fakeHTTPHelper.PutReturns([]byte("invalid json response"), nil)
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
 			})
 
@@ -148,7 +245,6 @@ var _ = Describe("Client - User operations", func() {
 			expectedUser := wundergo.User{}
 
 			BeforeEach(func() {
-				fakeHTTPHelper.PutReturns([]byte(""), nil)
 				fakeJSONHelper.UnmarshalReturns(&expectedUser, nil)
 			})
 
@@ -162,6 +258,11 @@ var _ = Describe("Client - User operations", func() {
 	})
 
 	Describe("getting users", func() {
+
+		BeforeEach(func() {
+			fakeHTTPHelper.GetReturns(dummyResponse, nil)
+		})
+
 		Context("when ListID is not provided", func() {
 			expectedUrl := fmt.Sprintf("%s/users", apiUrl)
 
@@ -181,9 +282,50 @@ var _ = Describe("Client - User operations", func() {
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.Users()
+					users, _ := client.Users()
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.Users()
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response body is nil", func() {
+				BeforeEach(func() {
+					dummyResponse.Body = nil
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.Users()
+
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("returns an error", func() {
+					_, err := client.Users()
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when reading body returns an error", func() {
+				expectedError := errors.New("read error")
+				BeforeEach(func() {
+					dummyResponse.Body = erroringReadCloser{
+						readError: expectedError,
+					}
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.Users()
+
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
@@ -197,14 +339,13 @@ var _ = Describe("Client - User operations", func() {
 				expectedError := errors.New("jsonHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte("invalid json response"), nil)
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.Users()
+					users, _ := client.Users()
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
@@ -218,7 +359,6 @@ var _ = Describe("Client - User operations", func() {
 				expectedUsers := []wundergo.User{}
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte(""), nil)
 					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
 				})
 
@@ -232,12 +372,12 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		Context("when ListID == 0", func() {
-			ListID := uint(0)
+			listID := uint(0)
 			expectedUrl := fmt.Sprintf("%s/users", apiUrl)
 
 			It("performs GET requests to /users", func() {
 				fakeJSONHelper.UnmarshalReturns(&[]wundergo.User{}, nil)
-				client.UsersForListID(ListID)
+				client.UsersForListID(listID)
 
 				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
 				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
@@ -250,13 +390,54 @@ var _ = Describe("Client - User operations", func() {
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.UsersForListID(ListID)
+					users, _ := client.UsersForListID(listID)
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
-					_, err := client.UsersForListID(ListID)
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response body is nil", func() {
+				BeforeEach(func() {
+					dummyResponse.Body = nil
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.UsersForListID(listID)
+
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("returns an error", func() {
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when reading body returns an error", func() {
+				expectedError := errors.New("read error")
+				BeforeEach(func() {
+					dummyResponse.Body = erroringReadCloser{
+						readError: expectedError,
+					}
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.UsersForListID(listID)
+
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -266,18 +447,17 @@ var _ = Describe("Client - User operations", func() {
 				expectedError := errors.New("jsonHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte("invalid json response"), nil)
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.UsersForListID(ListID)
+					users, _ := client.UsersForListID(listID)
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
-					_, err := client.UsersForListID(ListID)
+					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -287,12 +467,11 @@ var _ = Describe("Client - User operations", func() {
 				expectedUsers := []wundergo.User{}
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte(""), nil)
 					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
 				})
 
 				It("returns the unmarshalled array of users without error", func() {
-					users, err := client.UsersForListID(ListID)
+					users, err := client.UsersForListID(listID)
 
 					Expect(err).To(BeNil())
 					Expect(users).To(Equal(expectedUsers))
@@ -300,13 +479,13 @@ var _ = Describe("Client - User operations", func() {
 			})
 		})
 
-		Context("when ListID > 0", func() {
-			ListID := uint(12345)
-			expectedUrl := fmt.Sprintf("%s/users?list_id=%d", apiUrl, ListID)
+		Context("when listID > 0", func() {
+			listID := uint(12345)
+			expectedUrl := fmt.Sprintf("%s/users?list_id=%d", apiUrl, listID)
 
 			It("performs GET requests to /users with list_id param", func() {
 				fakeJSONHelper.UnmarshalReturns(&[]wundergo.User{}, nil)
-				client.UsersForListID(ListID)
+				client.UsersForListID(listID)
 
 				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
 				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
@@ -320,13 +499,54 @@ var _ = Describe("Client - User operations", func() {
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.UsersForListID(ListID)
+					users, _ := client.UsersForListID(listID)
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
-					_, err := client.UsersForListID(ListID)
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response body is nil", func() {
+				BeforeEach(func() {
+					dummyResponse.Body = nil
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.UsersForListID(listID)
+
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("returns an error", func() {
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when reading body returns an error", func() {
+				expectedError := errors.New("read error")
+				BeforeEach(func() {
+					dummyResponse.Body = erroringReadCloser{
+						readError: expectedError,
+					}
+					fakeHTTPHelper.GetReturns(dummyResponse, nil)
+				})
+
+				It("returns an empty array of users", func() {
+					users, _ := client.UsersForListID(listID)
+
+					Expect(users).To(Equal([]wundergo.User{}))
+				})
+
+				It("forwards the error", func() {
+					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -336,18 +556,17 @@ var _ = Describe("Client - User operations", func() {
 				expectedError := errors.New("jsonHelper error")
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte("invalid json response"), nil)
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
 				})
 
 				It("returns an empty array of users", func() {
-					user, _ := client.UsersForListID(ListID)
+					users, _ := client.UsersForListID(listID)
 
-					Expect(user).To(Equal([]wundergo.User{}))
+					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
-					_, err := client.UsersForListID(ListID)
+					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -357,18 +576,16 @@ var _ = Describe("Client - User operations", func() {
 				expectedUsers := []wundergo.User{}
 
 				BeforeEach(func() {
-					fakeHTTPHelper.GetReturns([]byte(""), nil)
 					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
 				})
 
 				It("returns the unmarshalled array of users without error", func() {
-					users, err := client.UsersForListID(ListID)
+					users, err := client.UsersForListID(listID)
 
 					Expect(err).To(BeNil())
 					Expect(users).To(Equal(expectedUsers))
 				})
 			})
 		})
-
 	})
 })

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
+	"net/http"
 )
 
 var NewHTTPTransportHelper = func() HTTPTransportHelper {
@@ -11,11 +12,11 @@ var NewHTTPTransportHelper = func() HTTPTransportHelper {
 }
 
 type HTTPHelper interface {
-	Get(url string) ([]byte, error)
-	Post(url string, body []byte) ([]byte, error)
-	Put(url string, body []byte) ([]byte, error)
-	Patch(url string, body []byte) ([]byte, error)
-	Delete(url string) error
+	Get(url string) (*http.Response, error)
+	Post(url string, body []byte) (*http.Response, error)
+	Put(url string, body []byte) (*http.Response, error)
+	Patch(url string, body []byte) (*http.Response, error)
+	Delete(url string) (*http.Response, error)
 }
 
 type OauthClientHTTPHelper struct {
@@ -32,7 +33,8 @@ func NewOauthClientHTTPHelper(accessToken string, clientID string) *OauthClientH
 	}
 }
 
-func (h OauthClientHTTPHelper) Get(url string) ([]byte, error) {
+// Response is guaranteed to be non-nil if error is nil
+func (h OauthClientHTTPHelper) Get(url string) (*http.Response, error) {
 	return h.performHTTPAction(
 		url,
 		"GET",
@@ -41,7 +43,8 @@ func (h OauthClientHTTPHelper) Get(url string) ([]byte, error) {
 	)
 }
 
-func (h OauthClientHTTPHelper) Put(url string, body []byte) ([]byte, error) {
+// Response is guaranteed to be non-nil if error is nil
+func (h OauthClientHTTPHelper) Put(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
 		url,
 		"PUT",
@@ -50,7 +53,8 @@ func (h OauthClientHTTPHelper) Put(url string, body []byte) ([]byte, error) {
 	)
 }
 
-func (h OauthClientHTTPHelper) Post(url string, body []byte) ([]byte, error) {
+// Response is guaranteed to be non-nil if error is nil
+func (h OauthClientHTTPHelper) Post(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
 		url,
 		"POST",
@@ -58,7 +62,8 @@ func (h OauthClientHTTPHelper) Post(url string, body []byte) ([]byte, error) {
 		map[string]string{"Content-Type": "application/json"})
 }
 
-func (h OauthClientHTTPHelper) Patch(url string, body []byte) ([]byte, error) {
+// Response is guaranteed to be non-nil if error is nil
+func (h OauthClientHTTPHelper) Patch(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
 		url,
 		"PATCH",
@@ -66,13 +71,13 @@ func (h OauthClientHTTPHelper) Patch(url string, body []byte) ([]byte, error) {
 		map[string]string{"Content-Type": "application/json"})
 }
 
-func (h OauthClientHTTPHelper) Delete(url string) error {
-	_, err := h.performHTTPAction(
+// Response is guaranteed to be non-nil if error is nil
+func (h OauthClientHTTPHelper) Delete(url string) (*http.Response, error) {
+	return h.performHTTPAction(
 		url,
 		"DELETE",
 		nil,
 		nil)
-	return err
 }
 
 func (h OauthClientHTTPHelper) performHTTPAction(
@@ -80,7 +85,7 @@ func (h OauthClientHTTPHelper) performHTTPAction(
 	action string,
 	body []byte,
 	headers map[string]string,
-) ([]byte, error) {
+) (*http.Response, error) {
 
 	req, err := h.httpTransport.NewRequest(action, url, nil)
 	if err != nil {
@@ -106,10 +111,5 @@ func (h OauthClientHTTPHelper) performHTTPAction(
 		return nil, errors.New("Nil response returned")
 	}
 
-	if resp.Body == nil {
-		return []byte{}, nil
-	}
-
-	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
+	return resp, nil
 }

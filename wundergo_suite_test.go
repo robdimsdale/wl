@@ -50,3 +50,16 @@ var initializeClient = func() {
 
 	client = wundergo.NewOauthClient(dummyAccessToken, dummyClientID)
 }
+
+type erroringReadCloser struct {
+	readError  error
+	closeError error
+}
+
+func (e erroringReadCloser) Read([]byte) (int, error) {
+	return 0, e.readError
+}
+
+func (e erroringReadCloser) Close() error {
+	return e.closeError
+}

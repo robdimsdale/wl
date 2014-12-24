@@ -1,7 +1,10 @@
 package wundergo
 
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
 const (
@@ -48,31 +51,57 @@ func NewOauthClient(accessToken string, clientID string) *OauthClient {
 }
 
 func (c OauthClient) User() (User, error) {
-	b, err := c.httpHelper.Get(fmt.Sprintf("%s/user", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/user", apiUrl))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return User{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return User{}, err
 	}
 
 	u, err := c.jsonHelper.Unmarshal(b, &User{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return User{}, err
 	}
 	return *(u.(*User)), nil
 }
 
+func (c OauthClient) readResponseBody(resp *http.Response) ([]byte, error) {
+	if resp.Body == nil {
+		return nil, errors.New(fmt.Sprintf("Nil body on http response: %v", resp))
+	}
+
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
 func (c OauthClient) UpdateUser(user User) (User, error) {
 	body := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
-	b, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiUrl), body)
+	resp, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiUrl), body)
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return User{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return User{}, err
 	}
 
 	u, err := c.jsonHelper.Unmarshal(b, &User{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return User{}, err
 	}
 	return *(u.(*User)), nil
@@ -83,68 +112,92 @@ func (c OauthClient) Users() ([]User, error) {
 }
 
 func (c OauthClient) UsersForListID(listId uint) ([]User, error) {
-	var b []byte
+	var resp *http.Response
 	var err error
 
 	if listId > 0 {
-		b, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiUrl, listId))
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiUrl, listId))
 	} else {
-		b, err = c.httpHelper.Get(fmt.Sprintf("%s/users", apiUrl))
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users", apiUrl))
 	}
 
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return []User{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return []User{}, err
 	}
 
 	u, err := c.jsonHelper.Unmarshal(b, &([]User{}))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return []User{}, err
 	}
 	return *(u.(*[]User)), nil
 }
 
 func (c OauthClient) Lists() ([]List, error) {
-	b, err := c.httpHelper.Get(fmt.Sprintf("%s/lists", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists", apiUrl))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return []List{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return []List{}, err
 	}
 
 	l, err := c.jsonHelper.Unmarshal(b, &([]List{}))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return []List{}, err
 	}
 	return *(l.(*[]List)), nil
 }
 
 func (c OauthClient) List(listID uint) (List, error) {
-	b, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiUrl, listID))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return List{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 
 	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 	return *(l.(*List)), nil
 }
 
 func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
-	b, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID))
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return ListTaskCount{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return ListTaskCount{}, err
 	}
 
 	l, err := c.jsonHelper.Unmarshal(b, &ListTaskCount{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return ListTaskCount{}, err
 	}
 	return *(l.(*ListTaskCount)), nil
@@ -153,15 +206,21 @@ func (c OauthClient) ListTaskCount(listID uint) (ListTaskCount, error) {
 func (c OauthClient) CreateList(listTitle string) (List, error) {
 	body := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 
-	b, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return List{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 
 	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 	return *(l.(*List)), nil
@@ -172,23 +231,36 @@ func (c OauthClient) UpdateList(list List) (List, error) {
 	if err != nil {
 		return List{}, err
 	}
-	b, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return List{}, err
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 
 	l, err := c.jsonHelper.Unmarshal(b, &List{})
 	if err != nil {
-		c.logger.LogLine(fmt.Sprintf("response body: %s", string(b)))
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return List{}, err
 	}
 	return *(l.(*List)), nil
 }
 
 func (c OauthClient) DeleteList(list List) error {
-	err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision))
+
 	if err != nil {
+		return err
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return err
 	}
 	return nil

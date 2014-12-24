@@ -2,66 +2,69 @@
 package fakes
 
 import (
-	"github.com/robdimsdale/wundergo"
+	"net/http"
 	"sync"
+
+	"github.com/robdimsdale/wundergo"
 )
 
 type FakeHTTPHelper struct {
-	GetStub        func(url string) ([]byte, error)
+	GetStub        func(url string) (*http.Response, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		url string
 	}
 	getReturns struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}
-	PostStub        func(url string, body []byte) ([]byte, error)
+	PostStub        func(url string, body []byte) (*http.Response, error)
 	postMutex       sync.RWMutex
 	postArgsForCall []struct {
 		url  string
 		body []byte
 	}
 	postReturns struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}
-	PutStub        func(url string, body []byte) ([]byte, error)
+	PutStub        func(url string, body []byte) (*http.Response, error)
 	putMutex       sync.RWMutex
 	putArgsForCall []struct {
 		url  string
 		body []byte
 	}
 	putReturns struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}
-	PatchStub        func(url string, body []byte) ([]byte, error)
+	PatchStub        func(url string, body []byte) (*http.Response, error)
 	patchMutex       sync.RWMutex
 	patchArgsForCall []struct {
 		url  string
 		body []byte
 	}
 	patchReturns struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}
-	DeleteStub        func(url string) error
+	DeleteStub        func(url string) (*http.Response, error)
 	deleteMutex       sync.RWMutex
 	deleteArgsForCall []struct {
 		url string
 	}
 	deleteReturns struct {
-		result1 error
+		result1 *http.Response
+		result2 error
 	}
 }
 
-func (fake *FakeHTTPHelper) Get(url string) ([]byte, error) {
+func (fake *FakeHTTPHelper) Get(url string) (*http.Response, error) {
 	fake.getMutex.Lock()
-	defer fake.getMutex.Unlock()
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		url string
 	}{url})
+	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
 		return fake.GetStub(url)
 	} else {
@@ -81,21 +84,21 @@ func (fake *FakeHTTPHelper) GetArgsForCall(i int) string {
 	return fake.getArgsForCall[i].url
 }
 
-func (fake *FakeHTTPHelper) GetReturns(result1 []byte, result2 error) {
+func (fake *FakeHTTPHelper) GetReturns(result1 *http.Response, result2 error) {
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHTTPHelper) Post(url string, body []byte) ([]byte, error) {
+func (fake *FakeHTTPHelper) Post(url string, body []byte) (*http.Response, error) {
 	fake.postMutex.Lock()
-	defer fake.postMutex.Unlock()
 	fake.postArgsForCall = append(fake.postArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
+	fake.postMutex.Unlock()
 	if fake.PostStub != nil {
 		return fake.PostStub(url, body)
 	} else {
@@ -115,21 +118,21 @@ func (fake *FakeHTTPHelper) PostArgsForCall(i int) (string, []byte) {
 	return fake.postArgsForCall[i].url, fake.postArgsForCall[i].body
 }
 
-func (fake *FakeHTTPHelper) PostReturns(result1 []byte, result2 error) {
+func (fake *FakeHTTPHelper) PostReturns(result1 *http.Response, result2 error) {
 	fake.PostStub = nil
 	fake.postReturns = struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHTTPHelper) Put(url string, body []byte) ([]byte, error) {
+func (fake *FakeHTTPHelper) Put(url string, body []byte) (*http.Response, error) {
 	fake.putMutex.Lock()
-	defer fake.putMutex.Unlock()
 	fake.putArgsForCall = append(fake.putArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
+	fake.putMutex.Unlock()
 	if fake.PutStub != nil {
 		return fake.PutStub(url, body)
 	} else {
@@ -149,21 +152,21 @@ func (fake *FakeHTTPHelper) PutArgsForCall(i int) (string, []byte) {
 	return fake.putArgsForCall[i].url, fake.putArgsForCall[i].body
 }
 
-func (fake *FakeHTTPHelper) PutReturns(result1 []byte, result2 error) {
+func (fake *FakeHTTPHelper) PutReturns(result1 *http.Response, result2 error) {
 	fake.PutStub = nil
 	fake.putReturns = struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHTTPHelper) Patch(url string, body []byte) ([]byte, error) {
+func (fake *FakeHTTPHelper) Patch(url string, body []byte) (*http.Response, error) {
 	fake.patchMutex.Lock()
-	defer fake.patchMutex.Unlock()
 	fake.patchArgsForCall = append(fake.patchArgsForCall, struct {
 		url  string
 		body []byte
 	}{url, body})
+	fake.patchMutex.Unlock()
 	if fake.PatchStub != nil {
 		return fake.PatchStub(url, body)
 	} else {
@@ -183,24 +186,24 @@ func (fake *FakeHTTPHelper) PatchArgsForCall(i int) (string, []byte) {
 	return fake.patchArgsForCall[i].url, fake.patchArgsForCall[i].body
 }
 
-func (fake *FakeHTTPHelper) PatchReturns(result1 []byte, result2 error) {
+func (fake *FakeHTTPHelper) PatchReturns(result1 *http.Response, result2 error) {
 	fake.PatchStub = nil
 	fake.patchReturns = struct {
-		result1 []byte
+		result1 *http.Response
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHTTPHelper) Delete(url string) error {
+func (fake *FakeHTTPHelper) Delete(url string) (*http.Response, error) {
 	fake.deleteMutex.Lock()
-	defer fake.deleteMutex.Unlock()
 	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
 		url string
 	}{url})
+	fake.deleteMutex.Unlock()
 	if fake.DeleteStub != nil {
 		return fake.DeleteStub(url)
 	} else {
-		return fake.deleteReturns.result1
+		return fake.deleteReturns.result1, fake.deleteReturns.result2
 	}
 }
 
@@ -216,11 +219,12 @@ func (fake *FakeHTTPHelper) DeleteArgsForCall(i int) string {
 	return fake.deleteArgsForCall[i].url
 }
 
-func (fake *FakeHTTPHelper) DeleteReturns(result1 error) {
+func (fake *FakeHTTPHelper) DeleteReturns(result1 *http.Response, result2 error) {
 	fake.DeleteStub = nil
 	fake.deleteReturns = struct {
-		result1 error
-	}{result1}
+		result1 *http.Response
+		result2 error
+	}{result1, result2}
 }
 
 var _ wundergo.HTTPHelper = new(FakeHTTPHelper)

@@ -1,7 +1,6 @@
 package wundergo_test
 
 import (
-	"bytes"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -42,17 +41,17 @@ var _ = Describe("HTTPHelper", func() {
 	}
 
 	Describe("GET requests", func() {
-		Context("when httpTrasport.NewRequest returns with error", func() {
+		Context("when httpTransport.NewRequest returns with error", func() {
 			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
 				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
-			It("returns nil byte array", func() {
-				b, _ := httpHelper.Get("someUrl")
+			It("returns nil response", func() {
+				resp, _ := httpHelper.Get("someUrl")
 
-				Expect(b).To(BeNil())
+				Expect(resp).To(BeNil())
 			})
 
 			It("forwards the error", func() {
@@ -72,17 +71,17 @@ var _ = Describe("HTTPHelper", func() {
 					verifyAuthHeaders()
 				})
 
-				Context("when httpTrasport.DoRequest returns with error", func() {
+				Context("when httpTransport.DoRequest returns with error", func() {
 					expectedError := errors.New("fakeHTTPTransportHelper error")
 
 					BeforeEach(func() {
 						fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 					})
 
-					It("returns nil byte array", func() {
-						b, _ := httpHelper.Get("someUrl")
+					It("returns nil response", func() {
+						resp, _ := httpHelper.Get("someUrl")
 
-						Expect(b).To(BeNil())
+						Expect(resp).To(BeNil())
 					})
 
 					It("forwards the error", func() {
@@ -92,15 +91,15 @@ var _ = Describe("HTTPHelper", func() {
 					})
 				})
 
-				Context("when httpTrasport.DoRequest returns with nil response", func() {
+				Context("when httpTransport.DoRequest returns with nil response", func() {
 					BeforeEach(func() {
 						fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 					})
 
-					It("returns nil byte array", func() {
-						b, _ := httpHelper.Get("someUrl")
+					It("returns nil response", func() {
+						resp, _ := httpHelper.Get("someUrl")
 
-						Expect(b).To(BeNil())
+						Expect(resp).To(BeNil())
 					})
 
 					It("returns an error", func() {
@@ -110,7 +109,7 @@ var _ = Describe("HTTPHelper", func() {
 					})
 				})
 
-				Context("when httpTrasport.DoRequest returns with valid response", func() {
+				Context("when httpTransport.DoRequest returns with valid response", func() {
 					var validResponse *http.Response
 
 					BeforeEach(func() {
@@ -118,28 +117,11 @@ var _ = Describe("HTTPHelper", func() {
 						fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 					})
 
-					Context("when the response body is nil", func() {
-						It("returns empty byte array without error", func() {
-							b, err := httpHelper.Get("someUrl")
+					It("returns the response wihout error", func() {
+						resp, err := httpHelper.Get("someUrl")
 
-							Expect(err).To(BeNil())
-							Expect(b).To(Equal([]byte{}))
-						})
-					})
-
-					Context("when the response body is non nil", func() {
-						expectedResponseBody := []byte("expectedResponseBody")
-
-						BeforeEach(func() {
-							validResponse.Body = ioutil.NopCloser(bytes.NewReader(expectedResponseBody))
-						})
-
-						It("returns the body wihout error", func() {
-							b, err := httpHelper.Get("someUrl")
-
-							Expect(err).To(BeNil())
-							Expect(b).To(Equal(expectedResponseBody))
-						})
+						Expect(err).To(BeNil())
+						Expect(resp).To(Equal(validResponse))
 					})
 				})
 			})
@@ -147,17 +129,17 @@ var _ = Describe("HTTPHelper", func() {
 	})
 
 	Describe("POST requests", func() {
-		Context("when httpTrasport.NewRequest returns with error", func() {
+		Context("when httpTransport.NewRequest returns with error", func() {
 			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
 				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
-			It("returns nil byte array", func() {
-				b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
+			It("returns nil response", func() {
+				resp, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
-				Expect(b).To(BeNil())
+				Expect(resp).To(BeNil())
 			})
 
 			It("forwards the error", func() {
@@ -214,17 +196,17 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with error", func() {
+			Context("when httpTransport.DoRequest returns with error", func() {
 				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("forwards the error", func() {
@@ -234,15 +216,15 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with nil response", func() {
+			Context("when httpTransport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("returns an error", func() {
@@ -252,7 +234,7 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with valid response", func() {
+			Context("when httpTransport.DoRequest returns with valid response", func() {
 				var validResponse *http.Response
 
 				BeforeEach(func() {
@@ -260,45 +242,28 @@ var _ = Describe("HTTPHelper", func() {
 					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
-				Context("when the response body is nil", func() {
-					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
+				It("returns the response wihout error", func() {
+					resp, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
 
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal([]byte{}))
-					})
-				})
-
-				Context("when the response body is non nil", func() {
-					expectedResponseBody := []byte("expectedResponseBody")
-
-					BeforeEach(func() {
-						validResponse.Body = ioutil.NopCloser(bytes.NewReader(expectedResponseBody))
-					})
-
-					It("returns the body wihout error", func() {
-						b, err := httpHelper.Post("someUrl", []byte("someRequestBody"))
-
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal(expectedResponseBody))
-					})
+					Expect(err).To(BeNil())
+					Expect(resp).To(Equal(validResponse))
 				})
 			})
 		})
 	})
 
 	Describe("PUT requests", func() {
-		Context("when httpTrasport.NewRequest returns with error", func() {
+		Context("when httpTransport.NewRequest returns with error", func() {
 			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
 				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
-			It("returns nil byte array", func() {
-				b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
+			It("returns nil response", func() {
+				resp, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
-				Expect(b).To(BeNil())
+				Expect(resp).To(BeNil())
 			})
 
 			It("forwards the error", func() {
@@ -355,17 +320,17 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with error", func() {
+			Context("when httpTransport.DoRequest returns with error", func() {
 				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("forwards the error", func() {
@@ -375,15 +340,15 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with nil response", func() {
+			Context("when httpTransport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Put("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("returns an error", func() {
@@ -393,7 +358,7 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with valid response", func() {
+			Context("when httpTransport.DoRequest returns with valid response", func() {
 				var validResponse *http.Response
 
 				BeforeEach(func() {
@@ -401,45 +366,28 @@ var _ = Describe("HTTPHelper", func() {
 					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
-				Context("when the response body is nil", func() {
-					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
+				It("returns the response wihout error", func() {
+					resp, err := httpHelper.Put("someUrl", []byte("someResponseBody"))
 
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal([]byte{}))
-					})
-				})
-
-				Context("when the response body is non nil", func() {
-					expectedResponseBody := []byte("expectedResponseBody")
-
-					BeforeEach(func() {
-						validResponse.Body = ioutil.NopCloser(bytes.NewReader(expectedResponseBody))
-					})
-
-					It("returns the body wihout error", func() {
-						b, err := httpHelper.Put("someUrl", []byte("someRequestBody"))
-
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal(expectedResponseBody))
-					})
+					Expect(err).To(BeNil())
+					Expect(resp).To(Equal(validResponse))
 				})
 			})
 		})
 	})
 
 	Describe("PATCH requests", func() {
-		Context("when httpTrasport.NewRequest returns with error", func() {
+		Context("when httpTransport.NewRequest returns with error", func() {
 			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
 				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
-			It("returns nil byte array", func() {
-				b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
+			It("returns nil response", func() {
+				resp, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
-				Expect(b).To(BeNil())
+				Expect(resp).To(BeNil())
 			})
 
 			It("forwards the error", func() {
@@ -496,17 +444,17 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with error", func() {
+			Context("when httpTransport.DoRequest returns with error", func() {
 				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("forwards the error", func() {
@@ -516,15 +464,15 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with nil response", func() {
+			Context("when httpTransport.DoRequest returns with nil response", func() {
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, nil)
 				})
 
-				It("returns nil byte array", func() {
-					b, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Patch("someUrl", []byte("someRequestBody"))
 
-					Expect(b).To(BeNil())
+					Expect(resp).To(BeNil())
 				})
 
 				It("returns an error", func() {
@@ -534,7 +482,7 @@ var _ = Describe("HTTPHelper", func() {
 				})
 			})
 
-			Context("when httpTrasport.DoRequest returns with valid response", func() {
+			Context("when httpTransport.DoRequest returns with valid response", func() {
 				var validResponse *http.Response
 
 				BeforeEach(func() {
@@ -542,43 +490,32 @@ var _ = Describe("HTTPHelper", func() {
 					fakeHTTPTransportHelper.DoRequestReturns(validResponse, nil)
 				})
 
-				Context("when the response body is nil", func() {
-					It("returns empty byte array without error", func() {
-						b, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
+				It("returns the response wihout error", func() {
+					resp, err := httpHelper.Patch("someUrl", []byte("someResponseBody"))
 
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal([]byte{}))
-					})
-				})
-
-				Context("when the response body is non nil", func() {
-					expectedResponseBody := []byte("expectedResponseBody")
-
-					BeforeEach(func() {
-						validResponse.Body = ioutil.NopCloser(bytes.NewReader(expectedResponseBody))
-					})
-
-					It("returns the body wihout error", func() {
-						b, err := httpHelper.Patch("someUrl", []byte("someRequestBody"))
-
-						Expect(err).To(BeNil())
-						Expect(b).To(Equal(expectedResponseBody))
-					})
+					Expect(err).To(BeNil())
+					Expect(resp).To(Equal(validResponse))
 				})
 			})
 		})
 	})
 
 	Describe("DELETE requests", func() {
-		Context("when httpTrasport.NewRequest returns with error", func() {
+		Context("when httpTransport.NewRequest returns with error", func() {
 			expectedError := errors.New("fakeHTTPTransportHelper error")
 
 			BeforeEach(func() {
 				fakeHTTPTransportHelper.NewRequestReturns(nil, expectedError)
 			})
 
+			It("returns nil response", func() {
+				resp, _ := httpHelper.Delete("someUrl")
+
+				Expect(resp).To(BeNil())
+			})
+
 			It("forwards the error", func() {
-				err := httpHelper.Delete("someUrl")
+				_, err := httpHelper.Delete("someUrl")
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -595,15 +532,21 @@ var _ = Describe("HTTPHelper", func() {
 				verifyAuthHeaders()
 			})
 
-			Context("when httpTrasport.DoRequest returns with error", func() {
+			Context("when httpTransport.DoRequest returns with error", func() {
 				expectedError := errors.New("fakeHTTPTransportHelper error")
 
 				BeforeEach(func() {
 					fakeHTTPTransportHelper.DoRequestReturns(nil, expectedError)
 				})
 
+				It("returns nil response", func() {
+					resp, _ := httpHelper.Delete("someUrl")
+
+					Expect(resp).To(BeNil())
+				})
+
 				It("forwards the error", func() {
-					err := httpHelper.Delete("someUrl")
+					_, err := httpHelper.Delete("someUrl")
 
 					Expect(err).To(Equal(expectedError))
 				})
