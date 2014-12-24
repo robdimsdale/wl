@@ -18,7 +18,7 @@ Running the tests will require [ginkgo](http://onsi.github.io/ginkgo/).
 In the cloned directory run the following command:
 
 ```
-ginkgo -r
+ginkgo
 ```
 
 ### Integration tests
