@@ -31,6 +31,16 @@ var _ = Describe("Client - Note operations", func() {
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
+		Context("when ListID == 0", func() {
+			listID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.NotesForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		It("performs GET requests to /notes?list_id=:id", func() {
 			expectedUrl := fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID)
 
@@ -60,7 +70,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.NotesForListID(listID)
 
 				Expect(err).To(HaveOccurred())
@@ -138,6 +148,16 @@ var _ = Describe("Client - Note operations", func() {
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
+		Context("when TaskID == 0", func() {
+			taskID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.NotesForTaskID(taskID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		It("performs GET requests to /notes?task_id=:id", func() {
 			expectedUrl := fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID)
 
@@ -167,7 +187,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.NotesForTaskID(taskID)
 
 				Expect(err).To(HaveOccurred())

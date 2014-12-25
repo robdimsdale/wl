@@ -305,11 +305,11 @@ func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 	var resp *http.Response
 	var err error
 
-	if listID > 0 {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID))
-	} else {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes", apiUrl))
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
 	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -338,11 +338,11 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 	var resp *http.Response
 	var err error
 
-	if taskID > 0 {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID))
-	} else {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes", apiUrl))
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
 	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
