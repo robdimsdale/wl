@@ -34,6 +34,8 @@ type Client interface {
 	CreateList(listTitle string) (*List, error)
 	UpdateList(list List) (*List, error)
 	DeleteList(list List) error
+	NotesForListID(listID uint) (*[]Note, error)
+	NotesForTaskID(taskID uint) (*[]Note, error)
 }
 
 type OauthClient struct {
@@ -297,4 +299,70 @@ func (c OauthClient) DeleteList(list List) error {
 		return err
 	}
 	return nil
+}
+
+func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
+	var resp *http.Response
+	var err error
+
+	if listID > 0 {
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID))
+	} else {
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes", apiUrl))
+	}
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &[]Note{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*[]Note), nil
+}
+
+func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
+	var resp *http.Response
+	var err error
+
+	if taskID > 0 {
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID))
+	} else {
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes", apiUrl))
+	}
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &[]Note{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*[]Note), nil
 }

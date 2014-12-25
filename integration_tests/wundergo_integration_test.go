@@ -39,7 +39,7 @@ var _ = Describe("Wundergo library", func() {
 		client = wundergo.NewOauthClient(accessToken, clientID)
 	})
 
-	Describe("Basic functionality", func() {
+	Describe("Basic list functionality", func() {
 		It("creates, updates and deletes new list", func() {
 			uuid1, err := uuid.NewV4()
 			Expect(err).NotTo(HaveOccurred())
