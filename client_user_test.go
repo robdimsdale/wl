@@ -46,12 +46,6 @@ var _ = Describe("Client - User operations", func() {
 				fakeHTTPHelper.GetReturns(nil, expectedError)
 			})
 
-			It("returns an empty user", func() {
-				user, _ := client.User()
-
-				Expect(user).To(Equal(wundergo.User{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.User()
 
@@ -63,12 +57,6 @@ var _ = Describe("Client - User operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty user", func() {
-				user, _ := client.User()
-
-				Expect(user).To(Equal(wundergo.User{}))
 			})
 
 			It("returns an error", func() {
@@ -87,12 +75,6 @@ var _ = Describe("Client - User operations", func() {
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty user", func() {
-				user, _ := client.User()
-
-				Expect(user).To(Equal(wundergo.User{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.User()
 
@@ -105,12 +87,6 @@ var _ = Describe("Client - User operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty user", func() {
-				user, _ := client.User()
-
-				Expect(user).To(Equal(wundergo.User{}))
 			})
 
 			It("forwards the error", func() {
@@ -167,12 +143,6 @@ var _ = Describe("Client - User operations", func() {
 				fakeHTTPHelper.PutReturns(nil, expectedError)
 			})
 
-			It("returns an empty user", func() {
-				user, _ := client.UpdateUser(user)
-
-				Expect(user).To(Equal(wundergo.User{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.UpdateUser(user)
 
@@ -184,12 +154,6 @@ var _ = Describe("Client - User operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.PutReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty user", func() {
-				user, _ := client.UpdateUser(user)
-
-				Expect(user).To(Equal(wundergo.User{}))
 			})
 
 			It("returns an error", func() {
@@ -208,12 +172,6 @@ var _ = Describe("Client - User operations", func() {
 				fakeHTTPHelper.PutReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty user", func() {
-				user, _ := client.UpdateUser(user)
-
-				Expect(user).To(Equal(wundergo.User{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.UpdateUser(user)
 
@@ -226,12 +184,6 @@ var _ = Describe("Client - User operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty user", func() {
-				user, _ := client.UpdateUser(user)
-
-				Expect(user).To(Equal(wundergo.User{}))
 			})
 
 			It("forwards the error", func() {
@@ -281,12 +233,6 @@ var _ = Describe("Client - User operations", func() {
 					fakeHTTPHelper.GetReturns(nil, expectedError)
 				})
 
-				It("returns an empty array of users", func() {
-					users, _ := client.Users()
-
-					Expect(users).To(Equal([]wundergo.User{}))
-				})
-
 				It("forwards the error", func() {
 					_, err := client.Users()
 
@@ -298,12 +244,6 @@ var _ = Describe("Client - User operations", func() {
 				BeforeEach(func() {
 					dummyResponse.Body = nil
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.Users()
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("returns an error", func() {
@@ -322,12 +262,6 @@ var _ = Describe("Client - User operations", func() {
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
 				})
 
-				It("returns an empty array of users", func() {
-					users, _ := client.Users()
-
-					Expect(users).To(Equal([]wundergo.User{}))
-				})
-
 				It("forwards the error", func() {
 					_, err := client.Users()
 
@@ -340,12 +274,6 @@ var _ = Describe("Client - User operations", func() {
 
 				BeforeEach(func() {
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.Users()
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
@@ -385,14 +313,9 @@ var _ = Describe("Client - User operations", func() {
 
 			Context("when httpHelper.Get returns an error", func() {
 				expectedError := errors.New("httpHelper GET error")
+
 				BeforeEach(func() {
 					fakeHTTPHelper.GetReturns(nil, expectedError)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
@@ -406,12 +329,6 @@ var _ = Describe("Client - User operations", func() {
 				BeforeEach(func() {
 					dummyResponse.Body = nil
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("returns an error", func() {
@@ -430,12 +347,6 @@ var _ = Describe("Client - User operations", func() {
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
 				})
 
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
-				})
-
 				It("forwards the error", func() {
 					_, err := client.UsersForListID(listID)
 
@@ -448,12 +359,6 @@ var _ = Describe("Client - User operations", func() {
 
 				BeforeEach(func() {
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {
@@ -498,12 +403,6 @@ var _ = Describe("Client - User operations", func() {
 					fakeHTTPHelper.GetReturns(nil, expectedError)
 				})
 
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
-				})
-
 				It("forwards the error", func() {
 					_, err := client.UsersForListID(listID)
 
@@ -515,12 +414,6 @@ var _ = Describe("Client - User operations", func() {
 				BeforeEach(func() {
 					dummyResponse.Body = nil
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("returns an error", func() {
@@ -539,12 +432,6 @@ var _ = Describe("Client - User operations", func() {
 					fakeHTTPHelper.GetReturns(dummyResponse, nil)
 				})
 
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
-				})
-
 				It("forwards the error", func() {
 					_, err := client.UsersForListID(listID)
 
@@ -557,12 +444,6 @@ var _ = Describe("Client - User operations", func() {
 
 				BeforeEach(func() {
 					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-				})
-
-				It("returns an empty array of users", func() {
-					users, _ := client.UsersForListID(listID)
-
-					Expect(users).To(Equal([]wundergo.User{}))
 				})
 
 				It("forwards the error", func() {

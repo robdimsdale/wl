@@ -45,12 +45,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(nil, expectedError)
 			})
 
-			It("returns an empty array of lists", func() {
-				lists, _ := client.Lists()
-
-				Expect(lists).To(Equal([]wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.Lists()
 
@@ -62,12 +56,6 @@ var _ = Describe("Client - List operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty array of lists", func() {
-				lists, _ := client.Lists()
-
-				Expect(lists).To(Equal([]wundergo.List{}))
 			})
 
 			It("returns an error", func() {
@@ -86,12 +74,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty array of lists", func() {
-				lists, _ := client.Lists()
-
-				Expect(lists).To(Equal([]wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.Lists()
 
@@ -104,12 +86,6 @@ var _ = Describe("Client - List operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty array of lists", func() {
-				lists, _ := client.Lists()
-
-				Expect(lists).To(Equal([]wundergo.List{}))
 			})
 
 			It("forwards the error", func() {
@@ -158,12 +134,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(nil, expectedError)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.List(listID)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.List(listID)
 
@@ -175,12 +145,6 @@ var _ = Describe("Client - List operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.List(listID)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("returns an error", func() {
@@ -199,12 +163,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.List(listID)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.List(listID)
 
@@ -217,12 +175,6 @@ var _ = Describe("Client - List operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.List(listID)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("forwards the error", func() {
@@ -271,12 +223,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(nil, expectedError)
 			})
 
-			It("returns an empty list task count", func() {
-				listTaskCount, _ := client.ListTaskCount(listID)
-
-				Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.ListTaskCount(listID)
 
@@ -288,12 +234,6 @@ var _ = Describe("Client - List operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty list task count", func() {
-				listTaskCount, _ := client.ListTaskCount(listID)
-
-				Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
 			})
 
 			It("returns an error", func() {
@@ -312,12 +252,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.GetReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty list task count", func() {
-				listTaskCount, _ := client.ListTaskCount(listID)
-
-				Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.Lists()
 
@@ -330,12 +264,6 @@ var _ = Describe("Client - List operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty list task count", func() {
-				listTaskCount, _ := client.ListTaskCount(listID)
-
-				Expect(listTaskCount).To(Equal(wundergo.ListTaskCount{}))
 			})
 
 			It("forwards the error", func() {
@@ -388,12 +316,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.PostReturns(nil, expectedError)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.CreateList(listTitle)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.CreateList(listTitle)
 
@@ -405,12 +327,6 @@ var _ = Describe("Client - List operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.CreateList(listTitle)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("returns an error", func() {
@@ -429,12 +345,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.CreateList(listTitle)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.CreateList(listTitle)
 
@@ -447,12 +357,6 @@ var _ = Describe("Client - List operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.CreateList(listTitle)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("forwards the error", func() {
@@ -511,12 +415,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeJSONHelper.MarshalReturns(nil, expectedError)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.UpdateList(list)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.UpdateList(list)
 
@@ -531,12 +429,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.PatchReturns(nil, expectedError)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.UpdateList(list)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.UpdateList(list)
 
@@ -548,12 +440,6 @@ var _ = Describe("Client - List operations", func() {
 			BeforeEach(func() {
 				dummyResponse.Body = nil
 				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.UpdateList(list)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("returns an error", func() {
@@ -572,12 +458,6 @@ var _ = Describe("Client - List operations", func() {
 				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
 			})
 
-			It("returns an empty list", func() {
-				list, _ := client.UpdateList(list)
-
-				Expect(list).To(Equal(wundergo.List{}))
-			})
-
 			It("forwards the error", func() {
 				_, err := client.UpdateList(list)
 
@@ -590,12 +470,6 @@ var _ = Describe("Client - List operations", func() {
 
 			BeforeEach(func() {
 				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
-			})
-
-			It("returns an empty list", func() {
-				list, _ := client.UpdateList(list)
-
-				Expect(list).To(Equal(wundergo.List{}))
 			})
 
 			It("forwards the error", func() {
