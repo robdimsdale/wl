@@ -14,9 +14,9 @@ var (
 	client wundergo.Client
 )
 
-func contains(lists []wundergo.List, list wundergo.List) bool {
-	for _, l := range lists {
-		if l == list {
+func contains(lists *[]wundergo.List, list *wundergo.List) bool {
+	for _, l := range *lists {
+		if l == *list {
 			return true
 		}
 	}
@@ -60,12 +60,12 @@ var _ = Describe("Wundergo library", func() {
 			Expect(contains(newLists, newList)).To(BeTrue())
 
 			newList.Title = newListTitle2
-			updatedList, err := client.UpdateList(newList)
+			updatedList, err := client.UpdateList(*newList)
 			Expect(err).NotTo(HaveOccurred())
 			newList.Revision = newList.Revision + 1
 			Expect(updatedList).To(Equal(newList))
 
-			err = client.DeleteList(newList)
+			err = client.DeleteList(*newList)
 			Expect(err).NotTo(HaveOccurred())
 
 			afterDeleteLists, err := client.Lists()

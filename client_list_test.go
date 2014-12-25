@@ -96,10 +96,14 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedLists := []wundergo.List{}
+			expectedLists := &[]wundergo.List{
+				wundergo.List{
+					Title: "Test Title",
+				},
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedLists, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedLists, nil)
 			})
 
 			It("returns the unmarshalled array of lists without error", func() {
@@ -185,10 +189,12 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedList := wundergo.List{}
+			expectedList := &wundergo.List{
+				Title: "Test Title",
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedList, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedList, nil)
 			})
 
 			It("returns the unmarshalled list without error", func() {
@@ -274,10 +280,12 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedListTaskCount := wundergo.ListTaskCount{}
+			expectedListTaskCount := &wundergo.ListTaskCount{
+				CompletedCount: 1,
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedListTaskCount, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedListTaskCount, nil)
 			})
 
 			It("returns the unmarshalled list task count without error", func() {
@@ -367,10 +375,12 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedList := wundergo.List{}
+			expectedList := &wundergo.List{
+				Title: "Test Title",
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedList, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedList, nil)
 			})
 
 			It("returns the unmarshalled list task count without error", func() {
@@ -480,10 +490,12 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedList := wundergo.List{}
+			expectedList := &wundergo.List{
+				Title: "Test Title",
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedList, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedList, nil)
 			})
 
 			It("returns the unmarshalled list without error", func() {

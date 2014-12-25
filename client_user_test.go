@@ -97,10 +97,12 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedUser := wundergo.User{Name: "testy"}
+			expectedUser := &wundergo.User{
+				Name: "testy",
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedUser, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedUser, nil)
 			})
 
 			It("returns the unmarshalled user without error", func() {
@@ -194,10 +196,12 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedUser := wundergo.User{}
+			expectedUser := &wundergo.User{
+				Name: "Testy",
+			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(&expectedUser, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedUser, nil)
 			})
 
 			It("returns the unmarshalled user without error", func() {
@@ -284,10 +288,14 @@ var _ = Describe("Client - User operations", func() {
 			})
 
 			Context("when valid response is received", func() {
-				expectedUsers := []wundergo.User{}
+				expectedUsers := &[]wundergo.User{
+					wundergo.User{
+						Name: "Testy",
+					},
+				}
 
 				BeforeEach(func() {
-					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
+					fakeJSONHelper.UnmarshalReturns(expectedUsers, nil)
 				})
 
 				It("returns the unmarshalled array of users without error", func() {
@@ -369,10 +377,14 @@ var _ = Describe("Client - User operations", func() {
 			})
 
 			Context("when valid response is received", func() {
-				expectedUsers := []wundergo.User{}
+				expectedUsers := &[]wundergo.User{
+					wundergo.User{
+						Name: "Testy",
+					},
+				}
 
 				BeforeEach(func() {
-					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
+					fakeJSONHelper.UnmarshalReturns(expectedUsers, nil)
 				})
 
 				It("returns the unmarshalled array of users without error", func() {
@@ -454,10 +466,14 @@ var _ = Describe("Client - User operations", func() {
 			})
 
 			Context("when valid response is received", func() {
-				expectedUsers := []wundergo.User{}
+				expectedUsers := &[]wundergo.User{
+					wundergo.User{
+						Name: "Testy",
+					},
+				}
 
 				BeforeEach(func() {
-					fakeJSONHelper.UnmarshalReturns(&expectedUsers, nil)
+					fakeJSONHelper.UnmarshalReturns(expectedUsers, nil)
 				})
 
 				It("returns the unmarshalled array of users without error", func() {
