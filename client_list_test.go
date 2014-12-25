@@ -26,6 +26,7 @@ var _ = Describe("Client - List operations", func() {
 	Describe("getting lists", func() {
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
@@ -49,6 +50,18 @@ var _ = Describe("Client - List operations", func() {
 				_, err := client.Lists()
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.Lists()
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -120,6 +133,7 @@ var _ = Describe("Client - List operations", func() {
 		expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, listID)
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
@@ -142,6 +156,18 @@ var _ = Describe("Client - List operations", func() {
 				_, err := client.List(listID)
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.List(listID)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -211,6 +237,7 @@ var _ = Describe("Client - List operations", func() {
 		expectedUrl := fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID)
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
@@ -233,6 +260,18 @@ var _ = Describe("Client - List operations", func() {
 				_, err := client.ListTaskCount(listID)
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.ListTaskCount(listID)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -304,6 +343,7 @@ var _ = Describe("Client - List operations", func() {
 		expectedBody := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusCreated
 			fakeHTTPHelper.PostReturns(dummyResponse, nil)
 		})
 
@@ -328,6 +368,18 @@ var _ = Describe("Client - List operations", func() {
 				_, err := client.CreateList(listTitle)
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.CreateList(listTitle)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -399,6 +451,7 @@ var _ = Describe("Client - List operations", func() {
 		expectedBody := []byte{}
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
 		})
 
@@ -443,6 +496,18 @@ var _ = Describe("Client - List operations", func() {
 				_, err := client.UpdateList(list)
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.UpdateList(list)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -514,6 +579,7 @@ var _ = Describe("Client - List operations", func() {
 		}
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
 			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
 		})
 
@@ -537,6 +603,18 @@ var _ = Describe("Client - List operations", func() {
 				err := client.DeleteList(list)
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				err := client.DeleteList(list)
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 

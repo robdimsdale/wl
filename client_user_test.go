@@ -26,6 +26,7 @@ var _ = Describe("Client - User operations", func() {
 	Describe("getting user", func() {
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
@@ -50,6 +51,18 @@ var _ = Describe("Client - User operations", func() {
 				_, err := client.User()
 
 				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				_, err := client.User()
+
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
@@ -216,6 +229,7 @@ var _ = Describe("Client - User operations", func() {
 	Describe("getting users", func() {
 
 		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
@@ -241,6 +255,18 @@ var _ = Describe("Client - User operations", func() {
 					_, err := client.Users()
 
 					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response status code is unexpected", func() {
+				BeforeEach(func() {
+					dummyResponse.StatusCode = http.StatusBadRequest
+				})
+
+				It("returns error", func() {
+					_, err := client.Users()
+
+					Expect(err).To(HaveOccurred())
 				})
 			})
 
@@ -333,6 +359,18 @@ var _ = Describe("Client - User operations", func() {
 				})
 			})
 
+			Context("when response status code is unexpected", func() {
+				BeforeEach(func() {
+					dummyResponse.StatusCode = http.StatusBadRequest
+				})
+
+				It("returns error", func() {
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
 			Context("when response body is nil", func() {
 				BeforeEach(func() {
 					dummyResponse.Body = nil
@@ -419,6 +457,18 @@ var _ = Describe("Client - User operations", func() {
 					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response status code is unexpected", func() {
+				BeforeEach(func() {
+					dummyResponse.StatusCode = http.StatusBadRequest
+				})
+
+				It("returns error", func() {
+					_, err := client.UsersForListID(listID)
+
+					Expect(err).To(HaveOccurred())
 				})
 			})
 

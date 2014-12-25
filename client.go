@@ -57,6 +57,10 @@ func (c OauthClient) User() (*User, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+	}
+
 	b, err := c.readResponseBody(resp)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -126,6 +130,10 @@ func (c OauthClient) UsersForListID(listId uint) (*[]User, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+	}
+
 	b, err := c.readResponseBody(resp)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -145,6 +153,10 @@ func (c OauthClient) Lists() (*[]List, error) {
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -168,6 +180,10 @@ func (c OauthClient) List(listID uint) (*List, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+	}
+
 	b, err := c.readResponseBody(resp)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -187,6 +203,10 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -212,6 +232,10 @@ func (c OauthClient) CreateList(listTitle string) (*List, error) {
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusCreated))
+	}
+
 	b, err := c.readResponseBody(resp)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -231,10 +255,15 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -256,6 +285,10 @@ func (c OauthClient) DeleteList(list List) error {
 
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusNoContent))
 	}
 
 	_, err = c.readResponseBody(resp)
