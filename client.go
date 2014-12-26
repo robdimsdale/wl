@@ -41,6 +41,7 @@ type Client interface {
 	UpdateNote(note Note) (*Note, error)
 	DeleteNote(note Note) error
 	TasksForListID(listID uint) (*[]Task, error)
+	Task(taskID uint) (*Task, error)
 }
 
 type OauthClient struct {
@@ -504,4 +505,29 @@ func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 		return nil, err
 	}
 	return t.(*[]Task), nil
+}
+
+func (c OauthClient) Task(taskID uint) (*Task, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/tasks/%d", apiUrl, taskID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &Task{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*Task), nil
 }
