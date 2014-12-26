@@ -38,6 +38,7 @@ type Client interface {
 	NotesForTaskID(taskID uint) (*[]Note, error)
 	Note(noteID uint) (*Note, error)
 	CreateNote(content string, taskID uint) (*Note, error)
+	UpdateNote(note Note) (*Note, error)
 }
 
 type OauthClient struct {
@@ -405,6 +406,36 @@ func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &Note{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*Note), nil
+}
+
+func (c OauthClient) UpdateNote(note Note) (*Note, error) {
+	body, err := c.jsonHelper.Marshal(note)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/notes/%d", apiUrl, note.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
