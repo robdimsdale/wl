@@ -27,7 +27,7 @@ type Client interface {
 	User() (*User, error)
 	UpdateUser(user User) (*User, error)
 	Users() (*[]User, error)
-	UsersForListID(listId uint) (*[]User, error)
+	UsersForListID(listID uint) (*[]User, error)
 	Lists() (*[]List, error)
 	List(listID uint) (*List, error)
 	ListTaskCount(listID uint) (*ListTaskCount, error)
@@ -117,12 +117,12 @@ func (c OauthClient) Users() (*[]User, error) {
 	return c.UsersForListID(0)
 }
 
-func (c OauthClient) UsersForListID(listId uint) (*[]User, error) {
+func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	var resp *http.Response
 	var err error
 
-	if listId > 0 {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiUrl, listId))
+	if listID > 0 {
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiUrl, listID))
 	} else {
 		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users", apiUrl))
 	}
