@@ -31,12 +31,13 @@ type Client interface {
 	Lists() (*[]List, error)
 	List(listID uint) (*List, error)
 	ListTaskCount(listID uint) (*ListTaskCount, error)
-	CreateList(listTitle string) (*List, error)
+	CreateList(title string) (*List, error)
 	UpdateList(list List) (*List, error)
 	DeleteList(list List) error
 	NotesForListID(listID uint) (*[]Note, error)
 	NotesForTaskID(taskID uint) (*[]Note, error)
 	Note(noteID uint) (*Note, error)
+	CreateNote(content string, taskID uint) (*Note, error)
 }
 
 type OauthClient struct {
@@ -226,8 +227,8 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	return l.(*ListTaskCount), nil
 }
 
-func (c OauthClient) CreateList(listTitle string) (*List, error) {
-	body := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
+func (c OauthClient) CreateList(title string) (*List, error) {
+	body := []byte(fmt.Sprintf(`{"title":"%s"}`, title))
 
 	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
 	if err != nil {
@@ -377,6 +378,33 @@ func (c OauthClient) Note(noteID uint) (*Note, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &Note{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*Note), nil
+}
+
+func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
+	body := []byte(fmt.Sprintf(`{"content":"%s","task_id":%d}`, content, taskID))
+
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/notes", apiUrl), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
 	}
 
 	b, err := c.readResponseBody(resp)

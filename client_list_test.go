@@ -334,7 +334,6 @@ var _ = Describe("Client - List operations", func() {
 				Expect(listTaskCount).To(Equal(expectedListTaskCount))
 			})
 		})
-
 	})
 
 	Describe("creating a new list", func() {
@@ -435,7 +434,7 @@ var _ = Describe("Client - List operations", func() {
 				fakeJSONHelper.UnmarshalReturns(expectedList, nil)
 			})
 
-			It("returns the unmarshalled list task count without error", func() {
+			It("returns the unmarshalled list without error", func() {
 				list, err := client.CreateList(listTitle)
 
 				Expect(err).To(BeNil())
