@@ -337,9 +337,7 @@ var _ = Describe("Client - List operations", func() {
 	})
 
 	Describe("creating a new list", func() {
-		expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
 		listTitle := "newListTitle"
-		expectedBody := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusCreated
@@ -347,6 +345,9 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		It("performs POST requests to /lists with new list title in body", func() {
+			expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
+			expectedBody := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
+
 			fakeJSONHelper.UnmarshalReturns(&wundergo.List{}, nil)
 			client.CreateList(listTitle)
 
@@ -447,18 +448,15 @@ var _ = Describe("Client - List operations", func() {
 		list := wundergo.List{
 			ID: uint(1),
 		}
-		expectedBody := []byte{}
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
 		})
 
-		BeforeEach(func() {
-			fakeJSONHelper.MarshalReturns(expectedBody, nil)
-		})
-
 		It("performs PATCH requests to /lists/:id", func() {
+			expectedBody := []byte{}
+			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.List{}, nil)
 			expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, list.ID)
 
