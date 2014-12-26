@@ -26,8 +26,8 @@ ginkgo
 The integration tests require the following environment variables to be set:
 `WL_CLIENT_ID` and `WL_ACCESS_TOKEN`. Values for these are obtained via the method documented at https://developer.wunderlist.com/documentation/concepts/authorization.
 
-After installing the dependencies, execute the following command in the cloned directory:
+In the cloned directory run the following command:
 
 ```
-WL_CLIENT_ID=my_client_id WL_ACCESS_TOKEN=my_access_token ginkgo -r
+WL_CLIENT_ID=my_client_id WL_ACCESS_TOKEN=my_access_token ginkgo integration_tests
 ```
