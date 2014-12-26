@@ -39,6 +39,7 @@ type Client interface {
 	Note(noteID uint) (*Note, error)
 	CreateNote(content string, taskID uint) (*Note, error)
 	UpdateNote(note Note) (*Note, error)
+	DeleteNote(note Note) error
 }
 
 type OauthClient struct {
@@ -450,4 +451,23 @@ func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 		return nil, err
 	}
 	return n.(*Note), nil
+}
+
+func (c OauthClient) DeleteNote(note Note) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/notes/%d?revision=%d", apiUrl, note.ID, note.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }
