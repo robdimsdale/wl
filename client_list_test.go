@@ -58,7 +58,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.Lists()
 
 				Expect(err).To(HaveOccurred())
@@ -164,7 +164,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.List(listID)
 
 				Expect(err).To(HaveOccurred())
@@ -268,7 +268,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.ListTaskCount(listID)
 
 				Expect(err).To(HaveOccurred())
@@ -376,7 +376,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.CreateList(listTitle)
 
 				Expect(err).To(HaveOccurred())
@@ -501,7 +501,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
@@ -608,7 +608,7 @@ var _ = Describe("Client - List operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())

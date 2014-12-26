@@ -68,6 +68,23 @@ var _ = Describe("Wundergo library", func() {
 			_, err = client.TasksForListID(newList.ID)
 			Expect(err).NotTo(HaveOccurred())
 
+			task, err := client.CreateTask(
+				"myTask",
+				newList.ID,
+				0,
+				false,
+				"",
+				0,
+				"1970-01-01",
+				false,
+			)
+			newList.Revision = newList.Revision + 1
+			Expect(err).NotTo(HaveOccurred())
+
+			_, err = client.CreateNote("myContent", task.ID)
+			newList.Revision = newList.Revision + 1
+			Expect(err).NotTo(HaveOccurred())
+
 			err = client.DeleteList(*newList)
 			Expect(err).NotTo(HaveOccurred())
 

@@ -42,6 +42,16 @@ type Client interface {
 	DeleteNote(note Note) error
 	TasksForListID(listID uint) (*[]Task, error)
 	Task(taskID uint) (*Task, error)
+	CreateTask(
+		title string,
+		listID uint,
+		assigneeID uint,
+		completed bool,
+		recurrenceType string,
+		recurrenceCount uint,
+		dueDate string,
+		starred bool,
+	) (*Task, error)
 }
 
 type OauthClient struct {
@@ -516,6 +526,76 @@ func (c OauthClient) Task(taskID uint) (*Task, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &Task{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*Task), nil
+}
+
+type taskCreateConfig struct {
+	ListID          uint   `json:"list_id"`
+	Title           string `json:"title"`
+	AssigneeID      uint   `json:"assignee_id,omitempty"`
+	Completed       bool   `json:"completed,omitempty"`
+	RecurrenceType  string `json:"recurrence_type,omitempty"`
+	RecurrenceCount uint   `json:"recurrence_count,omitempty"`
+	DueDate         string `json:"due_date,omitempty"`
+	Starred         bool   `json:"starred,omitempty"`
+}
+
+func (c OauthClient) CreateTask(
+	title string,
+	listID uint,
+	assigneeID uint,
+	completed bool,
+	recurrenceType string,
+	recurrenceCount uint,
+	dueDate string,
+	starred bool,
+) (*Task, error) {
+
+	if recurrenceType == "" && recurrenceCount > 1 {
+		return nil, errors.New("recurrenceCount must be zero if provided recurrenceType is not provided")
+	}
+
+	if recurrenceCount == 0 && recurrenceType != "" {
+		return nil, errors.New("recurrenceType must be valid if provided recurrenceCount is non-zero")
+	}
+
+	tcc := taskCreateConfig{
+		ListID:          listID,
+		Title:           title,
+		AssigneeID:      assigneeID,
+		Completed:       completed,
+		RecurrenceType:  recurrenceType,
+		RecurrenceCount: recurrenceCount,
+		DueDate:         dueDate,
+		Starred:         starred,
+	}
+
+	body, err := c.jsonHelper.Marshal(tcc)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/tasks", apiUrl), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
 	}
 
 	b, err := c.readResponseBody(resp)

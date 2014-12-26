@@ -293,7 +293,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.Note(noteID)
 
 				Expect(err).To(HaveOccurred())
@@ -402,7 +402,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.CreateNote(noteContent, taskID)
 
 				Expect(err).To(HaveOccurred())
@@ -527,7 +527,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
@@ -634,7 +634,7 @@ var _ = Describe("Client - Note operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())

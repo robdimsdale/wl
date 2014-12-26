@@ -142,7 +142,6 @@ var _ = Describe("Client - Task operations", func() {
 
 	Describe("getting task by ID", func() {
 		taskID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, taskID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -150,6 +149,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs GET requests to /tasks/:id", func() {
+			expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, taskID)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
 			client.Task(taskID)
 
@@ -176,7 +176,7 @@ var _ = Describe("Client - Task operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.Task(taskID)
 
 				Expect(err).To(HaveOccurred())
@@ -237,6 +237,237 @@ var _ = Describe("Client - Task operations", func() {
 
 			It("returns the unmarshalled task without error", func() {
 				task, err := client.Task(taskID)
+
+				Expect(err).To(BeNil())
+				Expect(task).To(Equal(expectedTask))
+			})
+		})
+	})
+
+	Describe("creating a new task", func() {
+		taskTitle := "newTaskTitle"
+		listID := uint(1)
+
+		var assigneeID uint
+		var completed bool
+		var recurrenceType string
+		var recurrenceCount uint
+		var dueDate string
+		var starred bool
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusCreated
+			fakeHTTPHelper.PostReturns(dummyResponse, nil)
+
+			assigneeID = uint(2)
+			completed = false
+			recurrenceType = "day"
+			recurrenceCount = uint(3)
+			dueDate = "1970-01-01"
+			starred = false
+		})
+
+		It("performs POST requests to /tasks with JSONHelper-serialized body", func() {
+			expectedUrl := fmt.Sprintf("%s/tasks", apiUrl)
+			expectedBody := []byte("some request body")
+			fakeJSONHelper.MarshalReturns(expectedBody, nil)
+
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
+			client.CreateTask(
+				taskTitle,
+				listID,
+				assigneeID,
+				completed,
+				recurrenceType,
+				recurrenceCount,
+				dueDate,
+				starred,
+			)
+
+			Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when recurrenceType is not provided", func() {
+			BeforeEach(func() {
+				recurrenceType = ""
+			})
+
+			It("does not allow recurrenceCount to be non-zero", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("recurrenceCount"))
+			})
+		})
+
+		Context("when recurrenceCount is zero", func() {
+			BeforeEach(func() {
+				recurrenceCount = 0
+			})
+
+			It("does not allow recurrenceType to be provided", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("recurrenceType"))
+			})
+		})
+
+		Context("when httpHelper.Post returns an error", func() {
+			expectedError := errors.New("httpHelper POST error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PostReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedTask := &wundergo.Task{
+				Title: "Test Title",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedTask, nil)
+			})
+
+			It("returns the unmarshalled task without error", func() {
+				task, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
 
 				Expect(err).To(BeNil())
 				Expect(task).To(Equal(expectedTask))

@@ -59,7 +59,7 @@ var _ = Describe("Client - User operations", func() {
 				dummyResponse.StatusCode = http.StatusBadRequest
 			})
 
-			It("returns error", func() {
+			It("returns an error", func() {
 				_, err := client.User()
 
 				Expect(err).To(HaveOccurred())
@@ -289,7 +289,7 @@ var _ = Describe("Client - User operations", func() {
 					dummyResponse.StatusCode = http.StatusBadRequest
 				})
 
-				It("returns error", func() {
+				It("returns an error", func() {
 					_, err := client.UsersForListID(listID)
 
 					Expect(err).To(HaveOccurred())
