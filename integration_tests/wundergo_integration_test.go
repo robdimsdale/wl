@@ -65,6 +65,9 @@ var _ = Describe("Wundergo library", func() {
 			newList.Revision = newList.Revision + 1
 			Expect(updatedList).To(Equal(newList))
 
+			_, err = client.TasksForListID(newList.ID)
+			Expect(err).NotTo(HaveOccurred())
+
 			err = client.DeleteList(*newList)
 			Expect(err).NotTo(HaveOccurred())
 
