@@ -61,7 +61,7 @@ func (c OauthClient) User() (*User, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -134,7 +134,7 @@ func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -159,7 +159,7 @@ func (c OauthClient) Lists() (*[]List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -184,7 +184,7 @@ func (c OauthClient) List(listID uint) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -209,7 +209,7 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -236,7 +236,7 @@ func (c OauthClient) CreateList(listTitle string) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusCreated))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -266,7 +266,7 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -291,7 +291,7 @@ func (c OauthClient) DeleteList(list List) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusNoContent))
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -318,7 +318,7 @@ func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -351,7 +351,7 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -376,7 +376,7 @@ func (c OauthClient) Note(noteID uint) (*Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected %s - expected %s", resp.StatusCode, http.StatusOK))
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
