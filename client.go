@@ -41,6 +41,7 @@ type Client interface {
 	UpdateNote(note Note) (*Note, error)
 	DeleteNote(note Note) error
 	TasksForListID(listID uint) (*[]Task, error)
+	CompletedTasksForListID(listID uint, completed bool) (*[]Task, error)
 	Task(taskID uint) (*Task, error)
 	CreateTask(
 		title string,
@@ -494,6 +495,39 @@ func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 	}
 
 	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d", apiUrl, listID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &[]Task{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*[]Task), nil
+}
+
+func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Task, error) {
+	var resp *http.Response
+	var err error
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d&completed=%t", apiUrl, listID, completed))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))

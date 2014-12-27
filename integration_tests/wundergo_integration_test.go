@@ -20,9 +20,18 @@ var (
 	client wundergo.Client
 )
 
-func contains(lists *[]wundergo.List, list *wundergo.List) bool {
+func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
 	for _, l := range *lists {
 		if l == *list {
+			return true
+		}
+	}
+	return false
+}
+
+func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
+	for _, t := range *tasks {
+		if t == *task {
 			return true
 		}
 	}
@@ -72,7 +81,7 @@ var _ = Describe("Wundergo library", func() {
 				newLists, err = client.Lists()
 				return err
 			}).ShouldNot(HaveOccurred())
-			Expect(contains(newLists, newList)).To(BeTrue())
+			Expect(listContains(newLists, newList)).To(BeTrue())
 
 			newList.Title = newListTitle2
 			var updatedList *wundergo.List
@@ -104,12 +113,27 @@ var _ = Describe("Wundergo library", func() {
 			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
 
+			var tasks *[]wundergo.Task
+			Eventually(func() error {
+				tasks, err = client.TasksForListID(newList.ID)
+				return err
+			}).ShouldNot(HaveOccurred())
+			Expect(taskContains(tasks, task)).To(BeTrue())
+
 			task.DueDate = "1971-01-01"
+			task.Completed = true
 			Eventually(func() error {
 				task, err = client.UpdateTask(*task)
 				return err
 			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
+
+			Eventually(func() error {
+				completed := true
+				tasks, err = client.CompletedTasksForListID(newList.ID, completed)
+				return err
+			}).ShouldNot(HaveOccurred())
+			Expect(taskContains(tasks, task)).To(BeTrue())
 
 			Eventually(func() error {
 				_, err := client.CreateNote("myContent", task.ID)
