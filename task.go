@@ -8,7 +8,7 @@ type Task struct {
 	CreatedByID     uint   `json:"created_by_id"`
 	DueDate         string `json:"dueDate"`
 	ListID          uint   `json:"list_id"`
-	Revision        int    `json:"revision"`
+	Revision        uint   `json:"revision"`
 	Starred         bool   `json:"starred"`
 	Title           string `json:"title"`
 	Completed       bool   `json:"completed"`

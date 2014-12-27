@@ -2,7 +2,7 @@ package wundergo
 
 type ListTaskCount struct {
 	ID               uint   `json:"id"`
-	CompletedCount   int    `json:"completed_count"`
-	UncompletedCount int    `json:"uncompleted_count"`
+	CompletedCount   uint   `json:"completed_count"`
+	UncompletedCount uint   `json:"uncompleted_count"`
 	TypeString       string `json:"type"`
 }

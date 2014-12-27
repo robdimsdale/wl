@@ -8,7 +8,7 @@ import (
 
 type testStruct struct {
 	Name    string
-	Counter int
+	Counter uint
 }
 
 var _ = Describe("Default JSON Helper", func() {

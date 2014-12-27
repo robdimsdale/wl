@@ -472,7 +472,7 @@ var _ = Describe("Client - Note operations", func() {
 
 	Describe("updating a note", func() {
 		note := wundergo.Note{
-			ID: uint(1),
+			ID: 1,
 		}
 
 		BeforeEach(func() {
@@ -597,7 +597,7 @@ var _ = Describe("Client - Note operations", func() {
 
 	Describe("deleting a note", func() {
 		note := wundergo.Note{
-			ID:       uint(1),
+			ID:       1,
 			Revision: 3,
 		}
 

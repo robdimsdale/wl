@@ -5,7 +5,7 @@ type List struct {
 	Title      string `json:"title"`
 	CreatedAt  string `json:"created_at"`
 	ListType   string `json:"list_type"`
-	Revision   int    `json:"revision"`
+	Revision   uint   `json:"revision"`
 	TypeString string `json:"type"`
 	Public     bool   `json:"public"`
 }

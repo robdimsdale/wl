@@ -591,7 +591,7 @@ type taskCreateConfig struct {
 
 type TaskUpdateConfig struct {
 	Title           string   `json:"title"`
-	Revision        int      `json:"revision"`
+	Revision        uint     `json:"revision"`
 	AssigneeID      uint     `json:"assignee_id,omitempty"`
 	Completed       bool     `json:"completed,omitempty"`
 	RecurrenceType  string   `json:"recurrence_type,omitempty"`

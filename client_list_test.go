@@ -446,7 +446,7 @@ var _ = Describe("Client - List operations", func() {
 
 	Describe("updating a list", func() {
 		list := wundergo.List{
-			ID: uint(1),
+			ID: 1,
 		}
 
 		BeforeEach(func() {
@@ -571,7 +571,7 @@ var _ = Describe("Client - List operations", func() {
 
 	Describe("deleting a list", func() {
 		list := wundergo.List{
-			ID:       uint(1),
+			ID:       1,
 			Revision: 3,
 		}
 
