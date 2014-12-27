@@ -153,7 +153,7 @@ var _ = Describe("Client - Task operations", func() {
 			listID := uint(0)
 
 			It("returns an error", func() {
-				_, err := client.TasksForListID(listID)
+				_, err := client.CompletedTasksForListID(listID, completed)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -232,7 +232,7 @@ var _ = Describe("Client - Task operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.TasksForListID(listID)
+				_, err := client.CompletedTasksForListID(listID, completed)
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -1250,6 +1250,90 @@ var _ = Describe("Client - Task operations", func() {
 
 				Expect(err).To(BeNil())
 				Expect(task).To(Equal(expectedUpdateTask))
+			})
+		})
+	})
+
+	Describe("deleting a task", func() {
+		task := wundergo.Task{
+			ID:       uint(1),
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /tasks/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/tasks/%d?revision=%d", apiUrl, task.ID, task.Revision)
+
+			client.DeleteTask(task)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteTask(task)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				err := client.DeleteTask(task)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.DeleteTask(task)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteTask(task)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the task without error", func() {
+				err := client.DeleteTask(task)
+
+				Expect(err).To(BeNil())
 			})
 		})
 	})

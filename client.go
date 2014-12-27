@@ -54,6 +54,7 @@ type Client interface {
 		starred bool,
 	) (*Task, error)
 	UpdateTask(task Task) (*Task, error)
+	DeleteTask(task Task) error
 }
 
 type OauthClient struct {
@@ -748,4 +749,23 @@ func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 		return nil, err
 	}
 	return t.(*Task), nil
+}
+
+func (c OauthClient) DeleteTask(task Task) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/tasks/%d?revision=%d", apiUrl, task.ID, task.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }
