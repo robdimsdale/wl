@@ -89,8 +89,11 @@ var _ = Describe("Basic task functionality", func() {
 			return client.DeleteTask(*task)
 		}).Should(Succeed())
 
-		Eventually(func() (*[]wundergo.Task, error) {
-			return client.TasksForListID(list.ID)
-		}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Equal(originalTasks))
+		var tasks *[]wundergo.Task
+		Eventually(func() error {
+			tasks, err = client.TasksForListID(list.ID)
+			return err
+		}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Succeed())
+		Expect(tasks).To(Equal(originalTasks))
 	})
 })
