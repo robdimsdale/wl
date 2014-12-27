@@ -47,18 +47,12 @@ var _ = Describe("Basic list functionality", func() {
 
 		Eventually(func() error {
 			newList, err = client.List(newList.ID)
-			return err
-		}).Should(Succeed())
-
-		Eventually(func() error {
 			return client.DeleteList(*newList)
 		}).Should(Succeed())
 
-		var lists *[]wundergo.List
-		Eventually(func() error {
-			lists, err = client.Lists()
-			return err
-		}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Succeed())
-		Expect(lists).To(Equal(originalLists))
+		Eventually(func() (bool, error) {
+			lists, err := client.Lists()
+			return listContains(lists, newList), err
+		}).Should(BeFalse())
 	})
 })

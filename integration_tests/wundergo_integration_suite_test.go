@@ -9,18 +9,12 @@ import (
 	"github.com/robdimsdale/wundergo"
 
 	"testing"
-	"time"
 )
 
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Wundergo Integration Test Suite")
 }
-
-const (
-	SERVER_CONSISTENCY_TIMEOUT = 30 * time.Second
-	POLLING_INTERVAL           = 10 * time.Millisecond
-)
 
 var (
 	client wundergo.Client
