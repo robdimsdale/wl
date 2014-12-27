@@ -1090,7 +1090,16 @@ var _ = Describe("Client - Task operations", func() {
 			expectedError := errors.New("jsonHelper error")
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+				callCount := 0
+				fakeJSONHelper.UnmarshalStub = func([]byte, interface{}) (interface{}, error) {
+					callCount++
+					switch callCount {
+					case 1:
+						return expectedGetTask, nil
+					default:
+						return nil, expectedError
+					}
+				}
 			})
 
 			It("forwards the error", func() {
