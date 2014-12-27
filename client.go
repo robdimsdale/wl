@@ -554,9 +554,28 @@ type taskCreateConfig struct {
 	Starred         bool   `json:"starred,omitempty"`
 }
 
-type taskUpdateConfig struct {
-	taskCreateConfig
-	remove []string `json:"remove,omitempty"`
+type TaskUpdateConfig struct {
+	Title           string   `json:"title"`
+	Revision        int      `json:"revision"`
+	AssigneeID      uint     `json:"assignee_id,omitempty"`
+	Completed       bool     `json:"completed,omitempty"`
+	RecurrenceType  string   `json:"recurrence_type,omitempty"`
+	RecurrenceCount uint     `json:"recurrence_count,omitempty"`
+	DueDate         string   `json:"due_date,omitempty"`
+	Starred         bool     `json:"starred,omitempty"`
+	Remove          []string `json:"remove,omitempty"`
+}
+
+func (c OauthClient) validateRecurrence(recurrenceType string, recurrenceCount uint) error {
+	if recurrenceType == "" && recurrenceCount > 0 {
+		return errors.New("recurrenceCount must be zero if provided recurrenceType is not provided")
+	}
+
+	if recurrenceCount == 0 && recurrenceType != "" {
+		return errors.New("recurrenceType must be valid if provided recurrenceCount is non-zero")
+	}
+
+	return nil
 }
 
 func (c OauthClient) CreateTask(
@@ -570,12 +589,9 @@ func (c OauthClient) CreateTask(
 	starred bool,
 ) (*Task, error) {
 
-	if recurrenceType == "" && recurrenceCount > 1 {
-		return nil, errors.New("recurrenceCount must be zero if provided recurrenceType is not provided")
-	}
-
-	if recurrenceCount == 0 && recurrenceType != "" {
-		return nil, errors.New("recurrenceType must be valid if provided recurrenceCount is non-zero")
+	err := c.validateRecurrence(recurrenceType, recurrenceCount)
+	if err != nil {
+		return nil, err
 	}
 
 	tcc := taskCreateConfig{
@@ -619,7 +635,59 @@ func (c OauthClient) CreateTask(
 }
 
 func (c OauthClient) UpdateTask(task Task) (*Task, error) {
-	body, err := c.jsonHelper.Marshal(task)
+	err := c.validateRecurrence(task.RecurrenceType, task.RecurrenceCount)
+	if err != nil {
+		return nil, err
+	}
+
+	origTask, err := c.Task(task.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	tuc := TaskUpdateConfig{
+		Title:    task.Title,
+		Revision: task.Revision,
+		Remove:   []string{},
+	}
+
+	if origTask.AssigneeID == task.AssigneeID {
+		tuc.AssigneeID = origTask.AssigneeID
+	} else {
+		if task.AssigneeID == 0 {
+			tuc.Remove = append(tuc.Remove, "assignee_id")
+		} else {
+			tuc.AssigneeID = task.AssigneeID
+		}
+	}
+
+	if origTask.DueDate == task.DueDate {
+		tuc.DueDate = origTask.DueDate
+	} else {
+		if task.DueDate == "" {
+			tuc.Remove = append(tuc.Remove, "due_date")
+		} else {
+			tuc.DueDate = task.DueDate
+		}
+	}
+
+	if origTask.RecurrenceCount == task.RecurrenceCount && origTask.RecurrenceType == task.RecurrenceType {
+		tuc.RecurrenceCount = origTask.RecurrenceCount
+		tuc.RecurrenceType = origTask.RecurrenceType
+	} else {
+		if task.RecurrenceCount == 0 {
+			tuc.Remove = append(tuc.Remove, "recurrence_type")
+			tuc.Remove = append(tuc.Remove, "recurrence_count")
+		} else {
+			tuc.RecurrenceCount = task.RecurrenceCount
+			tuc.RecurrenceType = task.RecurrenceType
+		}
+	}
+
+	tuc.Completed = task.Completed
+	tuc.Starred = task.Starred
+
+	body, err := c.jsonHelper.Marshal(tuc)
 	if err != nil {
 		return nil, err
 	}

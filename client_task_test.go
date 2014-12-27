@@ -334,6 +334,29 @@ var _ = Describe("Client - Task operations", func() {
 			})
 		})
 
+		Context("when marshalling list returns an error", func() {
+			expectedError := errors.New("JSONHelper marshal error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.MarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
 		Context("when httpHelper.Post returns an error", func() {
 			expectedError := errors.New("httpHelper POST error")
 
@@ -476,13 +499,508 @@ var _ = Describe("Client - Task operations", func() {
 	})
 
 	Describe("updating a task", func() {
-		task := wundergo.Task{
-			ID: uint(1),
-		}
+		var expectedGetTask *wundergo.Task
+		var task wundergo.Task
+
+		var dummyGetResponse *http.Response
 
 		BeforeEach(func() {
+			task = wundergo.Task{
+				ID:       uint(1),
+				Revision: 2,
+			}
+
+			expectedGetTask = &wundergo.Task{
+				Title: "testy",
+			}
+
+			dummyGetResponse = &http.Response{}
+			dummyGetResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
+			dummyGetResponse.StatusCode = http.StatusOK
+			fakeHTTPHelper.GetReturns(dummyGetResponse, nil)
+
 			dummyResponse.StatusCode = http.StatusOK
 			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+
+			fakeJSONHelper.UnmarshalReturns(expectedGetTask, nil)
+		})
+
+		Context("when recurrenceType is not provided", func() {
+			BeforeEach(func() {
+				task.RecurrenceType = ""
+			})
+
+			It("does not allow recurrenceCount to be non-zero", func() {
+				task.RecurrenceCount = 1
+				_, err := client.UpdateTask(task)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("recurrenceCount"))
+			})
+		})
+
+		Context("when recurrenceCount is zero", func() {
+			BeforeEach(func() {
+				task.RecurrenceCount = 0
+			})
+
+			It("does not allow recurrenceType to be provided", func() {
+				task.RecurrenceType = "day"
+				_, err := client.UpdateTask(task)
+
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("recurrenceType"))
+			})
+		})
+
+		Describe("during initial GET request", func() {
+			It("performs GET request to /tasks/:id", func() {
+				expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, task.ID)
+				fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
+				client.UpdateTask(task)
+
+				Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
+				Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
+			})
+
+			Context("when initial GET request returns with error", func() {
+				expectedError := errors.New("httpHelper GET error")
+
+				BeforeEach(func() {
+					fakeHTTPHelper.GetReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.UpdateTask(task)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+		})
+
+		Describe("assigneeID updates", func() {
+			Context("when original task had an assignee", func() {
+				BeforeEach(func() {
+					expectedGetTask.AssigneeID = 1
+				})
+
+				Context("and new task has no assignee", func() {
+					BeforeEach(func() {
+						task.AssigneeID = 0
+					})
+
+					It("adds 'assignee_id' to fields to remove", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.Remove).To(Equal([]string{"assignee_id"}))
+					})
+
+					It("sets assigneeID to 0", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.AssigneeID).To(Equal(task.AssigneeID))
+					})
+				})
+
+				Context("and new task has same assignee", func() {
+					BeforeEach(func() {
+						task.AssigneeID = expectedGetTask.AssigneeID
+					})
+
+					It("calls JSONHelper.marshal with same value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.AssigneeID).To(Equal(task.AssigneeID))
+					})
+				})
+
+				Context("and new task has different assignee", func() {
+					BeforeEach(func() {
+						task.AssigneeID = 2
+					})
+
+					It("calls JSONHelper.marshal with new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.AssigneeID).To(Equal(task.AssigneeID))
+					})
+				})
+			})
+
+			Context("when original task had no assignee", func() {
+				BeforeEach(func() {
+					expectedGetTask.AssigneeID = 0
+				})
+
+				Context("and new task has no assignee", func() {
+					BeforeEach(func() {
+						task.AssigneeID = 0
+					})
+
+					It("sets assigneeID to 0", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.AssigneeID).To(Equal(task.AssigneeID))
+					})
+				})
+
+				Context("and new task has an assignee", func() {
+					BeforeEach(func() {
+						task.AssigneeID = 1
+					})
+
+					It("calls JSONHelper.marshal with new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.AssigneeID).To(Equal(task.AssigneeID))
+					})
+				})
+			})
+		})
+
+		Describe("dueDate updates", func() {
+			Context("when original task had a due date", func() {
+				BeforeEach(func() {
+					expectedGetTask.DueDate = "1970-01-01"
+				})
+
+				Context("and new task has empty due date", func() {
+					BeforeEach(func() {
+						task.DueDate = ""
+					})
+
+					It("adds 'due_date' to fields to remove", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.Remove).To(Equal([]string{"due_date"}))
+					})
+
+					It("sets dueDate to empty string", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.DueDate).To(Equal(task.DueDate))
+					})
+				})
+
+				Context("and new task has same due date", func() {
+					BeforeEach(func() {
+						task.DueDate = expectedGetTask.DueDate
+					})
+
+					It("calls JSONHelper.marshal with same value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.DueDate).To(Equal(task.DueDate))
+					})
+				})
+
+				Context("and new task has different due date", func() {
+					BeforeEach(func() {
+						task.DueDate = "1971-01-01"
+					})
+
+					It("calls JSONHelper.marshal with new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.DueDate).To(Equal(task.DueDate))
+					})
+				})
+			})
+
+			Context("when original task had no due date", func() {
+				BeforeEach(func() {
+					expectedGetTask.DueDate = ""
+				})
+
+				Context("and new task has empty due date", func() {
+					BeforeEach(func() {
+						task.DueDate = ""
+					})
+
+					It("sets dueDate to empty", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.DueDate).To(Equal(task.DueDate))
+					})
+				})
+
+				Context("and new task has a due date", func() {
+					BeforeEach(func() {
+						task.DueDate = "1971-01-01"
+					})
+
+					It("calls JSONHelper.marshal with new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.DueDate).To(Equal(task.DueDate))
+					})
+				})
+			})
+		})
+
+		Describe("recurrence updates", func() {
+			Context("when recurrence was previously set", func() {
+				BeforeEach(func() {
+					expectedGetTask.RecurrenceType = "day"
+					expectedGetTask.RecurrenceCount = uint(1)
+				})
+
+				Context("and recurrence is now not set", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = ""
+						task.RecurrenceCount = 0
+					})
+
+					It("adds 'recurrence_type' and 'recurrence_count' to fields to remove", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.Remove).To(Equal([]string{"recurrence_type", "recurrence_count"}))
+					})
+
+					It("unsets recurrence", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+
+				Context("and recurrence type is now set to a different value", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = "week"
+						task.RecurrenceCount = uint(1)
+					})
+
+					It("sets recurrence to new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+
+				Context("and recurrence count is now set to a different value", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = "day"
+						task.RecurrenceCount = uint(2)
+					})
+
+					It("sets recurrence to new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+
+				Context("and recurrence is now set to the same value", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = "day"
+						task.RecurrenceCount = uint(1)
+					})
+
+					It("sets recurrence to same value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+			})
+
+			Context("when recurrence was not previously set", func() {
+				BeforeEach(func() {
+					expectedGetTask.RecurrenceType = ""
+					expectedGetTask.RecurrenceCount = 0
+				})
+
+				Context("and recurrence is still not set", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = ""
+						task.RecurrenceCount = 0
+					})
+
+					It("leaves recurrence unset", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+
+				Context("and recurrence is now set", func() {
+					BeforeEach(func() {
+						task.RecurrenceType = "day"
+						task.RecurrenceCount = uint(1)
+					})
+
+					It("sets recurrence to new value", func() {
+						client.UpdateTask(task)
+
+						Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+						arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+						actualTuc := arg0.(wundergo.TaskUpdateConfig)
+						Expect(actualTuc.RecurrenceType).To(Equal(task.RecurrenceType))
+						Expect(actualTuc.RecurrenceCount).To(Equal(task.RecurrenceCount))
+					})
+				})
+			})
+		})
+
+		Describe("completed updates", func() {
+			Context("when completed state changes", func() {
+				BeforeEach(func() {
+					expectedGetTask.Completed = true
+					task.Completed = false
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Completed).To(Equal(task.Completed))
+				})
+			})
+
+			Context("when completed state is unchanged", func() {
+				BeforeEach(func() {
+					expectedGetTask.Completed = true
+					task.Completed = true
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Completed).To(Equal(task.Completed))
+				})
+			})
+		})
+
+		Describe("starred updates", func() {
+			Context("when starred state changes", func() {
+				BeforeEach(func() {
+					expectedGetTask.Starred = true
+					task.Starred = false
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Starred).To(Equal(task.Starred))
+				})
+			})
+
+			Context("when starred state is unchanged", func() {
+				BeforeEach(func() {
+					expectedGetTask.Starred = true
+					task.Starred = true
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Starred).To(Equal(task.Starred))
+				})
+			})
+		})
+
+		Describe("title updates", func() {
+			Context("when title changes", func() {
+				BeforeEach(func() {
+					expectedGetTask.Title = "Old Title"
+					task.Title = "Old Title"
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Title).To(Equal(task.Title))
+				})
+			})
+
+			Context("when title is unchanged", func() {
+				BeforeEach(func() {
+					expectedGetTask.Title = "Old Title"
+					task.Title = "New Title"
+				})
+
+				It("calls JSONHelper.marshal with new value", func() {
+					client.UpdateTask(task)
+
+					Expect(fakeJSONHelper.MarshalCallCount()).To(Equal(1))
+					arg0 := fakeJSONHelper.MarshalArgsForCall(0)
+					actualTuc := arg0.(wundergo.TaskUpdateConfig)
+					Expect(actualTuc.Title).To(Equal(task.Title))
+				})
+			})
 		})
 
 		It("performs PATCH requests to /tasks/:id", func() {
@@ -499,7 +1017,7 @@ var _ = Describe("Client - Task operations", func() {
 			Expect(arg1).To(Equal(expectedBody))
 		})
 
-		Context("when marshalling task returns an error", func() {
+		Context("when marshalling update body returns an error", func() {
 			expectedError := errors.New("JSONHelper marshal error")
 
 			BeforeEach(func() {
@@ -583,19 +1101,28 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedTask := &wundergo.Task{
-				Title: "Test Title",
+			expectedUpdateTask := &wundergo.Task{
+				Title: "Updated Title",
 			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(expectedTask, nil)
+				callCount := 0
+				fakeJSONHelper.UnmarshalStub = func([]byte, interface{}) (interface{}, error) {
+					callCount++
+					switch callCount {
+					case 1:
+						return expectedGetTask, nil
+					default:
+						return expectedUpdateTask, nil
+					}
+				}
 			})
 
 			It("returns the unmarshalled task without error", func() {
 				task, err := client.UpdateTask(task)
 
 				Expect(err).To(BeNil())
-				Expect(task).To(Equal(expectedTask))
+				Expect(task).To(Equal(expectedUpdateTask))
 			})
 		})
 	})

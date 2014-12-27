@@ -81,6 +81,11 @@ var _ = Describe("Wundergo library", func() {
 			newList.Revision = newList.Revision + 1
 			Expect(err).NotTo(HaveOccurred())
 
+			task.DueDate = "1971-01-01"
+			task, err = client.UpdateTask(*task)
+			newList.Revision = newList.Revision + 1
+			Expect(err).NotTo(HaveOccurred())
+
 			_, err = client.CreateNote("myContent", task.ID)
 			newList.Revision = newList.Revision + 1
 			Expect(err).NotTo(HaveOccurred())
