@@ -3,6 +3,7 @@ package wundergo_test
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
@@ -10,6 +11,10 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+const (
+	SERVER_CONSISTENCY_TIMEOUT = 5*time.Second
+	POLLING_INTERVAL = 10*time.Millisecond
+)
 var (
 	client wundergo.Client
 )
@@ -119,7 +124,7 @@ var _ = Describe("Wundergo library", func() {
 				afterDeleteLists, err := client.Lists()
 				Expect(err).ShouldNot(HaveOccurred())
 				return afterDeleteLists
-			}).Should(Equal(originalLists))
+			}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Equal(originalLists))
 		})
 	})
 })
