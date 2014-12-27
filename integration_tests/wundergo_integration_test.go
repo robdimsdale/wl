@@ -68,19 +68,19 @@ var _ = Describe("Wundergo library", func() {
 			Eventually(func() error {
 				originalLists, err = client.Lists()
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			var newList *wundergo.List
 			Eventually(func() error {
 				newList, err = client.CreateList(newListTitle1)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			var newLists *[]wundergo.List
 			Eventually(func() error {
 				newLists, err = client.Lists()
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 			Expect(listContains(newLists, newList)).To(BeTrue())
 
 			newList.Title = newListTitle2
@@ -88,24 +88,20 @@ var _ = Describe("Wundergo library", func() {
 			Eventually(func() error {
 				updatedList, err = client.UpdateList(*newList)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 			newList.Revision = newList.Revision + 1
 			Expect(updatedList).To(Equal(newList))
 
 			Eventually(func() error {
 				newList, err = client.List(newList.ID)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			Eventually(func() error {
 				return client.DeleteList(*newList)
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
-			Eventually(func() *[]wundergo.List {
-				afterDeleteLists, err := client.Lists()
-				Expect(err).ShouldNot(HaveOccurred())
-				return afterDeleteLists
-			}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Equal(originalLists))
+			Eventually(client.Lists, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Equal(originalLists))
 		})
 	})
 
@@ -116,7 +112,7 @@ var _ = Describe("Wundergo library", func() {
 				l, err := client.Lists()
 				lists = *l
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 			list := lists[0]
 
 			uuid, err := uuid.NewV4()
@@ -149,7 +145,7 @@ var _ = Describe("Wundergo library", func() {
 				completed := true
 				completedTasks, err = client.CompletedTasksForListID(list.ID, completed)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 			Expect(taskContains(completedTasks, task)).To(BeFalse())
 
 			task.DueDate = "1971-01-01"
@@ -157,7 +153,7 @@ var _ = Describe("Wundergo library", func() {
 			Eventually(func() error {
 				task, err = client.UpdateTask(*task)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			Eventually(func() error {
 				completed := true
@@ -170,31 +166,29 @@ var _ = Describe("Wundergo library", func() {
 			Eventually(func() error {
 				note, err = client.CreateNote("myContent", task.ID)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			note.Content = "newContent"
 			Eventually(func() error {
 				note, err = client.UpdateNote(*note)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			Eventually(func() error {
 				return client.DeleteNote(*note)
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			Eventually(func() error {
 				task, err = client.Task(task.ID)
 				return err
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
 			Eventually(func() error {
 				return client.DeleteTask(*task)
-			}).ShouldNot(HaveOccurred())
+			}).Should(Succeed())
 
-			Eventually(func() *[]wundergo.Task {
-				afterDeleteTasks, err := client.TasksForListID(list.ID)
-				Expect(err).ShouldNot(HaveOccurred())
-				return afterDeleteTasks
+			Eventually(func() (*[]wundergo.Task, error) {
+				return client.TasksForListID(list.ID)
 			}, SERVER_CONSISTENCY_TIMEOUT, POLLING_INTERVAL).Should(Equal(originalTasks))
 		})
 	})
