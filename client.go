@@ -52,6 +52,7 @@ type Client interface {
 		dueDate string,
 		starred bool,
 	) (*Task, error)
+	UpdateTask(task Task) (*Task, error)
 }
 
 type OauthClient struct {
@@ -553,6 +554,11 @@ type taskCreateConfig struct {
 	Starred         bool   `json:"starred,omitempty"`
 }
 
+type taskUpdateConfig struct {
+	taskCreateConfig
+	remove []string `json:"remove,omitempty"`
+}
+
 func (c OauthClient) CreateTask(
 	title string,
 	listID uint,
@@ -596,6 +602,36 @@ func (c OauthClient) CreateTask(
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &Task{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*Task), nil
+}
+
+func (c OauthClient) UpdateTask(task Task) (*Task, error) {
+	body, err := c.jsonHelper.Marshal(task)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/tasks/%d", apiUrl, task.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
