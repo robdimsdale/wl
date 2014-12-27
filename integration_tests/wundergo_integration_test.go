@@ -49,52 +49,77 @@ var _ = Describe("Wundergo library", func() {
 			Expect(err).NotTo(HaveOccurred())
 			newListTitle2 := uuid2.String()
 
-			originalLists, err := client.Lists()
-			Expect(err).NotTo(HaveOccurred())
+			var originalLists *[]wundergo.List
+			Eventually(func() error {
+				originalLists, err = client.Lists()
+				return err
+			}).ShouldNot(HaveOccurred())
 
-			newList, err := client.CreateList(newListTitle1)
-			Expect(err).NotTo(HaveOccurred())
+			var newList *wundergo.List
+			Eventually(func() error {
+				newList, err = client.CreateList(newListTitle1)
+				return err
+			}).ShouldNot(HaveOccurred())
 
-			newLists, err := client.Lists()
-			Expect(err).NotTo(HaveOccurred())
+			var newLists *[]wundergo.List
+			Eventually(func() error {
+				newLists, err = client.Lists()
+				return err
+			}).ShouldNot(HaveOccurred())
 			Expect(contains(newLists, newList)).To(BeTrue())
 
 			newList.Title = newListTitle2
-			updatedList, err := client.UpdateList(*newList)
-			Expect(err).NotTo(HaveOccurred())
+			var updatedList *wundergo.List
+			Eventually(func() error {
+				updatedList, err = client.UpdateList(*newList)
+				return err
+			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
 			Expect(updatedList).To(Equal(newList))
 
-			_, err = client.TasksForListID(newList.ID)
-			Expect(err).NotTo(HaveOccurred())
+			Eventually(func() error {
+				_, err = client.TasksForListID(newList.ID)
+				return err
+			}).ShouldNot(HaveOccurred())
 
-			task, err := client.CreateTask(
-				"myTask",
-				newList.ID,
-				0,
-				false,
-				"",
-				0,
-				"1970-01-01",
-				false,
-			)
+			var task *wundergo.Task
+			Eventually(func() error {
+				task, err = client.CreateTask(
+					"myTask",
+					newList.ID,
+					0,
+					false,
+					"",
+					0,
+					"1970-01-01",
+					false,
+				)
+				return err
+			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
-			Expect(err).NotTo(HaveOccurred())
 
 			task.DueDate = "1971-01-01"
-			task, err = client.UpdateTask(*task)
+			Eventually(func() error {
+				task, err = client.UpdateTask(*task)
+				return err
+			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
-			Expect(err).NotTo(HaveOccurred())
 
-			_, err = client.CreateNote("myContent", task.ID)
+			Eventually(func() error {
+				_, err := client.CreateNote("myContent", task.ID)
+				return err
+			}).ShouldNot(HaveOccurred())
 			newList.Revision = newList.Revision + 1
-			Expect(err).NotTo(HaveOccurred())
 
-			err = client.DeleteList(*newList)
-			Expect(err).NotTo(HaveOccurred())
+			Eventually(func() error {
+				return client.DeleteList(*newList)
+			}).ShouldNot(HaveOccurred())
 
-			afterDeleteLists, err := client.Lists()
-			Expect(err).NotTo(HaveOccurred())
+			var afterDeleteLists *[]wundergo.List
+			Eventually(func() error {
+				afterDeleteLists, err = client.Lists()
+				return err
+			}).ShouldNot(HaveOccurred())
 
 			Expect(afterDeleteLists).To(Equal(originalLists))
 		})
