@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	SERVER_CONSISTENCY_TIMEOUT = 5*time.Second
-	POLLING_INTERVAL = 10*time.Millisecond
+	SERVER_CONSISTENCY_TIMEOUT = 30 * time.Second
+	POLLING_INTERVAL           = 10 * time.Millisecond
 )
+
 var (
 	client wundergo.Client
 )
