@@ -115,13 +115,11 @@ var _ = Describe("Wundergo library", func() {
 				return client.DeleteList(*newList)
 			}).ShouldNot(HaveOccurred())
 
-			var afterDeleteLists *[]wundergo.List
-			Eventually(func() error {
-				afterDeleteLists, err = client.Lists()
-				return err
-			}).ShouldNot(HaveOccurred())
-
-			Expect(afterDeleteLists).To(Equal(originalLists))
+			Eventually(func() *[]wundergo.List {
+				afterDeleteLists, err := client.Lists()
+				Expect(err).ShouldNot(HaveOccurred())
+				return afterDeleteLists
+			}).Should(Equal(originalLists))
 		})
 	})
 })
