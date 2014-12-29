@@ -78,6 +78,23 @@ var _ = Describe("Basic task functionality", func() {
 			return client.DeleteNote(*note)
 		}).Should(Succeed())
 
+		var subtask *wundergo.Subtask
+		subtaskComplete := false
+		Eventually(func() error {
+			subtask, err = client.CreateSubtask("mySubtaskTitle", task.ID, subtaskComplete)
+			return err
+		}).Should(Succeed())
+
+		subtask.Title = "newSubtaskTitle"
+		Eventually(func() error {
+			subtask, err = client.UpdateSubtask(*subtask)
+			return err
+		}).Should(Succeed())
+
+		Eventually(func() error {
+			return client.DeleteSubtask(*subtask)
+		}).Should(Succeed())
+
 		Eventually(func() error {
 			task, err = client.Task(task.ID)
 			return client.DeleteTask(*task)

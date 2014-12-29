@@ -66,6 +66,7 @@ type Client interface {
 		completed bool,
 	) (*Subtask, error)
 	UpdateSubtask(subtask Subtask) (*Subtask, error)
+	DeleteSubtask(subtask Subtask) error
 }
 
 type OauthClient struct {
@@ -997,4 +998,23 @@ func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 		return nil, err
 	}
 	return s.(*Subtask), nil
+}
+
+func (c OauthClient) DeleteSubtask(subtask Subtask) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/subtasks/%d?revision=%d", apiUrl, subtask.ID, subtask.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }

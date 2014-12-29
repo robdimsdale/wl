@@ -861,4 +861,88 @@ var _ = Describe("Client - Subtask operations", func() {
 			})
 		})
 	})
+
+	Describe("Deleting a subtask", func() {
+		subtask := wundergo.Subtask{
+			ID:       uint(1),
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /subtasks/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/subtasks/%d?revision=%d", apiUrl, subtask.ID, subtask.Revision)
+
+			client.DeleteSubtask(subtask)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteSubtask(subtask)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				err := client.DeleteSubtask(subtask)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.DeleteSubtask(subtask)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteSubtask(subtask)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the subtask without error", func() {
+				err := client.DeleteSubtask(subtask)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
 })
