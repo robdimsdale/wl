@@ -65,6 +65,7 @@ type Client interface {
 		listID uint,
 		completed bool,
 	) (*Subtask, error)
+	UpdateSubtask(subtask Subtask) (*Subtask, error)
 }
 
 type OauthClient struct {
@@ -952,6 +953,36 @@ func (c OauthClient) CreateSubtask(
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	s, err := c.jsonHelper.Unmarshal(b, &Subtask{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return s.(*Subtask), nil
+}
+
+func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
+	body, err := c.jsonHelper.Marshal(subtask)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/subtasks/%d", apiUrl, subtask.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
