@@ -22,7 +22,7 @@ var (
 
 func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
 	for _, l := range *lists {
-		if l == *list {
+		if l.ID == list.ID {
 			return true
 		}
 	}
@@ -31,7 +31,7 @@ func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
 
 func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
 	for _, t := range *tasks {
-		if t == *task {
+		if t.ID == task.ID {
 			return true
 		}
 	}

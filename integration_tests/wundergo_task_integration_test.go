@@ -43,12 +43,11 @@ var _ = Describe("Basic task functionality", func() {
 		}).ShouldNot(HaveOccurred())
 
 		var completedTasks *[]wundergo.Task
-		Eventually(func() error {
+		Eventually(func() (bool, error) {
 			completed := true
 			completedTasks, err = client.CompletedTasksForListID(list.ID, completed)
-			return err
-		}).Should(Succeed())
-		Expect(taskContains(completedTasks, task)).To(BeFalse())
+			return taskContains(completedTasks, task), err
+		}).Should(BeFalse())
 
 		task.DueDate = "1971-01-01"
 		task.Completed = true
@@ -57,12 +56,11 @@ var _ = Describe("Basic task functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		Eventually(func() error {
-			completed := true
+		completed := true
+		Eventually(func() (bool, error) {
 			completedTasks, err = client.CompletedTasksForListID(list.ID, completed)
-			return err
-		}).ShouldNot(HaveOccurred())
-		Expect(taskContains(completedTasks, task)).To(BeTrue())
+			return taskContains(completedTasks, task), err
+		}).Should(BeTrue())
 
 		var note *wundergo.Note
 		Eventually(func() error {
