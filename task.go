@@ -12,6 +12,8 @@ type Task struct {
 	Starred         bool   `json:"starred"`
 	Title           string `json:"title"`
 	Completed       bool   `json:"completed"`
+	CompletedAt     string `json:"completed_at"`
+	CompletedByID   uint   `json:"completed_by"`
 	RecurrenceType  string `json:"recurrence_type"`
 	RecurrenceCount uint   `json:"recurrence_count"`
 }
