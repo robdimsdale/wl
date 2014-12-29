@@ -493,7 +493,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("getting subtask by ID", func() {
+	Describe("Getting subtask by ID", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {
@@ -596,4 +596,142 @@ var _ = Describe("Client - Subtask operations", func() {
 			})
 		})
 	})
+
+	Describe("Creating a new subtask", func() {
+		subtaskTitle := "newSubtaskTitle"
+		taskID := uint(1)
+
+		var completed bool
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusCreated
+			fakeHTTPHelper.PostReturns(dummyResponse, nil)
+
+			completed = false
+		})
+
+		It("performs POST requests to /subtasks with new list title in body", func() {
+			expectedUrl := fmt.Sprintf("%s/subtasks", apiUrl)
+			expectedBody := []byte(fmt.Sprintf(`{"title":"%s","task_id":%d,"completed":%t}`, subtaskTitle, taskID, completed))
+
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Subtask{}, nil)
+			client.CreateSubtask(subtaskTitle, taskID, completed)
+
+			Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when httpHelper.Post returns an error", func() {
+			expectedError := errors.New("httpHelper POST error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PostReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedSubtask := &wundergo.Subtask{
+				Title: "Test Title",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedSubtask, nil)
+			})
+
+			It("returns the unmarshalled subtask without error", func() {
+				subtask, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(BeNil())
+				Expect(subtask).To(Equal(expectedSubtask))
+			})
+		})
+	})
+
 })

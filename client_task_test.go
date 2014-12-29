@@ -452,7 +452,7 @@ var _ = Describe("Client - Task operations", func() {
 			})
 		})
 
-		Context("when marshalling list returns an error", func() {
+		Context("when marshalling task-creation config struct returns an error", func() {
 			expectedError := errors.New("JSONHelper marshal error")
 
 			BeforeEach(func() {
