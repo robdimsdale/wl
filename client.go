@@ -75,6 +75,7 @@ type Client interface {
 		taskID uint,
 		createdByDeviceUdid string,
 	) (*Reminder, error)
+	UpdateReminder(reminder Reminder) (*Reminder, error)
 }
 
 type OauthClient struct {
@@ -1139,6 +1140,36 @@ func (c OauthClient) CreateReminder(
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	r, err := c.jsonHelper.Unmarshal(b, &Reminder{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return r.(*Reminder), nil
+}
+
+func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
+	body, err := c.jsonHelper.Marshal(reminder)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/reminders/%d", apiUrl, reminder.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)
