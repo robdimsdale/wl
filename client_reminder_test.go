@@ -360,4 +360,165 @@ var _ = Describe("Client - Reminder operations", func() {
 			})
 		})
 	})
+
+	Describe("Creating a new Reminder", func() {
+		reminderDate := "new-reminder-date"
+		var createdByDeviceUdid string
+		taskID := uint(1)
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusCreated
+			fakeHTTPHelper.PostReturns(dummyResponse, nil)
+
+			createdByDeviceUdid = "some-device-id"
+		})
+
+		It("performs POST requests to /reminders with new list title in body", func() {
+			expectedUrl := fmt.Sprintf("%s/reminders", apiUrl)
+			expectedBody := []byte(fmt.Sprintf(`{"date":"%s","task_id":%d,"created_by_device_udid":%s}`, reminderDate, taskID, createdByDeviceUdid))
+
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Reminder{}, nil)
+			client.CreateReminder(
+				reminderDate,
+				taskID,
+				createdByDeviceUdid,
+			)
+
+			Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when createdByDeviceUdid is empty", func() {
+			BeforeEach(func() {
+				createdByDeviceUdid = ""
+			})
+
+			It("does not include created_by_device_udid in the params", func() {
+				expectedBody := []byte(fmt.Sprintf(`{"date":"%s","task_id":%d}`, reminderDate, taskID))
+
+				fakeJSONHelper.UnmarshalReturns(&wundergo.Reminder{}, nil)
+				client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+				_, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+				Expect(arg1).To(Equal(expectedBody))
+			})
+		})
+
+		Context("when httpHelper.Post returns an error", func() {
+			expectedError := errors.New("httpHelper POST error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PostReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedReminder := &wundergo.Reminder{
+				Date: "some-date",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedReminder, nil)
+			})
+
+			It("returns the unmarshalled Reminder without error", func() {
+				reminder, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(BeNil())
+				Expect(reminder).To(Equal(expectedReminder))
+			})
+		})
+	})
 })

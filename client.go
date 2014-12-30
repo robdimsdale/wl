@@ -70,6 +70,11 @@ type Client interface {
 	RemindersForListID(listID uint) (*[]Reminder, error)
 	RemindersForTaskID(taskID uint) (*[]Reminder, error)
 	Reminder(reminderID uint) (*Reminder, error)
+	CreateReminder(
+		date string,
+		taskID uint,
+		createdByDeviceUdid string,
+	) (*Reminder, error)
 }
 
 type OauthClient struct {
@@ -1097,6 +1102,43 @@ func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	r, err := c.jsonHelper.Unmarshal(b, &Reminder{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return r.(*Reminder), nil
+}
+
+func (c OauthClient) CreateReminder(
+	date string,
+	taskID uint,
+	createdByDeviceUdid string,
+) (*Reminder, error) {
+
+	var body []byte
+	if createdByDeviceUdid == "" {
+		body = []byte(fmt.Sprintf(`{"date":"%s","task_id":%d}`, date, taskID))
+	} else {
+		body = []byte(fmt.Sprintf(`{"date":"%s","task_id":%d,"created_by_device_udid":%s}`, date, taskID, createdByDeviceUdid))
+	}
+
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/reminders", apiUrl), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
 	}
 
 	b, err := c.readResponseBody(resp)
