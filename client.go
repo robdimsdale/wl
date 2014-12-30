@@ -69,6 +69,7 @@ type Client interface {
 	DeleteSubtask(subtask Subtask) error
 	RemindersForListID(listID uint) (*[]Reminder, error)
 	RemindersForTaskID(taskID uint) (*[]Reminder, error)
+	Reminder(reminderID uint) (*Reminder, error)
 }
 
 type OauthClient struct {
@@ -1085,4 +1086,29 @@ func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 		return nil, err
 	}
 	return r.(*[]Reminder), nil
+}
+
+func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/reminders/%d", apiUrl, reminderID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	r, err := c.jsonHelper.Unmarshal(b, &Reminder{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return r.(*Reminder), nil
 }
