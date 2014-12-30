@@ -67,6 +67,8 @@ type Client interface {
 	) (*Subtask, error)
 	UpdateSubtask(subtask Subtask) (*Subtask, error)
 	DeleteSubtask(subtask Subtask) error
+	RemindersForListID(listID uint) (*[]Reminder, error)
+	RemindersForTaskID(taskID uint) (*[]Reminder, error)
 }
 
 type OauthClient struct {
@@ -1017,4 +1019,70 @@ func (c OauthClient) DeleteSubtask(subtask Subtask) error {
 		return err
 	}
 	return nil
+}
+
+func (c OauthClient) RemindersForListID(listID uint) (*[]Reminder, error) {
+	var resp *http.Response
+	var err error
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?list_id=%d", apiUrl, listID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	r, err := c.jsonHelper.Unmarshal(b, &[]Reminder{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return r.(*[]Reminder), nil
+}
+
+func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
+	var resp *http.Response
+	var err error
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?task_id=%d", apiUrl, taskID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	r, err := c.jsonHelper.Unmarshal(b, &[]Reminder{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return r.(*[]Reminder), nil
 }

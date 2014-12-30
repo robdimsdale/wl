@@ -6,7 +6,7 @@ type Task struct {
 	AssignerID      uint   `json:"assigner_id"`
 	CreatedAt       string `json:"created_at"`
 	CreatedByID     uint   `json:"created_by_id"`
-	DueDate         string `json:"dueDate"`
+	DueDate         string `json:"due_date"`
 	ListID          uint   `json:"list_id"`
 	Revision        uint   `json:"revision"`
 	Starred         bool   `json:"starred"`
