@@ -649,4 +649,88 @@ var _ = Describe("Client - Reminder operations", func() {
 			})
 		})
 	})
+
+	Describe("Deleting a Reminder", func() {
+		reminder := wundergo.Reminder{
+			ID:       uint(1),
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /reminders/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/reminders/%d?revision=%d", apiUrl, reminder.ID, reminder.Revision)
+
+			client.DeleteReminder(reminder)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteReminder(reminder)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns error", func() {
+				err := client.DeleteReminder(reminder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.DeleteReminder(reminder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteReminder(reminder)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the Reminder without error", func() {
+				err := client.DeleteReminder(reminder)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
 })

@@ -43,11 +43,13 @@ var _ = Describe("Basic task functionality", func() {
 		}).ShouldNot(HaveOccurred())
 
 		var completedTasks *[]wundergo.Task
+		showCompletedTasks := true
 		Eventually(func() (bool, error) {
-			completed := true
-			completedTasks, err = client.CompletedTasksForListID(list.ID, completed)
+			completedTasks, err = client.CompletedTasksForListID(list.ID, showCompletedTasks)
 			return taskContains(completedTasks, task), err
 		}).Should(BeFalse())
+
+		// Update (and complete) task
 
 		task.DueDate = "1971-01-01"
 		task.Completed = true
@@ -56,11 +58,12 @@ var _ = Describe("Basic task functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		completed := true
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(list.ID, completed)
+			completedTasks, err = client.CompletedTasksForListID(list.ID, showCompletedTasks)
 			return taskContains(completedTasks, task), err
 		}).Should(BeTrue())
+
+		// Note
 
 		var note *wundergo.Note
 		Eventually(func() error {
@@ -78,6 +81,8 @@ var _ = Describe("Basic task functionality", func() {
 			return client.DeleteNote(*note)
 		}).Should(Succeed())
 
+		// Subtask
+
 		var subtask *wundergo.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
@@ -94,6 +99,28 @@ var _ = Describe("Basic task functionality", func() {
 		Eventually(func() error {
 			return client.DeleteSubtask(*subtask)
 		}).Should(Succeed())
+
+		// Reminder
+
+		var reminder *wundergo.Reminder
+		reminderDate := "1970-08-30T08:29:46.203Z"
+		createdByDeviceUdid := ""
+		Eventually(func() error {
+			reminder, err = client.CreateReminder(reminderDate, task.ID, createdByDeviceUdid)
+			return err
+		}).Should(Succeed())
+
+		reminder.Date = "1971-08-30T08:29:46.203Z"
+		Eventually(func() error {
+			reminder, err = client.UpdateReminder(*reminder)
+			return err
+		}).Should(Succeed())
+
+		Eventually(func() error {
+			return client.DeleteReminder(*reminder)
+		}).Should(Succeed())
+
+		// Delete task
 
 		Eventually(func() error {
 			task, err = client.Task(task.ID)

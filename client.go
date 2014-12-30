@@ -76,6 +76,7 @@ type Client interface {
 		createdByDeviceUdid string,
 	) (*Reminder, error)
 	UpdateReminder(reminder Reminder) (*Reminder, error)
+	DeleteReminder(reminder Reminder) error
 }
 
 type OauthClient struct {
@@ -1184,4 +1185,23 @@ func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 		return nil, err
 	}
 	return r.(*Reminder), nil
+}
+
+func (c OauthClient) DeleteReminder(reminder Reminder) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/reminders/%d?revision=%d", apiUrl, reminder.ID, reminder.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }
