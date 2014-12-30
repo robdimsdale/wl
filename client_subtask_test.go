@@ -623,6 +623,20 @@ var _ = Describe("Client - Subtask operations", func() {
 			Expect(arg1).To(Equal(expectedBody))
 		})
 
+		Context("when taskID == 0", func() {
+			taskID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateSubtask(
+					subtaskTitle,
+					taskID,
+					completed,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		Context("when httpHelper.Post returns an error", func() {
 			expectedError := errors.New("httpHelper POST error")
 

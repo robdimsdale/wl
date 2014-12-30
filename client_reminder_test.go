@@ -390,6 +390,20 @@ var _ = Describe("Client - Reminder operations", func() {
 			Expect(arg1).To(Equal(expectedBody))
 		})
 
+		Context("when taskID == 0", func() {
+			taskID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateReminder(
+					reminderDate,
+					taskID,
+					createdByDeviceUdid,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		Context("when createdByDeviceUdid is empty", func() {
 			BeforeEach(func() {
 				createdByDeviceUdid = ""

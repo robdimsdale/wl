@@ -434,6 +434,11 @@ func (c OauthClient) Note(noteID uint) (*Note, error) {
 }
 
 func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
 	body := []byte(fmt.Sprintf(`{"content":"%s","task_id":%d}`, content, taskID))
 
 	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/notes", apiUrl), body)
@@ -645,6 +650,10 @@ func (c OauthClient) CreateTask(
 	dueDate string,
 	starred bool,
 ) (*Task, error) {
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
 
 	err := c.validateRecurrence(recurrenceType, recurrenceCount)
 	if err != nil {
@@ -954,6 +963,11 @@ func (c OauthClient) CreateSubtask(
 	listID uint,
 	completed bool,
 ) (*Subtask, error) {
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
 	body := []byte(fmt.Sprintf(`{"title":"%s","task_id":%d,"completed":%t}`, title, listID, completed))
 
 	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/subtasks", apiUrl), body)
@@ -1125,6 +1139,10 @@ func (c OauthClient) CreateReminder(
 	taskID uint,
 	createdByDeviceUdid string,
 ) (*Reminder, error) {
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
 
 	var body []byte
 	if createdByDeviceUdid == "" {

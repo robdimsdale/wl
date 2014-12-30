@@ -408,6 +408,25 @@ var _ = Describe("Client - Task operations", func() {
 			Expect(arg1).To(Equal(expectedBody))
 		})
 
+		Context("when ListID == 0", func() {
+			listID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateTask(
+					taskTitle,
+					listID,
+					assigneeID,
+					completed,
+					recurrenceType,
+					recurrenceCount,
+					dueDate,
+					starred,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		Context("when recurrenceType is not provided", func() {
 			BeforeEach(func() {
 				recurrenceType = ""
