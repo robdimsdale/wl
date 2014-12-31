@@ -77,6 +77,7 @@ type Client interface {
 	) (*Reminder, error)
 	UpdateReminder(reminder Reminder) (*Reminder, error)
 	DeleteReminder(reminder Reminder) error
+	ListPositions() (*[]Position, error)
 }
 
 type OauthClient struct {
@@ -1222,4 +1223,29 @@ func (c OauthClient) DeleteReminder(reminder Reminder) error {
 		return err
 	}
 	return nil
+}
+
+func (c OauthClient) ListPositions() (*[]Position, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions", apiUrl))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	l, err := c.jsonHelper.Unmarshal(b, &([]Position{}))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return l.(*[]Position), nil
 }
