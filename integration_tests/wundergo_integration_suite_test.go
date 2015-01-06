@@ -38,6 +38,15 @@ func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
 	return false
 }
 
+func positionContainsValue(position *wundergo.Position, id uint) bool {
+	for _, v := range position.Values {
+		if v == id {
+			return true
+		}
+	}
+	return false
+}
+
 var _ = BeforeSuite(func() {
 	accessToken := os.Getenv("WL_ACCESS_TOKEN")
 	clientID := os.Getenv("WL_CLIENT_ID")
