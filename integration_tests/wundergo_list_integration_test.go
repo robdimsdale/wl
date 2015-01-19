@@ -19,12 +19,6 @@ var _ = Describe("Basic list functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
-		var originalLists *[]wundergo.List
-		Eventually(func() error {
-			originalLists, err = client.Lists()
-			return err
-		}).Should(Succeed())
-
 		var newList *wundergo.List
 		Eventually(func() error {
 			newList, err = client.CreateList(newListTitle1)
@@ -42,11 +36,10 @@ var _ = Describe("Basic list functionality", func() {
 		Expect(updatedList).To(Equal(newList))
 
 		var newLists *[]wundergo.List
-		Eventually(func() error {
+		Eventually(func() (bool, error) {
 			newLists, err = client.Lists()
-			return err
-		}).Should(Succeed())
-		Expect(listContains(newLists, newList)).To(BeTrue())
+			return listContains(newLists, newList), err
+		}).Should(BeTrue())
 
 		Eventually(func() error {
 			newList, err = client.List(newList.ID)

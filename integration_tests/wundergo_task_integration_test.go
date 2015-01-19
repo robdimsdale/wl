@@ -21,12 +21,6 @@ var _ = Describe("Basic task functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuid.String()
 
-		var originalTasks *[]wundergo.Task
-		Eventually(func() error {
-			originalTasks, err = client.TasksForListID(list.ID)
-			return err
-		}).ShouldNot(HaveOccurred())
-
 		var task *wundergo.Task
 		Eventually(func() error {
 			task, err = client.CreateTask(
