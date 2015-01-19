@@ -109,21 +109,21 @@ var _ = Describe("Client - List position operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedLists := &[]wundergo.Position{
+			expectedListPositions := &[]wundergo.Position{
 				wundergo.Position{
 					ID: 1234,
 				},
 			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(expectedLists, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedListPositions, nil)
 			})
 
 			It("returns the unmarshalled array of list positions without error", func() {
-				lists, err := client.ListPositions()
+				listPositions, err := client.ListPositions()
 
 				Expect(err).To(BeNil())
-				Expect(lists).To(Equal(expectedLists))
+				Expect(listPositions).To(Equal(expectedListPositions))
 			})
 		})
 	})
@@ -225,6 +225,131 @@ var _ = Describe("Client - List position operations", func() {
 
 			It("returns the unmarshalled list position without error", func() {
 				listPosition, err := client.ListPosition(listPositionID)
+
+				Expect(err).To(BeNil())
+				Expect(listPosition).To(Equal(expectedListPosition))
+			})
+		})
+	})
+
+	Describe("updating a list position", func() {
+		listPosition := wundergo.Position{
+			ID: 1,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
+			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+		})
+
+		It("performs PATCH requests to /list_positions/:id", func() {
+			expectedBody := []byte{}
+			fakeJSONHelper.MarshalReturns(expectedBody, nil)
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Position{}, nil)
+			expectedUrl := fmt.Sprintf("%s/list_positions/%d", apiUrl, listPosition.ID)
+
+			client.UpdateListPosition(listPosition)
+
+			Expect(fakeHTTPHelper.PatchCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PatchArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when marshalling list returns an error", func() {
+			expectedError := errors.New("JSONHelper marshal error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.MarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when httpHelper.Patch returns an error", func() {
+			expectedError := errors.New("httpHelper PATCH error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PatchReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.UpdateListPosition(listPosition)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedListPosition := &wundergo.Position{
+				Values: []uint{1, 2},
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedListPosition, nil)
+			})
+
+			It("returns the unmarshalled list without error", func() {
+				listPosition, err := client.UpdateListPosition(*expectedListPosition)
 
 				Expect(err).To(BeNil())
 				Expect(listPosition).To(Equal(expectedListPosition))
