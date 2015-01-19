@@ -3,6 +3,10 @@ wundergo [![Build Status](https://travis-ci.org/robdimsdale/wundergo.svg?branch=
 
 Golang API client for Wunderlist
 
+## Supported Golang versions
+
+The code is tested against the latest versions of golang 1.2, 1.3 and 1.4.
+
 ## Getting the code
 
 The [**develop**](https://github.com/robdimsdale/wundergo/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
