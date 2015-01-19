@@ -80,6 +80,9 @@ type Client interface {
 	ListPositions() (*[]Position, error)
 	ListPosition(listPositionID uint) (*Position, error)
 	UpdateListPosition(listPosition Position) (*Position, error)
+	TaskPositionsForListID(listID uint) (*[]Position, error)
+	TaskPosition(taskPositionID uint) (*Position, error)
+	UpdateTaskPosition(taskPosition Position) (*Position, error)
 }
 
 type OauthClient struct {
@@ -1284,6 +1287,91 @@ func (c OauthClient) UpdateListPosition(listPosition Position) (*Position, error
 	}
 
 	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/list_positions/%d", apiUrl, listPosition.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	p, err := c.jsonHelper.Unmarshal(b, &Position{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return p.(*Position), nil
+}
+
+func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions?list_id=%d", apiUrl, listID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	l, err := c.jsonHelper.Unmarshal(b, &([]Position{}))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return l.(*[]Position), nil
+}
+
+func (c OauthClient) TaskPosition(taskPositionID uint) (*Position, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPositionID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	l, err := c.jsonHelper.Unmarshal(b, &Position{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return l.(*Position), nil
+}
+
+func (c OauthClient) UpdateTaskPosition(taskPosition Position) (*Position, error) {
+	body, err := c.jsonHelper.Marshal(taskPosition)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPosition.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err

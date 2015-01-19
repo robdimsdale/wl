@@ -38,6 +38,15 @@ func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
 	return false
 }
 
+func positionsContainValue(position *[]wundergo.Position, id uint) bool {
+	for _, p := range *position {
+		if positionContainsValue(&p, id) {
+			return true
+		}
+	}
+	return false
+}
+
 func positionContainsValue(position *wundergo.Position, id uint) bool {
 	for _, v := range position.Values {
 		if v == id {
