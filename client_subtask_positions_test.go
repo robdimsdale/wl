@@ -24,7 +24,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 	})
 
 	Describe("getting subtask positions for list", func() {
-		taskID := uint(1)
+		listID := uint(1)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -35,17 +35,17 @@ var _ = Describe("Client - Subtask position operations", func() {
 			taskID := uint(0)
 
 			It("returns an error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(taskID)
 
 				Expect(err).To(HaveOccurred())
 			})
 		})
 
-		It("performs GET requests to /subtask_positions?task_id=%d", func() {
-			expectedUrl := fmt.Sprintf("%s/subtask_positions?task_id=%d", apiUrl, taskID)
+		It("performs GET requests to /subtask_positions?list_id=%d", func() {
+			expectedUrl := fmt.Sprintf("%s/subtask_positions?list_id=%d", apiUrl, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Position{}, nil)
-			client.SubtaskPositionsForTaskID(taskID)
+			client.SubtaskPositionsForListID(listID)
 
 			Expect(fakeHTTPHelper.GetCallCount()).To(Equal(1))
 			Expect(fakeHTTPHelper.GetArgsForCall(0)).To(Equal(expectedUrl))
@@ -58,7 +58,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -70,7 +70,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("returns an error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -83,7 +83,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("returns an error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -99,7 +99,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -113,7 +113,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.SubtaskPositionsForTaskID(taskID)
+				_, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(Equal(expectedError))
 			})
@@ -131,7 +131,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			})
 
 			It("returns the unmarshalled array of subtask positions without error", func() {
-				taskPositions, err := client.SubtaskPositionsForTaskID(taskID)
+				taskPositions, err := client.SubtaskPositionsForListID(listID)
 
 				Expect(err).To(BeNil())
 				Expect(taskPositions).To(Equal(expectedSubtaskPositions))
