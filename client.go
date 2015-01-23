@@ -90,6 +90,8 @@ type Client interface {
 	Memberships() (*[]Membership, error)
 	MembershipsForListID(listID uint) (*[]Membership, error)
 	Membership(membershipID uint) (*Membership, error)
+	AddMemberToListViaUserID(userID uint, listID uint) (*Membership, error)
+	AddMemberToListViaEmailAddress(emailAddress string, listID uint) (*Membership, error)
 }
 
 type OauthClient struct {
@@ -1598,4 +1600,78 @@ func (c OauthClient) MembershipsForListID(listID uint) (*[]Membership, error) {
 		return nil, err
 	}
 	return m.(*[]Membership), nil
+}
+
+func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint) (*Membership, error) {
+	var resp *http.Response
+	var err error
+
+	if userID == 0 {
+		return nil, errors.New("userID must be > 0")
+	}
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d", apiUrl, userID, listID), nil)
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	m, err := c.jsonHelper.Unmarshal(b, &Membership{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return m.(*Membership), nil
+}
+
+func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID uint) (*Membership, error) {
+	var resp *http.Response
+	var err error
+
+	if emailAddress == "" {
+		return nil, errors.New("emailAddress must not be empty")
+	}
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?email=%s&list_id=%d", apiUrl, emailAddress, listID), nil)
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	m, err := c.jsonHelper.Unmarshal(b, &Membership{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return m.(*Membership), nil
 }

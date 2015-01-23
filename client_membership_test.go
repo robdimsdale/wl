@@ -349,4 +349,262 @@ var _ = Describe("Client - Membership operations", func() {
 			})
 		})
 	})
+
+	Describe("adding member to a list", func() {
+		listID := uint(1)
+
+		Describe("using userID", func() {
+
+			userID := uint(2)
+
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusCreated
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("performs POST requests to /memberships?user_id=:userID&list_id=:listID", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d", apiUrl, userID, listID)
+
+				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
+				client.AddMemberToListViaUserID(userID, listID)
+
+				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				Expect(arg0).To(Equal(expectedUrl))
+			})
+
+			Context("when userID == 0", func() {
+				userID := uint(0)
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when listID == 0", func() {
+				listID := uint(0)
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when httpHelper.Post returns an error", func() {
+				expectedError := errors.New("httpHelper POST error")
+
+				BeforeEach(func() {
+					fakeHTTPHelper.PostReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response status code is unexpected", func() {
+				BeforeEach(func() {
+					dummyResponse.StatusCode = http.StatusBadRequest
+				})
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when response body is nil", func() {
+				BeforeEach(func() {
+					dummyResponse.Body = nil
+					fakeHTTPHelper.PostReturns(dummyResponse, nil)
+				})
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when reading body returns an error", func() {
+				expectedError := errors.New("read error")
+				BeforeEach(func() {
+					dummyResponse.Body = erroringReadCloser{
+						readError: expectedError,
+					}
+					fakeHTTPHelper.PostReturns(dummyResponse, nil)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when unmarshalling json response returns an error", func() {
+				expectedError := errors.New("jsonHelper error")
+
+				BeforeEach(func() {
+					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when valid response is received", func() {
+				expectedMembership := &wundergo.Membership{
+					UserID: 1234,
+				}
+
+				BeforeEach(func() {
+					fakeJSONHelper.UnmarshalReturns(expectedMembership, nil)
+				})
+
+				It("returns the unmarshalled note without error", func() {
+					note, err := client.AddMemberToListViaUserID(userID, listID)
+
+					Expect(err).To(BeNil())
+					Expect(note).To(Equal(expectedMembership))
+				})
+			})
+		})
+
+		Describe("using email address", func() {
+
+			emailAddress := "my-email-address"
+
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusCreated
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("performs POST requests to /memberships?email=:emailAddress&list_id=:listID", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d", apiUrl, emailAddress, listID)
+
+				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
+				client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				Expect(arg0).To(Equal(expectedUrl))
+			})
+
+			Context("when emailAddress is empty", func() {
+				userID := ""
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(userID, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when listID == 0", func() {
+				listID := uint(0)
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when httpHelper.Post returns an error", func() {
+				expectedError := errors.New("httpHelper POST error")
+
+				BeforeEach(func() {
+					fakeHTTPHelper.PostReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when response status code is unexpected", func() {
+				BeforeEach(func() {
+					dummyResponse.StatusCode = http.StatusBadRequest
+				})
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when response body is nil", func() {
+				BeforeEach(func() {
+					dummyResponse.Body = nil
+					fakeHTTPHelper.PostReturns(dummyResponse, nil)
+				})
+
+				It("returns an error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when reading body returns an error", func() {
+				expectedError := errors.New("read error")
+				BeforeEach(func() {
+					dummyResponse.Body = erroringReadCloser{
+						readError: expectedError,
+					}
+					fakeHTTPHelper.PostReturns(dummyResponse, nil)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when unmarshalling json response returns an error", func() {
+				expectedError := errors.New("jsonHelper error")
+
+				BeforeEach(func() {
+					fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+				})
+
+				It("forwards the error", func() {
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(Equal(expectedError))
+				})
+			})
+
+			Context("when valid response is received", func() {
+				expectedMembership := &wundergo.Membership{
+					UserID: 1234,
+				}
+
+				BeforeEach(func() {
+					fakeJSONHelper.UnmarshalReturns(expectedMembership, nil)
+				})
+
+				It("returns the unmarshalled note without error", func() {
+					note, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+
+					Expect(err).To(BeNil())
+					Expect(note).To(Equal(expectedMembership))
+				})
+			})
+		})
+	})
 })
