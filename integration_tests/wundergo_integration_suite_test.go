@@ -21,6 +21,10 @@ var (
 )
 
 func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
+	if lists == nil || list == nil {
+		return false
+	}
+
 	for _, l := range *lists {
 		if l.ID == list.ID {
 			return true
@@ -30,6 +34,9 @@ func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
 }
 
 func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
+	if tasks == nil || task == nil {
+		return false
+	}
 	for _, t := range *tasks {
 		if t.ID == task.ID {
 			return true
@@ -39,6 +46,10 @@ func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
 }
 
 func positionsContainValue(position *[]wundergo.Position, id uint) bool {
+	if position == nil {
+		return false
+	}
+
 	for _, p := range *position {
 		if positionContainsValue(&p, id) {
 			return true
@@ -48,6 +59,10 @@ func positionsContainValue(position *[]wundergo.Position, id uint) bool {
 }
 
 func positionContainsValue(position *wundergo.Position, id uint) bool {
+	if position == nil {
+		return false
+	}
+
 	for _, v := range position.Values {
 		if v == id {
 			return true
