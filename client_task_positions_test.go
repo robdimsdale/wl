@@ -42,7 +42,7 @@ var _ = Describe("Client - Task position operations", func() {
 		})
 
 		It("performs GET requests to /task_positions?list_id=%d", func() {
-			expectedUrl := fmt.Sprintf("%s/task_positions?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/task_positions?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Position{}, nil)
 			client.TaskPositionsForListID(listID)
@@ -141,7 +141,7 @@ var _ = Describe("Client - Task position operations", func() {
 
 	Describe("getting taskPosition by ID", func() {
 		taskPositionID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPositionID)
+		expectedUrl := fmt.Sprintf("%s/task_positions/%d", apiURL, taskPositionID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -257,7 +257,7 @@ var _ = Describe("Client - Task position operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Position{}, nil)
-			expectedUrl := fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPosition.ID)
+			expectedUrl := fmt.Sprintf("%s/task_positions/%d", apiURL, taskPosition.ID)
 
 			client.UpdateTaskPosition(taskPosition)
 

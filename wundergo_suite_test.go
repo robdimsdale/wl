@@ -13,7 +13,7 @@ const (
 	dummyAccessToken = "dummyAccessToken"
 	dummyClientID    = "dummyClientID"
 
-	apiUrl = "https://a.wunderlist.com/api/v1"
+	apiURL = "https://a.wunderlist.com/api/v1"
 )
 
 var (

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	apiUrl = "https://a.wunderlist.com/api/v1"
+	apiURL = "https://a.wunderlist.com/api/v1"
 )
 
 var NewLogger = func() Logger {
@@ -121,7 +121,7 @@ func NewOauthClient(accessToken string, clientID string) *OauthClient {
 }
 
 func (c OauthClient) User() (*User, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/user", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/user", apiURL))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -161,7 +161,7 @@ func (c OauthClient) readResponseBody(resp *http.Response) ([]byte, error) {
 
 func (c OauthClient) UpdateUser(user User) (*User, error) {
 	body := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
-	resp, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiUrl), body)
+	resp, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -190,9 +190,9 @@ func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	var err error
 
 	if listID > 0 {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiUrl, listID))
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users?list_id=%d", apiURL, listID))
 	} else {
-		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users", apiUrl))
+		resp, err = c.httpHelper.Get(fmt.Sprintf("%s/users", apiURL))
 	}
 
 	if err != nil {
@@ -219,7 +219,7 @@ func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 }
 
 func (c OauthClient) Lists() (*[]List, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists", apiURL))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -244,7 +244,7 @@ func (c OauthClient) Lists() (*[]List, error) {
 }
 
 func (c OauthClient) List(listID uint) (*List, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiURL, listID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -269,7 +269,7 @@ func (c OauthClient) List(listID uint) (*List, error) {
 }
 
 func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiURL, listID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -296,7 +296,7 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 func (c OauthClient) CreateList(title string) (*List, error) {
 	body := []byte(fmt.Sprintf(`{"title":"%s"}`, title))
 
-	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/lists", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -326,7 +326,7 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiUrl, list.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/lists/%d", apiURL, list.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -351,7 +351,7 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 }
 
 func (c OauthClient) DeleteList(list List) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiURL, list.ID, list.Revision))
 
 	if err != nil {
 		return err
@@ -377,7 +377,7 @@ func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?list_id=%d", apiURL, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -410,7 +410,7 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 		return nil, errors.New("taskID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/notes?task_id=%d", apiURL, taskID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -436,7 +436,7 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 }
 
 func (c OauthClient) Note(noteID uint) (*Note, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/notes/%d", apiUrl, noteID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/notes/%d", apiURL, noteID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -468,7 +468,7 @@ func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
 
 	body := []byte(fmt.Sprintf(`{"content":"%s","task_id":%d}`, content, taskID))
 
-	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/notes", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/notes", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -498,7 +498,7 @@ func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/notes/%d", apiUrl, note.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/notes/%d", apiURL, note.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -523,7 +523,7 @@ func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 }
 
 func (c OauthClient) DeleteNote(note Note) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/notes/%d?revision=%d", apiUrl, note.ID, note.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/notes/%d?revision=%d", apiURL, note.ID, note.Revision))
 
 	if err != nil {
 		return err
@@ -549,7 +549,7 @@ func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d", apiUrl, listID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d", apiURL, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -582,7 +582,7 @@ func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Ta
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d&completed=%t", apiUrl, listID, completed))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/tasks?list_id=%d&completed=%t", apiURL, listID, completed))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -608,7 +608,7 @@ func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Ta
 }
 
 func (c OauthClient) Task(taskID uint) (*Task, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/tasks/%d", apiUrl, taskID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/tasks/%d", apiURL, taskID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -703,7 +703,7 @@ func (c OauthClient) CreateTask(
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/tasks", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/tasks", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -785,7 +785,7 @@ func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/tasks/%d", apiUrl, task.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/tasks/%d", apiURL, task.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -810,7 +810,7 @@ func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 }
 
 func (c OauthClient) DeleteTask(task Task) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/tasks/%d?revision=%d", apiUrl, task.ID, task.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/tasks/%d?revision=%d", apiURL, task.ID, task.Revision))
 
 	if err != nil {
 		return err
@@ -836,7 +836,7 @@ func (c OauthClient) SubtasksForListID(listID uint) (*[]Subtask, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?list_id=%d", apiUrl, listID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?list_id=%d", apiURL, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -869,7 +869,7 @@ func (c OauthClient) SubtasksForTaskID(taskID uint) (*[]Subtask, error) {
 		return nil, errors.New("taskID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?task_id=%d", apiUrl, taskID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?task_id=%d", apiURL, taskID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -902,7 +902,7 @@ func (c OauthClient) CompletedSubtasksForListID(listID uint, completed bool) (*[
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?list_id=%d&completed=%t", apiUrl, listID, completed))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?list_id=%d&completed=%t", apiURL, listID, completed))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -935,7 +935,7 @@ func (c OauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) (*[
 		return nil, errors.New("taskID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?task_id=%d&completed=%t", apiUrl, taskID, completed))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/subtasks?task_id=%d&completed=%t", apiURL, taskID, completed))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -961,7 +961,7 @@ func (c OauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) (*[
 }
 
 func (c OauthClient) Subtask(subtaskID uint) (*Subtask, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtasks/%d", apiUrl, subtaskID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtasks/%d", apiURL, subtaskID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -997,7 +997,7 @@ func (c OauthClient) CreateSubtask(
 
 	body := []byte(fmt.Sprintf(`{"title":"%s","task_id":%d,"completed":%t}`, title, taskID, completed))
 
-	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/subtasks", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/subtasks", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1027,7 +1027,7 @@ func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/subtasks/%d", apiUrl, subtask.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/subtasks/%d", apiURL, subtask.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1052,7 +1052,7 @@ func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 }
 
 func (c OauthClient) DeleteSubtask(subtask Subtask) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/subtasks/%d?revision=%d", apiUrl, subtask.ID, subtask.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/subtasks/%d?revision=%d", apiURL, subtask.ID, subtask.Revision))
 
 	if err != nil {
 		return err
@@ -1078,7 +1078,7 @@ func (c OauthClient) RemindersForListID(listID uint) (*[]Reminder, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?list_id=%d", apiUrl, listID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?list_id=%d", apiURL, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -1111,7 +1111,7 @@ func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 		return nil, errors.New("taskID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?task_id=%d", apiUrl, taskID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/reminders?task_id=%d", apiURL, taskID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -1137,7 +1137,7 @@ func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 }
 
 func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/reminders/%d", apiUrl, reminderID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/reminders/%d", apiURL, reminderID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1178,7 +1178,7 @@ func (c OauthClient) CreateReminder(
 		body = []byte(fmt.Sprintf(`{"date":"%s","task_id":%d,"created_by_device_udid":%s}`, date, taskID, createdByDeviceUdid))
 	}
 
-	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/reminders", apiUrl), body)
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/reminders", apiURL), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1208,7 +1208,7 @@ func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/reminders/%d", apiUrl, reminder.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/reminders/%d", apiURL, reminder.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1233,7 +1233,7 @@ func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 }
 
 func (c OauthClient) DeleteReminder(reminder Reminder) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/reminders/%d?revision=%d", apiUrl, reminder.ID, reminder.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/reminders/%d?revision=%d", apiURL, reminder.ID, reminder.Revision))
 
 	if err != nil {
 		return err
@@ -1252,7 +1252,7 @@ func (c OauthClient) DeleteReminder(reminder Reminder) error {
 }
 
 func (c OauthClient) ListPositions() (*[]Position, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions", apiURL))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1277,7 +1277,7 @@ func (c OauthClient) ListPositions() (*[]Position, error) {
 }
 
 func (c OauthClient) ListPosition(listPositionID uint) (*Position, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions/%d", apiUrl, listPositionID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions/%d", apiURL, listPositionID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1307,7 +1307,7 @@ func (c OauthClient) UpdateListPosition(listPosition Position) (*Position, error
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/list_positions/%d", apiUrl, listPosition.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/list_positions/%d", apiURL, listPosition.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1337,7 +1337,7 @@ func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions?list_id=%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions?list_id=%d", apiURL, listID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1362,7 +1362,7 @@ func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
 }
 
 func (c OauthClient) TaskPosition(taskPositionID uint) (*Position, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPositionID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions/%d", apiURL, taskPositionID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1392,7 +1392,7 @@ func (c OauthClient) UpdateTaskPosition(taskPosition Position) (*Position, error
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/task_positions/%d", apiUrl, taskPosition.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/task_positions/%d", apiURL, taskPosition.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1422,7 +1422,7 @@ func (c OauthClient) SubtaskPositionsForListID(listID uint) (*[]Position, error)
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions?list_id=%d", apiUrl, listID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions?list_id=%d", apiURL, listID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1452,7 +1452,7 @@ func (c OauthClient) SubtaskPositionsForTaskID(taskID uint) (*[]Position, error)
 		return nil, errors.New("taskID must be > 0")
 	}
 
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions?task_id=%d", apiUrl, taskID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions?task_id=%d", apiURL, taskID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1477,7 +1477,7 @@ func (c OauthClient) SubtaskPositionsForTaskID(taskID uint) (*[]Position, error)
 }
 
 func (c OauthClient) SubtaskPosition(subTaskPositionID uint) (*Position, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions/%d", apiUrl, subTaskPositionID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions/%d", apiURL, subTaskPositionID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1507,7 +1507,7 @@ func (c OauthClient) UpdateSubtaskPosition(subTaskPosition Position) (*Position,
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/subtask_positions/%d", apiUrl, subTaskPosition.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/subtask_positions/%d", apiURL, subTaskPosition.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1532,7 +1532,7 @@ func (c OauthClient) UpdateSubtaskPosition(subTaskPosition Position) (*Position,
 }
 
 func (c OauthClient) Memberships() (*[]Membership, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships", apiUrl))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships", apiURL))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1557,7 +1557,7 @@ func (c OauthClient) Memberships() (*[]Membership, error) {
 }
 
 func (c OauthClient) Membership(membershipID uint) (*Membership, error) {
-	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships/%d", apiUrl, membershipID))
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships/%d", apiURL, membershipID))
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1589,7 +1589,7 @@ func (c OauthClient) MembershipsForListID(listID uint) (*[]Membership, error) {
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/memberships?list_id=%d", apiUrl, listID))
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/memberships?list_id=%d", apiURL, listID))
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -1626,7 +1626,7 @@ func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiUrl, userID, listID, muted), nil)
+	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiURL, userID, listID, muted), nil)
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -1663,7 +1663,7 @@ func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiUrl, emailAddress, listID, muted), nil)
+	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiURL, emailAddress, listID, muted), nil)
 
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
@@ -1694,7 +1694,7 @@ func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
 		return nil, err
 	}
 
-	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/memberships/%d", apiUrl, membership.ID), body)
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/memberships/%d", apiURL, membership.ID), body)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -1719,7 +1719,7 @@ func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
 }
 
 func (c OauthClient) RejectInvite(membership Membership) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision))
 
 	if err != nil {
 		return err
@@ -1738,7 +1738,7 @@ func (c OauthClient) RejectInvite(membership Membership) error {
 }
 
 func (c OauthClient) RemoveMemberFromList(membership Membership) error {
-	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision))
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision))
 
 	if err != nil {
 		return err

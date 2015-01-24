@@ -42,7 +42,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 		})
 
 		It("performs GET requests to /subtask_positions?list_id=%d", func() {
-			expectedUrl := fmt.Sprintf("%s/subtask_positions?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/subtask_positions?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Position{}, nil)
 			client.SubtaskPositionsForListID(listID)
@@ -158,7 +158,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 		})
 
 		It("performs GET requests to /subtask_positions?task_id=%d", func() {
-			expectedUrl := fmt.Sprintf("%s/subtask_positions?task_id=%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/subtask_positions?task_id=%d", apiURL, taskID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Position{}, nil)
 			client.SubtaskPositionsForTaskID(taskID)
@@ -257,7 +257,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 
 	Describe("getting subTaskPosition by ID", func() {
 		taskPositionID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/subtask_positions/%d", apiUrl, taskPositionID)
+		expectedUrl := fmt.Sprintf("%s/subtask_positions/%d", apiURL, taskPositionID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -373,7 +373,7 @@ var _ = Describe("Client - Subtask position operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Position{}, nil)
-			expectedUrl := fmt.Sprintf("%s/subtask_positions/%d", apiUrl, subTaskPosition.ID)
+			expectedUrl := fmt.Sprintf("%s/subtask_positions/%d", apiURL, subTaskPosition.ID)
 
 			client.UpdateSubtaskPosition(subTaskPosition)
 

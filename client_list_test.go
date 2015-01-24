@@ -31,7 +31,7 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		It("performs GET requests to /lists", func() {
-			expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/lists", apiURL)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.List{}, nil)
 			client.Lists()
@@ -130,7 +130,7 @@ var _ = Describe("Client - List operations", func() {
 
 	Describe("getting list by ID", func() {
 		listID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, listID)
+		expectedUrl := fmt.Sprintf("%s/lists/%d", apiURL, listID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -234,7 +234,7 @@ var _ = Describe("Client - List operations", func() {
 
 	Describe("getting a list's task count", func() {
 		listID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiUrl, listID)
+		expectedUrl := fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiURL, listID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -345,7 +345,7 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		It("performs POST requests to /lists with new list title in body", func() {
-			expectedUrl := fmt.Sprintf("%s/lists", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/lists", apiURL)
 			expectedBody := []byte(fmt.Sprintf(`{"title":"%s"}`, listTitle))
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.List{}, nil)
@@ -458,7 +458,7 @@ var _ = Describe("Client - List operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.List{}, nil)
-			expectedUrl := fmt.Sprintf("%s/lists/%d", apiUrl, list.ID)
+			expectedUrl := fmt.Sprintf("%s/lists/%d", apiURL, list.ID)
 
 			client.UpdateList(list)
 
@@ -581,7 +581,7 @@ var _ = Describe("Client - List operations", func() {
 		})
 
 		It("performs DELETE requests to /lists/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/lists/%d?revision=%d", apiUrl, list.ID, list.Revision)
+			expectedUrl := fmt.Sprintf("%s/lists/%d?revision=%d", apiURL, list.ID, list.Revision)
 
 			client.DeleteList(list)
 

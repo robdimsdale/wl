@@ -42,7 +42,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 
 		It("performs GET requests to /reminders?list_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/reminders?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/reminders?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Reminder{}, nil)
 			client.RemindersForListID(listID)
@@ -159,7 +159,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 
 		It("performs GET requests to /reminders?task_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/reminders?task_id=%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/reminders?task_id=%d", apiURL, taskID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Reminder{}, nil)
 			client.RemindersForTaskID(taskID)
@@ -266,7 +266,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 
 		It("performs GET requests to /reminders/:id", func() {
-			expectedUrl := fmt.Sprintf("%s/reminders/%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/reminders/%d", apiURL, taskID)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Reminder{}, nil)
 			client.Reminder(taskID)
 
@@ -374,7 +374,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 
 		It("performs POST requests to /reminders with new list title in body", func() {
-			expectedUrl := fmt.Sprintf("%s/reminders", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/reminders", apiURL)
 			expectedBody := []byte(fmt.Sprintf(`{"date":"%s","task_id":%d,"created_by_device_udid":%s}`, reminderDate, taskID, createdByDeviceUdid))
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Reminder{}, nil)
@@ -553,7 +553,7 @@ var _ = Describe("Client - Reminder operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Reminder{}, nil)
-			expectedUrl := fmt.Sprintf("%s/reminders/%d", apiUrl, Reminder.ID)
+			expectedUrl := fmt.Sprintf("%s/reminders/%d", apiURL, Reminder.ID)
 
 			client.UpdateReminder(Reminder)
 
@@ -676,7 +676,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 
 		It("performs DELETE requests to /reminders/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/reminders/%d?revision=%d", apiUrl, reminder.ID, reminder.Revision)
+			expectedUrl := fmt.Sprintf("%s/reminders/%d?revision=%d", apiURL, reminder.ID, reminder.Revision)
 
 			client.DeleteReminder(reminder)
 

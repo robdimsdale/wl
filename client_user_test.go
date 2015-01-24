@@ -31,7 +31,7 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		It("performs GET requests to /user", func() {
-			expectedUrl := fmt.Sprintf("%s/user", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/user", apiURL)
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.User{}, nil)
 			client.User()
@@ -138,7 +138,7 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		It("performs PUT requests with new username to /user", func() {
-			expectedUrl := fmt.Sprintf("%s/user", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/user", apiURL)
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.User{}, nil)
 			expectedBody := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
@@ -234,7 +234,7 @@ var _ = Describe("Client - User operations", func() {
 		})
 
 		Context("when ListID is not provided", func() {
-			expectedUrl := fmt.Sprintf("%s/users", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/users", apiURL)
 
 			It("performs GET requests to /users", func() {
 				fakeJSONHelper.UnmarshalReturns(&[]wundergo.User{}, nil)
@@ -247,7 +247,7 @@ var _ = Describe("Client - User operations", func() {
 
 		Context("when ListID == 0", func() {
 			listID := uint(0)
-			expectedUrl := fmt.Sprintf("%s/users", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/users", apiURL)
 
 			It("performs GET requests to /users", func() {
 				fakeJSONHelper.UnmarshalReturns(&[]wundergo.User{}, nil)
@@ -260,7 +260,7 @@ var _ = Describe("Client - User operations", func() {
 
 		Context("when listID > 0", func() {
 			listID := uint(12345)
-			expectedUrl := fmt.Sprintf("%s/users?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/users?list_id=%d", apiURL, listID)
 
 			It("performs GET requests to /users with list_id param", func() {
 				fakeJSONHelper.UnmarshalReturns(&[]wundergo.User{}, nil)

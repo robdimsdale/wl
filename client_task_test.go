@@ -42,7 +42,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs GET requests to /tasks?list_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/tasks?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/tasks?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Task{}, nil)
 			client.TasksForListID(listID)
@@ -160,7 +160,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs GET requests to /tasks?list_id=:id&completed=:completed", func() {
-			expectedUrl := fmt.Sprintf("%s/tasks?list_id=%d&completed=%t", apiUrl, listID, completed)
+			expectedUrl := fmt.Sprintf("%s/tasks?list_id=%d&completed=%t", apiURL, listID, completed)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Task{}, nil)
 			client.CompletedTasksForListID(listID, completed)
@@ -267,7 +267,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs GET requests to /tasks/:id", func() {
-			expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/tasks/%d", apiURL, taskID)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
 			client.Task(taskID)
 
@@ -386,7 +386,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs POST requests to /tasks with JSONHelper-serialized body", func() {
-			expectedUrl := fmt.Sprintf("%s/tasks", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/tasks", apiURL)
 			expectedBody := []byte("some request body")
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 
@@ -692,7 +692,7 @@ var _ = Describe("Client - Task operations", func() {
 
 		Describe("during initial GET request", func() {
 			It("performs GET request to /tasks/:id", func() {
-				expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, task.ID)
+				expectedUrl := fmt.Sprintf("%s/tasks/%d", apiURL, task.ID)
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
 				client.UpdateTask(task)
 
@@ -1144,7 +1144,7 @@ var _ = Describe("Client - Task operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Task{}, nil)
-			expectedUrl := fmt.Sprintf("%s/tasks/%d", apiUrl, task.ID)
+			expectedUrl := fmt.Sprintf("%s/tasks/%d", apiURL, task.ID)
 
 			client.UpdateTask(task)
 
@@ -1285,7 +1285,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 
 		It("performs DELETE requests to /tasks/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/tasks/%d?revision=%d", apiUrl, task.ID, task.Revision)
+			expectedUrl := fmt.Sprintf("%s/tasks/%d?revision=%d", apiURL, task.ID, task.Revision)
 
 			client.DeleteTask(task)
 

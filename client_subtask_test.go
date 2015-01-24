@@ -42,7 +42,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs GET requests to /subtasks?list_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/subtasks?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Subtask{}, nil)
 			client.SubtasksForListID(listID)
@@ -159,7 +159,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs GET requests to /subtasks?task_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks?task_id=%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/subtasks?task_id=%d", apiURL, taskID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Subtask{}, nil)
 			client.SubtasksForTaskID(taskID)
@@ -277,7 +277,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs GET requests to /subtasks?list_id=:id&completed=:completed", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks?list_id=%d&completed=%t", apiUrl, listID, completed)
+			expectedUrl := fmt.Sprintf("%s/subtasks?list_id=%d&completed=%t", apiURL, listID, completed)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Subtask{}, nil)
 			client.CompletedSubtasksForListID(listID, completed)
@@ -395,7 +395,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs GET requests to /subtasks?task_id=:id&completed=:completed", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks?task_id=%d&completed=%t", apiUrl, taskID, completed)
+			expectedUrl := fmt.Sprintf("%s/subtasks?task_id=%d&completed=%t", apiURL, taskID, completed)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Subtask{}, nil)
 			client.CompletedSubtasksForTaskID(taskID, completed)
@@ -502,7 +502,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs GET requests to /subtasks/:id", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks/%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/subtasks/%d", apiURL, taskID)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Subtask{}, nil)
 			client.Subtask(taskID)
 
@@ -611,7 +611,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs POST requests to /subtasks with new list title in body", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/subtasks", apiURL)
 			expectedBody := []byte(fmt.Sprintf(`{"title":"%s","task_id":%d,"completed":%t}`, subtaskTitle, taskID, completed))
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Subtask{}, nil)
@@ -765,7 +765,7 @@ var _ = Describe("Client - Subtask operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Subtask{}, nil)
-			expectedUrl := fmt.Sprintf("%s/subtasks/%d", apiUrl, subtask.ID)
+			expectedUrl := fmt.Sprintf("%s/subtasks/%d", apiURL, subtask.ID)
 
 			client.UpdateSubtask(subtask)
 
@@ -888,7 +888,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 
 		It("performs DELETE requests to /subtasks/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/subtasks/%d?revision=%d", apiUrl, subtask.ID, subtask.Revision)
+			expectedUrl := fmt.Sprintf("%s/subtasks/%d?revision=%d", apiURL, subtask.ID, subtask.Revision)
 
 			client.DeleteSubtask(subtask)
 

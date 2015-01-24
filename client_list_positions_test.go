@@ -31,7 +31,7 @@ var _ = Describe("Client - List position operations", func() {
 		})
 
 		It("performs GET requests to /list_positions", func() {
-			expectedUrl := fmt.Sprintf("%s/list_positions", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/list_positions", apiURL)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Position{}, nil)
 			client.ListPositions()
@@ -130,7 +130,7 @@ var _ = Describe("Client - List position operations", func() {
 
 	Describe("getting listPosition by ID", func() {
 		listPositionID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/list_positions/%d", apiUrl, listPositionID)
+		expectedUrl := fmt.Sprintf("%s/list_positions/%d", apiURL, listPositionID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -246,7 +246,7 @@ var _ = Describe("Client - List position operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Position{}, nil)
-			expectedUrl := fmt.Sprintf("%s/list_positions/%d", apiUrl, listPosition.ID)
+			expectedUrl := fmt.Sprintf("%s/list_positions/%d", apiURL, listPosition.ID)
 
 			client.UpdateListPosition(listPosition)
 

@@ -42,7 +42,7 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 
 		It("performs GET requests to /memberships?list_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/memberships?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/memberships?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Membership{}, nil)
 			client.MembershipsForListID(listID)
@@ -148,7 +148,7 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 
 		It("performs GET requests to /memberships", func() {
-			expectedUrl := fmt.Sprintf("%s/memberships", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/memberships", apiURL)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Membership{}, nil)
 			client.Memberships()
@@ -248,7 +248,7 @@ var _ = Describe("Client - Membership operations", func() {
 
 	Describe("getting membership by ID", func() {
 		membershipID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/memberships/%d", apiUrl, membershipID)
+		expectedUrl := fmt.Sprintf("%s/memberships/%d", apiURL, membershipID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -364,7 +364,7 @@ var _ = Describe("Client - Membership operations", func() {
 			})
 
 			It("performs POST requests to /memberships?user_id=:userID&list_id=:listID&muted=:muted", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiUrl, userID, listID, muted)
+				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiURL, userID, listID, muted)
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
 				client.AddMemberToListViaUserID(userID, listID, muted)
@@ -491,7 +491,7 @@ var _ = Describe("Client - Membership operations", func() {
 			})
 
 			It("performs POST requests to /memberships?email=:emailAddress&list_id=:listID&muted=:muted", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiUrl, emailAddress, listID, muted)
+				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiURL, emailAddress, listID, muted)
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
 				client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
@@ -625,7 +625,7 @@ var _ = Describe("Client - Membership operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
-			expectedUrl := fmt.Sprintf("%s/memberships/%d", apiUrl, membership.ID)
+			expectedUrl := fmt.Sprintf("%s/memberships/%d", apiURL, membership.ID)
 
 			client.AcceptMember(membership)
 
@@ -748,7 +748,7 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 
 		It("performs DELETE requests to /memberships/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision)
+			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision)
 
 			client.RejectInvite(membership)
 
@@ -832,7 +832,7 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 
 		It("performs DELETE requests to /memberships/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision)
+			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision)
 
 			client.RemoveMemberFromList(membership)
 

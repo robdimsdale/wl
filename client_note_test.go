@@ -42,7 +42,7 @@ var _ = Describe("Client - Note operations", func() {
 		})
 
 		It("performs GET requests to /notes?list_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/notes?list_id=%d", apiUrl, listID)
+			expectedUrl := fmt.Sprintf("%s/notes?list_id=%d", apiURL, listID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Note{}, nil)
 			client.NotesForListID(listID)
@@ -159,7 +159,7 @@ var _ = Describe("Client - Note operations", func() {
 		})
 
 		It("performs GET requests to /notes?task_id=:id", func() {
-			expectedUrl := fmt.Sprintf("%s/notes?task_id=%d", apiUrl, taskID)
+			expectedUrl := fmt.Sprintf("%s/notes?task_id=%d", apiURL, taskID)
 
 			fakeJSONHelper.UnmarshalReturns(&[]wundergo.Note{}, nil)
 			client.NotesForTaskID(taskID)
@@ -259,7 +259,7 @@ var _ = Describe("Client - Note operations", func() {
 
 	Describe("getting note by ID", func() {
 		noteID := uint(1)
-		expectedUrl := fmt.Sprintf("%s/notes/%d", apiUrl, noteID)
+		expectedUrl := fmt.Sprintf("%s/notes/%d", apiURL, noteID)
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK
@@ -371,7 +371,7 @@ var _ = Describe("Client - Note operations", func() {
 		})
 
 		It("performs POST requests to /notes with new note content in body", func() {
-			expectedUrl := fmt.Sprintf("%s/notes", apiUrl)
+			expectedUrl := fmt.Sprintf("%s/notes", apiURL)
 			expectedBody := []byte(fmt.Sprintf(`{"content":"%s","task_id":%d}`, noteContent, taskID))
 
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Note{}, nil)
@@ -494,7 +494,7 @@ var _ = Describe("Client - Note operations", func() {
 			expectedBody := []byte{}
 			fakeJSONHelper.MarshalReturns(expectedBody, nil)
 			fakeJSONHelper.UnmarshalReturns(&wundergo.Note{}, nil)
-			expectedUrl := fmt.Sprintf("%s/notes/%d", apiUrl, note.ID)
+			expectedUrl := fmt.Sprintf("%s/notes/%d", apiURL, note.ID)
 
 			client.UpdateNote(note)
 
@@ -617,7 +617,7 @@ var _ = Describe("Client - Note operations", func() {
 		})
 
 		It("performs DELETE requests to /notes/:id?revision=:revision", func() {
-			expectedUrl := fmt.Sprintf("%s/notes/%d?revision=%d", apiUrl, note.ID, note.Revision)
+			expectedUrl := fmt.Sprintf("%s/notes/%d?revision=%d", apiURL, note.ID, note.Revision)
 
 			client.DeleteNote(note)
 
