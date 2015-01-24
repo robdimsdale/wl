@@ -352,6 +352,7 @@ var _ = Describe("Client - Membership operations", func() {
 
 	Describe("adding member to a list", func() {
 		listID := uint(1)
+		muted := true
 
 		Describe("using userID", func() {
 
@@ -362,11 +363,11 @@ var _ = Describe("Client - Membership operations", func() {
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
 			})
 
-			It("performs POST requests to /memberships?user_id=:userID&list_id=:listID", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d", apiUrl, userID, listID)
+			It("performs POST requests to /memberships?user_id=:userID&list_id=:listID&muted=:muted", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiUrl, userID, listID, muted)
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
-				client.AddMemberToListViaUserID(userID, listID)
+				client.AddMemberToListViaUserID(userID, listID, muted)
 
 				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
 				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
@@ -377,7 +378,7 @@ var _ = Describe("Client - Membership operations", func() {
 				userID := uint(0)
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -387,7 +388,7 @@ var _ = Describe("Client - Membership operations", func() {
 				listID := uint(0)
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -401,7 +402,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -413,7 +414,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -426,7 +427,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -442,7 +443,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -456,7 +457,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaUserID(userID, listID)
+					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -472,7 +473,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns the unmarshalled note without error", func() {
-					note, err := client.AddMemberToListViaUserID(userID, listID)
+					note, err := client.AddMemberToListViaUserID(userID, listID, muted)
 
 					Expect(err).To(BeNil())
 					Expect(note).To(Equal(expectedMembership))
@@ -489,11 +490,11 @@ var _ = Describe("Client - Membership operations", func() {
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
 			})
 
-			It("performs POST requests to /memberships?email=:emailAddress&list_id=:listID", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d", apiUrl, emailAddress, listID)
+			It("performs POST requests to /memberships?email=:emailAddress&list_id=:listID&muted=:muted", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiUrl, emailAddress, listID, muted)
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
-				client.AddMemberToListViaEmailAddress(emailAddress, listID)
+				client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
 				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
@@ -504,7 +505,7 @@ var _ = Describe("Client - Membership operations", func() {
 				userID := ""
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(userID, listID)
+					_, err := client.AddMemberToListViaEmailAddress(userID, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -514,7 +515,7 @@ var _ = Describe("Client - Membership operations", func() {
 				listID := uint(0)
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -528,7 +529,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -540,7 +541,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -553,7 +554,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns an error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(HaveOccurred())
 				})
@@ -569,7 +570,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -583,7 +584,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("forwards the error", func() {
-					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(Equal(expectedError))
 				})
@@ -599,7 +600,7 @@ var _ = Describe("Client - Membership operations", func() {
 				})
 
 				It("returns the unmarshalled note without error", func() {
-					note, err := client.AddMemberToListViaEmailAddress(emailAddress, listID)
+					note, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 					Expect(err).To(BeNil())
 					Expect(note).To(Equal(expectedMembership))

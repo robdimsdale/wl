@@ -7,6 +7,8 @@ import (
 )
 
 var _ = Describe("Basic membership functionality", func() {
+	muted := true
+
 	It("can add members via userID", func() {
 		var lists []wundergo.List
 		Eventually(func() error {
@@ -27,7 +29,7 @@ var _ = Describe("Basic membership functionality", func() {
 		// should return 201. This is odd, but it's the way it works
 
 		Eventually(func() error {
-			_, err := client.AddMemberToListViaUserID(user.ID, list.ID)
+			_, err := client.AddMemberToListViaUserID(user.ID, list.ID, muted)
 			return err
 		}).Should(Succeed())
 	})
@@ -52,7 +54,7 @@ var _ = Describe("Basic membership functionality", func() {
 		// should return 201. This is odd, but it's the way it works
 
 		Eventually(func() error {
-			_, err := client.AddMemberToListViaEmailAddress(user.Email, list.ID)
+			_, err := client.AddMemberToListViaEmailAddress(user.Email, list.ID, muted)
 			return err
 		}).Should(Succeed())
 	})
