@@ -103,6 +103,7 @@ type Client interface {
 	AddMemberToListViaEmailAddress(emailAddress string, listID uint, muted bool) (*Membership, error)
 	RejectInvite(membership Membership) error
 	RemoveMemberFromList(membership Membership) error
+	AcceptMember(membership Membership) (*Membership, error)
 }
 
 type OauthClient struct {
@@ -1671,6 +1672,36 @@ func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	m, err := c.jsonHelper.Unmarshal(b, &Membership{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return m.(*Membership), nil
+}
+
+func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
+	body, err := c.jsonHelper.Marshal(membership)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/memberships/%d", apiUrl, membership.ID), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
 	}
 
 	b, err := c.readResponseBody(resp)

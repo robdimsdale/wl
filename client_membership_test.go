@@ -609,6 +609,133 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 	})
 
+	Describe("marking member as accepted", func() {
+		membership := wundergo.Membership{
+			ID:       1,
+			State:    "accepted",
+			Revision: 1,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
+			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+		})
+
+		It("performs PATCH requests to /memberships/:id", func() {
+			expectedBody := []byte{}
+			fakeJSONHelper.MarshalReturns(expectedBody, nil)
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
+			expectedUrl := fmt.Sprintf("%s/memberships/%d", apiUrl, membership.ID)
+
+			client.AcceptMember(membership)
+
+			Expect(fakeHTTPHelper.PatchCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PatchArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when marshalling note returns an error", func() {
+			expectedError := errors.New("JSONHelper marshal error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.MarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when httpHelper.Patch returns an error", func() {
+			expectedError := errors.New("httpHelper PATCH error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PatchReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.AcceptMember(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedNote := &wundergo.Membership{
+				ID: 1,
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedNote, nil)
+			})
+
+			It("returns the unmarshalled note without error", func() {
+				note, err := client.AcceptMember(membership)
+
+				Expect(err).To(BeNil())
+				Expect(note).To(Equal(expectedNote))
+			})
+		})
+	})
+
 	Describe("rejecting an invite", func() {
 		membership := wundergo.Membership{
 			ID:       1,
