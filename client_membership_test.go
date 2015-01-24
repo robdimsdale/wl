@@ -608,4 +608,172 @@ var _ = Describe("Client - Membership operations", func() {
 			})
 		})
 	})
+
+	Describe("rejecting an invite", func() {
+		membership := wundergo.Membership{
+			ID:       1,
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /memberships/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision)
+
+			client.RejectInvite(membership)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.RejectInvite(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				err := client.RejectInvite(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.RejectInvite(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.RejectInvite(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the note without error", func() {
+				err := client.RejectInvite(membership)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
+
+	Describe("removing a member from a list", func() {
+		membership := wundergo.Membership{
+			ID:       1,
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /memberships/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision)
+
+			client.RemoveMemberFromList(membership)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.RemoveMemberFromList(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				err := client.RemoveMemberFromList(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.RemoveMemberFromList(membership)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.RemoveMemberFromList(membership)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the note without error", func() {
+				err := client.RemoveMemberFromList(membership)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
 })

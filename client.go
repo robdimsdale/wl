@@ -101,6 +101,8 @@ type Client interface {
 	Membership(membershipID uint) (*Membership, error)
 	AddMemberToListViaUserID(userID uint, listID uint, muted bool) (*Membership, error)
 	AddMemberToListViaEmailAddress(emailAddress string, listID uint, muted bool) (*Membership, error)
+	RejectInvite(membership Membership) error
+	RemoveMemberFromList(membership Membership) error
 }
 
 type OauthClient struct {
@@ -1683,4 +1685,42 @@ func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 		return nil, err
 	}
 	return m.(*Membership), nil
+}
+
+func (c OauthClient) RejectInvite(membership Membership) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
+}
+
+func (c OauthClient) RemoveMemberFromList(membership Membership) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiUrl, membership.ID, membership.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }
