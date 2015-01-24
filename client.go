@@ -128,7 +128,7 @@ func (c OauthClient) User() (*User, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -147,7 +147,7 @@ func (c OauthClient) User() (*User, error) {
 
 func (c OauthClient) readResponseBody(resp *http.Response) ([]byte, error) {
 	if resp.Body == nil {
-		return nil, errors.New(fmt.Sprintf("Nil body on http response: %v", resp))
+		return nil, fmt.Errorf("Nil body on http response: %v", resp)
 	}
 
 	defer resp.Body.Close()
@@ -201,7 +201,7 @@ func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -226,7 +226,7 @@ func (c OauthClient) Lists() (*[]List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -251,7 +251,7 @@ func (c OauthClient) List(listID uint) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -276,7 +276,7 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -303,7 +303,7 @@ func (c OauthClient) CreateList(title string) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -333,7 +333,7 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -358,7 +358,7 @@ func (c OauthClient) DeleteList(list List) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -385,7 +385,7 @@ func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -418,7 +418,7 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -443,7 +443,7 @@ func (c OauthClient) Note(noteID uint) (*Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -475,7 +475,7 @@ func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -505,7 +505,7 @@ func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -530,7 +530,7 @@ func (c OauthClient) DeleteNote(note Note) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -557,7 +557,7 @@ func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -590,7 +590,7 @@ func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Ta
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -615,7 +615,7 @@ func (c OauthClient) Task(taskID uint) (*Task, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -710,7 +710,7 @@ func (c OauthClient) CreateTask(
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -792,7 +792,7 @@ func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -817,7 +817,7 @@ func (c OauthClient) DeleteTask(task Task) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -844,7 +844,7 @@ func (c OauthClient) SubtasksForListID(listID uint) (*[]Subtask, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -877,7 +877,7 @@ func (c OauthClient) SubtasksForTaskID(taskID uint) (*[]Subtask, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -910,7 +910,7 @@ func (c OauthClient) CompletedSubtasksForListID(listID uint, completed bool) (*[
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -943,7 +943,7 @@ func (c OauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) (*[
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -968,7 +968,7 @@ func (c OauthClient) Subtask(subtaskID uint) (*Subtask, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1004,7 +1004,7 @@ func (c OauthClient) CreateSubtask(
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1034,7 +1034,7 @@ func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1059,7 +1059,7 @@ func (c OauthClient) DeleteSubtask(subtask Subtask) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -1086,7 +1086,7 @@ func (c OauthClient) RemindersForListID(listID uint) (*[]Reminder, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1119,7 +1119,7 @@ func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1144,7 +1144,7 @@ func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1185,7 +1185,7 @@ func (c OauthClient) CreateReminder(
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1215,7 +1215,7 @@ func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1240,7 +1240,7 @@ func (c OauthClient) DeleteReminder(reminder Reminder) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -1259,7 +1259,7 @@ func (c OauthClient) ListPositions() (*[]Position, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1284,7 +1284,7 @@ func (c OauthClient) ListPosition(listPositionID uint) (*Position, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1314,7 +1314,7 @@ func (c OauthClient) UpdateListPosition(listPosition Position) (*Position, error
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1344,7 +1344,7 @@ func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1369,7 +1369,7 @@ func (c OauthClient) TaskPosition(taskPositionID uint) (*Position, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1399,7 +1399,7 @@ func (c OauthClient) UpdateTaskPosition(taskPosition Position) (*Position, error
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1429,7 +1429,7 @@ func (c OauthClient) SubtaskPositionsForListID(listID uint) (*[]Position, error)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1459,7 +1459,7 @@ func (c OauthClient) SubtaskPositionsForTaskID(taskID uint) (*[]Position, error)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1484,7 +1484,7 @@ func (c OauthClient) SubtaskPosition(subTaskPositionID uint) (*Position, error) 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1514,7 +1514,7 @@ func (c OauthClient) UpdateSubtaskPosition(subTaskPosition Position) (*Position,
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1539,7 +1539,7 @@ func (c OauthClient) Memberships() (*[]Membership, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1564,7 +1564,7 @@ func (c OauthClient) Membership(membershipID uint) (*Membership, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1597,7 +1597,7 @@ func (c OauthClient) MembershipsForListID(listID uint) (*[]Membership, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1634,7 +1634,7 @@ func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1671,7 +1671,7 @@ func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1701,7 +1701,7 @@ func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK))
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	b, err := c.readResponseBody(resp)
@@ -1726,7 +1726,7 @@ func (c OauthClient) RejectInvite(membership Membership) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
@@ -1745,7 +1745,7 @@ func (c OauthClient) RemoveMemberFromList(membership Membership) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent))
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
 	}
 
 	_, err = c.readResponseBody(resp)
