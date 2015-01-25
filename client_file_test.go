@@ -361,4 +361,87 @@ var _ = Describe("Client - File operations", func() {
 		})
 	})
 
+	Describe("destroying a file", func() {
+		file := wundergo.File{
+			ID:       1,
+			Revision: 3,
+		}
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusNoContent
+			fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+		})
+
+		It("performs DELETE requests to /files/:id?revision=:revision", func() {
+			expectedUrl := fmt.Sprintf("%s/files/%d?revision=%d", apiURL, file.ID, file.Revision)
+
+			client.DestroyFile(file)
+
+			Expect(fakeHTTPHelper.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHTTPHelper.DeleteArgsForCall(0)).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Delete returns an error", func() {
+			expectedError := errors.New("httpHelper DELETE error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.DeleteReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				err := client.DestroyFile(file)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				err := client.DestroyFile(file)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				err := client.DestroyFile(file)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.DeleteReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				err := client.DestroyFile(file)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			It("deletes the note without error", func() {
+				err := client.DestroyFile(file)
+
+				Expect(err).To(BeNil())
+			})
+		})
+	})
 })

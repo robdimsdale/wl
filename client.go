@@ -108,6 +108,7 @@ type Client interface {
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
 	File(fileID uint) (*File, error)
+	DestroyFile(file File) error
 	CreateUpload(
 		contentType string,
 		fileName string,
@@ -2006,4 +2007,23 @@ func (c OauthClient) ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum st
 		return nil, err
 	}
 	return u.(*Upload), nil
+}
+
+func (c OauthClient) DestroyFile(file File) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/files/%d?revision=%d", apiURL, file.ID, file.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
 }
