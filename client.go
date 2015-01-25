@@ -108,6 +108,8 @@ type Client interface {
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
 	File(fileID uint) (*File, error)
+
+	FilePreview(fileID uint) (*FilePreview, error)
 }
 
 type OauthClient struct {
@@ -1843,10 +1845,35 @@ func (c OauthClient) File(fileID uint) (*File, error) {
 		return nil, err
 	}
 
-	n, err := c.jsonHelper.Unmarshal(b, &File{})
+	f, err := c.jsonHelper.Unmarshal(b, &File{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
 	}
-	return n.(*File), nil
+	return f.(*File), nil
+}
+
+func (c OauthClient) FilePreview(fileID uint) (*FilePreview, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/previews?file_id=%d", apiURL, fileID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	f, err := c.jsonHelper.Unmarshal(b, &FilePreview{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return f.(*FilePreview), nil
 }

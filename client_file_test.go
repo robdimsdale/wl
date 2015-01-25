@@ -266,7 +266,7 @@ var _ = Describe("Client - File operations", func() {
 			fakeHTTPHelper.GetReturns(dummyResponse, nil)
 		})
 
-		It("performs GET requests to /notes/:id", func() {
+		It("performs GET requests to /files/:id", func() {
 			fakeJSONHelper.UnmarshalReturns(&wundergo.File{}, nil)
 			client.File(fileID)
 
@@ -344,19 +344,19 @@ var _ = Describe("Client - File operations", func() {
 		})
 
 		Context("when valid response is received", func() {
-			expectedNote := &wundergo.File{
+			expectedFile := &wundergo.File{
 				URL: "testy",
 			}
 
 			BeforeEach(func() {
-				fakeJSONHelper.UnmarshalReturns(expectedNote, nil)
+				fakeJSONHelper.UnmarshalReturns(expectedFile, nil)
 			})
 
-			It("returns the unmarshalled note without error", func() {
+			It("returns the unmarshalled file without error", func() {
 				file, err := client.File(fileID)
 
 				Expect(err).To(BeNil())
-				Expect(file).To(Equal(expectedNote))
+				Expect(file).To(Equal(expectedFile))
 			})
 		})
 	})
