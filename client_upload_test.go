@@ -341,6 +341,114 @@ var _ = Describe("Client - Upload operations", func() {
 				Expect(upload).To(Equal(expectedUpload))
 			})
 		})
-
 	})
+
+	Describe("marking upload complete", func() {
+		uploadID := uint(1)
+
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusOK
+			fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+		})
+
+		It("performs PATCH requests to /uploads/:id?state=finished", func() {
+			expectedBody := []byte{}
+			fakeJSONHelper.MarshalReturns(expectedBody, nil)
+			fakeJSONHelper.UnmarshalReturns(&wundergo.Upload{}, nil)
+			expectedUrl := fmt.Sprintf("%s/uploads/%d?state=finished", apiURL, uploadID)
+
+			client.MarkUploadComplete(uploadID)
+
+			Expect(fakeHTTPHelper.PatchCallCount()).To(Equal(1))
+			arg0, _ := fakeHTTPHelper.PatchArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+		})
+
+		Context("when httpHelper.Patch returns an error", func() {
+			expectedError := errors.New("httpHelper PATCH error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PatchReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PatchReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedNote := &wundergo.Upload{
+				State: "finished",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedNote, nil)
+			})
+
+			It("returns the unmarshalled note without error", func() {
+				upload, err := client.MarkUploadComplete(uploadID)
+
+				Expect(err).To(BeNil())
+				Expect(upload).To(Equal(expectedNote))
+			})
+		})
+	})
+
 })
