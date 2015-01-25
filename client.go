@@ -108,6 +108,13 @@ type Client interface {
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
 	File(fileID uint) (*File, error)
+	CreateUpload(
+		contentType string,
+		fileName string,
+		fileSize uint,
+		partNumber uint,
+		md5Sum string,
+	) (*Upload, error)
 
 	FilePreview(fileID uint) (*FilePreview, error)
 }
@@ -1876,4 +1883,60 @@ func (c OauthClient) FilePreview(fileID uint) (*FilePreview, error) {
 		return nil, err
 	}
 	return f.(*FilePreview), nil
+}
+
+func (c OauthClient) CreateUpload(
+	contentType string,
+	fileName string,
+	fileSize uint,
+	partNumber uint,
+	md5Sum string,
+) (*Upload, error) {
+
+	var body []byte
+
+	if contentType == "" {
+		return nil, errors.New("contentType must not be empty")
+	}
+
+	if fileName == "" {
+		return nil, errors.New("fileName must not be empty")
+	}
+
+	if fileSize == 0 {
+		return nil, errors.New("fileSize must be non-zero")
+	}
+
+	url := fmt.Sprintf("%s/uploads?content_type=%s&file_name=%s&file_size=%d", apiURL, contentType, fileName, fileSize)
+
+	if partNumber != 0 {
+		url = fmt.Sprintf("%s&part_number=%d", url, partNumber)
+	}
+
+	if md5Sum != "" {
+		url = fmt.Sprintf("%s&md5_sum=%s", url, md5Sum)
+	}
+
+	resp, err := c.httpHelper.Post(url, body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	u, err := c.jsonHelper.Unmarshal(b, &Upload{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return u.(*Upload), nil
 }
