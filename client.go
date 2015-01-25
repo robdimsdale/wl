@@ -107,6 +107,7 @@ type Client interface {
 
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
+	File(fileID uint) (*File, error)
 }
 
 type OauthClient struct {
@@ -1823,4 +1824,29 @@ func (c OauthClient) FilesForTaskID(taskID uint) (*[]File, error) {
 		return nil, err
 	}
 	return f.(*[]File), nil
+}
+
+func (c OauthClient) File(fileID uint) (*File, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/files/%d", apiURL, fileID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &File{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*File), nil
 }
