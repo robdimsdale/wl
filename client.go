@@ -104,6 +104,9 @@ type Client interface {
 	RejectInvite(membership Membership) error
 	RemoveMemberFromList(membership Membership) error
 	AcceptMember(membership Membership) (*Membership, error)
+
+	FilesForListID(listID uint) (*[]File, error)
+	FilesForTaskID(taskID uint) (*[]File, error)
 }
 
 type OauthClient struct {
@@ -1754,4 +1757,70 @@ func (c OauthClient) RemoveMemberFromList(membership Membership) error {
 		return err
 	}
 	return nil
+}
+
+func (c OauthClient) FilesForListID(listID uint) (*[]File, error) {
+	var resp *http.Response
+	var err error
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/files?list_id=%d", apiURL, listID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	f, err := c.jsonHelper.Unmarshal(b, &[]File{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return f.(*[]File), nil
+}
+
+func (c OauthClient) FilesForTaskID(taskID uint) (*[]File, error) {
+	var resp *http.Response
+	var err error
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/files?task_id=%d", apiURL, taskID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	f, err := c.jsonHelper.Unmarshal(b, &[]File{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return f.(*[]File), nil
 }
