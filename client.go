@@ -115,6 +115,7 @@ type Client interface {
 		partNumber uint,
 		md5Sum string,
 	) (*Upload, error)
+	ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum string) (*Upload, error)
 	MarkUploadComplete(uploadID uint) (*Upload, error)
 
 	FilePreview(fileID uint) (*FilePreview, error)
@@ -1944,6 +1945,46 @@ func (c OauthClient) CreateUpload(
 
 func (c OauthClient) MarkUploadComplete(uploadID uint) (*Upload, error) {
 	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/uploads/%d?state=finished", apiURL, uploadID), nil)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	u, err := c.jsonHelper.Unmarshal(b, &Upload{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return u.(*Upload), nil
+}
+
+func (c OauthClient) ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum string) (*Upload, error) {
+
+	if uploadID == 0 {
+		return nil, errors.New("uploadID must be non-zero")
+	}
+
+	if partNumber == 0 {
+		return nil, errors.New("partNumber must be non-zero")
+	}
+
+	url := fmt.Sprintf("%s/uploads/%d/parts?part_number=%d", apiURL, uploadID, partNumber)
+
+	if md5Sum != "" {
+		url = fmt.Sprintf("%s&md5_sum=%s", url, md5Sum)
+	}
+
+	resp, err := c.httpHelper.Get(url)
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
