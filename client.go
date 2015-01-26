@@ -108,6 +108,7 @@ type Client interface {
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
 	File(fileID uint) (*File, error)
+	CreateFile(uploadID uint, taskID uint, localCreatedAt string) (*File, error)
 	DestroyFile(file File) error
 	CreateUpload(
 		contentType string,
@@ -2026,4 +2027,44 @@ func (c OauthClient) DestroyFile(file File) error {
 		return err
 	}
 	return nil
+}
+
+func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt string) (*File, error) {
+
+	if uploadID == 0 {
+		return nil, errors.New("uploadID must be > 0")
+	}
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
+	url := fmt.Sprintf("%s/files?upload_id=%d&task_id=%d", apiURL, uploadID, taskID)
+
+	if localCreatedAt != "" {
+		url = fmt.Sprintf("%s&local_created_at=%s", url, localCreatedAt)
+	}
+
+	resp, err := c.httpHelper.Post(url, nil)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	f, err := c.jsonHelper.Unmarshal(b, &File{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return f.(*File), nil
 }

@@ -361,6 +361,168 @@ var _ = Describe("Client - File operations", func() {
 		})
 	})
 
+	Describe("creating a file", func() {
+		var uploadID uint
+		var taskID uint
+		var localCreatedAt string
+
+		BeforeEach(func() {
+			uploadID = 1
+			taskID = 1
+			localCreatedAt = ""
+
+			dummyResponse.StatusCode = http.StatusCreated
+			fakeHTTPHelper.PostReturns(dummyResponse, nil)
+		})
+
+		It("performs POST requests to /files?upload_id=:uploadID&task_id=:taskID", func() {
+			expectedUrl := fmt.Sprintf("%s/files?upload_id=%d&task_id=%d", apiURL, uploadID, taskID)
+
+			fakeJSONHelper.UnmarshalReturns(&wundergo.File{}, nil)
+			client.CreateFile(uploadID, taskID, localCreatedAt)
+
+			Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+			arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+		})
+
+		Context("when uploadID == 0", func() {
+			uploadID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when taskID == 0", func() {
+			taskID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when localCreatedAt is empty", func() {
+			It("does not include local_created_at in the url params", func() {
+				expectedUrl := fmt.Sprintf("%s/files?upload_id=%d&task_id=%d", apiURL, uploadID, taskID)
+				fakeJSONHelper.UnmarshalReturns(&wundergo.File{}, nil)
+
+				client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				Expect(arg0).To(Equal(expectedUrl))
+			})
+		})
+
+		Context("when localCreatedAt is not empty", func() {
+			BeforeEach(func() {
+				localCreatedAt = "some_time"
+			})
+
+			It("includes local_created_at in the url params", func() {
+				fakeJSONHelper.UnmarshalReturns(&wundergo.File{}, nil)
+				expectedUrl := fmt.Sprintf("%s/files?upload_id=%d&task_id=%d&local_created_at=%s", apiURL, uploadID, taskID, localCreatedAt)
+
+				client.CreateFile(uploadID, taskID, localCreatedAt)
+				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				Expect(arg0).To(Equal(expectedUrl))
+
+			})
+		})
+
+		Context("when httpHelper.Post returns an error", func() {
+			expectedError := errors.New("httpHelper PATCH error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PostReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.GetReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.GetReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedFile := &wundergo.File{
+				URL: "url",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedFile, nil)
+			})
+
+			It("returns the unmarshalled upload without error", func() {
+				file, err := client.CreateFile(uploadID, taskID, localCreatedAt)
+
+				Expect(err).To(BeNil())
+				Expect(file).To(Equal(expectedFile))
+			})
+		})
+	})
+
 	Describe("destroying a file", func() {
 		file := wundergo.File{
 			ID:       1,
