@@ -1,5 +1,7 @@
 package wundergo
 
+// File contains the information about an uploaded file.
+// See also Upload.
 type File struct {
 	ID             uint   `json:"id"`
 	URL            string `json:"url"`

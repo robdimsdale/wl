@@ -1,5 +1,6 @@
 package wundergo
 
+// List contains information about a List.
 type List struct {
 	ID         uint   `json:"id"`
 	Title      string `json:"title"`

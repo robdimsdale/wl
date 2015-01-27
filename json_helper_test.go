@@ -15,7 +15,7 @@ var _ = Describe("Default JSON Helper", func() {
 	var jsonHelper *wundergo.DefaultJSONHelper
 
 	BeforeEach(func() {
-		jsonHelper = wundergo.NewDefaultJSONHelper()
+		jsonHelper = &wundergo.DefaultJSONHelper{}
 	})
 
 	Describe("Marshal", func() {

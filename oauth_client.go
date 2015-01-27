@@ -11,7 +11,7 @@ import (
 // Isolates the client from logging implementation details.
 // Defaults to return NewPrintlnLogger.
 var NewLogger = func() Logger {
-	return NewPrintlnLogger()
+	return &PrintlnLogger{}
 }
 
 // NewHTTPHelper allows for the injection of an HTTPHelper boundary object.
@@ -25,7 +25,7 @@ var NewHTTPHelper = func(accessToken string, clientID string) HTTPHelper {
 // Isolates the client from JSON marshalling and unmarshalling.
 // Defaults to NewDefaultJSONHelper.
 var NewJSONHelper = func() JSONHelper {
-	return NewDefaultJSONHelper()
+	return &DefaultJSONHelper{}
 }
 
 // OauthClient is an implementation of Client.
@@ -45,6 +45,9 @@ func NewOauthClient(accessToken string, clientID string) *OauthClient {
 	}
 }
 
+// User returns the currently logged in user.
+// This makes it a good method to validate the auth credentials provided
+// in NewOauthClient.
 func (c OauthClient) User() (*User, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/user", apiURL))
 	if err != nil {
@@ -84,6 +87,8 @@ func (c OauthClient) readResponseBody(resp *http.Response) ([]byte, error) {
 	return b, nil
 }
 
+// UpdateUser is a currently undocumented method which updates the provided user.
+// Currently the only field that is updated is user.Name
 func (c OauthClient) UpdateUser(user User) (*User, error) {
 	body := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
 	resp, err := c.httpHelper.Put(fmt.Sprintf("%s/user", apiURL), body)
@@ -106,10 +111,13 @@ func (c OauthClient) UpdateUser(user User) (*User, error) {
 	return u.(*User), nil
 }
 
+// Users returns a list of all users the client can access.
 func (c OauthClient) Users() (*[]User, error) {
 	return c.UsersForListID(0)
 }
 
+// UsersForListID returns a list of users the client can access,
+// restricted to users that have access to the provided list.
 func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	var resp *http.Response
 	var err error
@@ -143,6 +151,7 @@ func (c OauthClient) UsersForListID(listID uint) (*[]User, error) {
 	return u.(*[]User), nil
 }
 
+// Lists returns all lists the client has permission to access.
 func (c OauthClient) Lists() (*[]List, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists", apiURL))
 	if err != nil {
@@ -168,6 +177,7 @@ func (c OauthClient) Lists() (*[]List, error) {
 	return l.(*[]List), nil
 }
 
+// List returns the list for the corresponding listID.
 func (c OauthClient) List(listID uint) (*List, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/%d", apiURL, listID))
 	if err != nil {
@@ -193,6 +203,7 @@ func (c OauthClient) List(listID uint) (*List, error) {
 	return l.(*List), nil
 }
 
+// ListTaskCount returns a ListTaskCount for the corresponding listID.
 func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/lists/tasks_count?list_id=%d", apiURL, listID))
 	if err != nil {
@@ -218,6 +229,7 @@ func (c OauthClient) ListTaskCount(listID uint) (*ListTaskCount, error) {
 	return l.(*ListTaskCount), nil
 }
 
+// CreateList creates a list with the provided title.
 func (c OauthClient) CreateList(title string) (*List, error) {
 	body := []byte(fmt.Sprintf(`{"title":"%s"}`, title))
 
@@ -245,6 +257,7 @@ func (c OauthClient) CreateList(title string) (*List, error) {
 	return l.(*List), nil
 }
 
+// UpdateList updates the provided List.
 func (c OauthClient) UpdateList(list List) (*List, error) {
 	body, err := c.jsonHelper.Marshal(list)
 	if err != nil {
@@ -275,6 +288,7 @@ func (c OauthClient) UpdateList(list List) (*List, error) {
 	return l.(*List), nil
 }
 
+// DeleteList deletes the provided list.
 func (c OauthClient) DeleteList(list List) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/lists/%d?revision=%d", apiURL, list.ID, list.Revision))
 
@@ -294,6 +308,7 @@ func (c OauthClient) DeleteList(list List) error {
 	return nil
 }
 
+// NotesForListID returns Notes for the provided listID.
 func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 	var resp *http.Response
 	var err error
@@ -327,6 +342,7 @@ func (c OauthClient) NotesForListID(listID uint) (*[]Note, error) {
 	return n.(*[]Note), nil
 }
 
+// NotesForTaskID returns Notes for the provided taskID.
 func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 	var resp *http.Response
 	var err error
@@ -360,6 +376,7 @@ func (c OauthClient) NotesForTaskID(taskID uint) (*[]Note, error) {
 	return n.(*[]Note), nil
 }
 
+// Note returns the Note for the corresponding noteID.
 func (c OauthClient) Note(noteID uint) (*Note, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/notes/%d", apiURL, noteID))
 	if err != nil {
@@ -385,6 +402,8 @@ func (c OauthClient) Note(noteID uint) (*Note, error) {
 	return n.(*Note), nil
 }
 
+// CreateNote creates a note with the provided content associated with the
+// Task for the corresponding taskID.
 func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
 
 	if taskID == 0 {
@@ -417,6 +436,7 @@ func (c OauthClient) CreateNote(content string, taskID uint) (*Note, error) {
 	return n.(*Note), nil
 }
 
+// UpdateNote updates the provided Note.
 func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 	body, err := c.jsonHelper.Marshal(note)
 	if err != nil {
@@ -447,6 +467,7 @@ func (c OauthClient) UpdateNote(note Note) (*Note, error) {
 	return n.(*Note), nil
 }
 
+// DeleteNote deletes the provided note.
 func (c OauthClient) DeleteNote(note Note) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/notes/%d?revision=%d", apiURL, note.ID, note.Revision))
 
@@ -466,6 +487,7 @@ func (c OauthClient) DeleteNote(note Note) error {
 	return nil
 }
 
+// TasksForListID returns Tasks for the provided listID.
 func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 	var resp *http.Response
 	var err error
@@ -499,6 +521,7 @@ func (c OauthClient) TasksForListID(listID uint) (*[]Task, error) {
 	return t.(*[]Task), nil
 }
 
+// CompletedTasksForListID returns tasks filtered by whether they are completed.
 func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Task, error) {
 	var resp *http.Response
 	var err error
@@ -532,6 +555,7 @@ func (c OauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]Ta
 	return t.(*[]Task), nil
 }
 
+// Task returns the Task for the corresponding taskID.
 func (c OauthClient) Task(taskID uint) (*Task, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/tasks/%d", apiURL, taskID))
 	if err != nil {
@@ -568,6 +592,7 @@ type taskCreateConfig struct {
 	Starred         bool   `json:"starred,omitempty"`
 }
 
+// TaskUpdateConfig contains information required to update an existing task.
 type TaskUpdateConfig struct {
 	Title           string   `json:"title"`
 	Revision        uint     `json:"revision"`
@@ -592,6 +617,7 @@ func (c OauthClient) validateRecurrence(recurrenceType string, recurrenceCount u
 	return nil
 }
 
+// CreateTask creates a task with the provided parameters.
 func (c OauthClient) CreateTask(
 	title string,
 	listID uint,
@@ -652,6 +678,7 @@ func (c OauthClient) CreateTask(
 	return t.(*Task), nil
 }
 
+// UpdateTask updates the provided Task.
 func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 	err := c.validateRecurrence(task.RecurrenceType, task.RecurrenceCount)
 	if err != nil {
@@ -734,6 +761,7 @@ func (c OauthClient) UpdateTask(task Task) (*Task, error) {
 	return t.(*Task), nil
 }
 
+// DeleteTask deletes the provided Task.
 func (c OauthClient) DeleteTask(task Task) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/tasks/%d?revision=%d", apiURL, task.ID, task.Revision))
 
@@ -753,6 +781,7 @@ func (c OauthClient) DeleteTask(task Task) error {
 	return nil
 }
 
+// SubtasksForListID returns the Subtasks associated with the provided listID.
 func (c OauthClient) SubtasksForListID(listID uint) (*[]Subtask, error) {
 	var resp *http.Response
 	var err error
@@ -786,6 +815,7 @@ func (c OauthClient) SubtasksForListID(listID uint) (*[]Subtask, error) {
 	return s.(*[]Subtask), nil
 }
 
+// SubtasksForTaskID returns the Subtasks associated with the provided taskID.
 func (c OauthClient) SubtasksForTaskID(taskID uint) (*[]Subtask, error) {
 	var resp *http.Response
 	var err error
@@ -819,6 +849,8 @@ func (c OauthClient) SubtasksForTaskID(taskID uint) (*[]Subtask, error) {
 	return s.(*[]Subtask), nil
 }
 
+// CompletedSubtasksForListID returns subtasks for the provided List,
+// filtered on whether they are completed.
 func (c OauthClient) CompletedSubtasksForListID(listID uint, completed bool) (*[]Subtask, error) {
 	var resp *http.Response
 	var err error
@@ -852,6 +884,8 @@ func (c OauthClient) CompletedSubtasksForListID(listID uint, completed bool) (*[
 	return s.(*[]Subtask), nil
 }
 
+// CompletedSubtasksForTaskID returns subtasks for the provided List,
+// filtered on whether they are completed.
 func (c OauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) (*[]Subtask, error) {
 	var resp *http.Response
 	var err error
@@ -885,6 +919,7 @@ func (c OauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) (*[
 	return s.(*[]Subtask), nil
 }
 
+// Subtask returns the subtask for the corresponding subtaskID.
 func (c OauthClient) Subtask(subtaskID uint) (*Subtask, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtasks/%d", apiURL, subtaskID))
 	if err != nil {
@@ -910,6 +945,7 @@ func (c OauthClient) Subtask(subtaskID uint) (*Subtask, error) {
 	return s.(*Subtask), nil
 }
 
+// CreateSubtask creates a Subtask for the provided parameters.
 func (c OauthClient) CreateSubtask(
 	title string,
 	taskID uint,
@@ -946,6 +982,7 @@ func (c OauthClient) CreateSubtask(
 	return s.(*Subtask), nil
 }
 
+// UpdateSubtask updates the provided Subtask.
 func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 	body, err := c.jsonHelper.Marshal(subtask)
 	if err != nil {
@@ -976,6 +1013,7 @@ func (c OauthClient) UpdateSubtask(subtask Subtask) (*Subtask, error) {
 	return s.(*Subtask), nil
 }
 
+// DeleteSubtask deletes the provided Subtask.
 func (c OauthClient) DeleteSubtask(subtask Subtask) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/subtasks/%d?revision=%d", apiURL, subtask.ID, subtask.Revision))
 
@@ -995,6 +1033,8 @@ func (c OauthClient) DeleteSubtask(subtask Subtask) error {
 	return nil
 }
 
+// RemindersForListID returns the Reminders for the List associated with the
+// provided listID.
 func (c OauthClient) RemindersForListID(listID uint) (*[]Reminder, error) {
 	var resp *http.Response
 	var err error
@@ -1028,6 +1068,8 @@ func (c OauthClient) RemindersForListID(listID uint) (*[]Reminder, error) {
 	return r.(*[]Reminder), nil
 }
 
+// RemindersForTaskID returns the Reminders for the Task associated with the
+// provided taskID.
 func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 	var resp *http.Response
 	var err error
@@ -1061,6 +1103,7 @@ func (c OauthClient) RemindersForTaskID(taskID uint) (*[]Reminder, error) {
 	return r.(*[]Reminder), nil
 }
 
+// Reminder returns the Reminder associated with the provided reminderID.
 func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/reminders/%d", apiURL, reminderID))
 	if err != nil {
@@ -1086,6 +1129,7 @@ func (c OauthClient) Reminder(reminderID uint) (*Reminder, error) {
 	return r.(*Reminder), nil
 }
 
+// CreateReminder creates a Reminder with the provided parameters.
 func (c OauthClient) CreateReminder(
 	date string,
 	taskID uint,
@@ -1127,6 +1171,7 @@ func (c OauthClient) CreateReminder(
 	return r.(*Reminder), nil
 }
 
+// UpdateReminder updates the provided Reminder.
 func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 	body, err := c.jsonHelper.Marshal(reminder)
 	if err != nil {
@@ -1157,6 +1202,7 @@ func (c OauthClient) UpdateReminder(reminder Reminder) (*Reminder, error) {
 	return r.(*Reminder), nil
 }
 
+// DeleteReminder deletes the provided Reminder.
 func (c OauthClient) DeleteReminder(reminder Reminder) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/reminders/%d?revision=%d", apiURL, reminder.ID, reminder.Revision))
 
@@ -1176,6 +1222,8 @@ func (c OauthClient) DeleteReminder(reminder Reminder) error {
 	return nil
 }
 
+// ListPositions returns the positions of all Lists the client can access.
+// The returned ListPosition.Values might be empty if the Lists have never been reordered.
 func (c OauthClient) ListPositions() (*[]Position, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions", apiURL))
 	if err != nil {
@@ -1201,6 +1249,7 @@ func (c OauthClient) ListPositions() (*[]Position, error) {
 	return l.(*[]Position), nil
 }
 
+// ListPosition returns the ListPosition associated with the provided listPositionID.
 func (c OauthClient) ListPosition(listPositionID uint) (*Position, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/list_positions/%d", apiURL, listPositionID))
 	if err != nil {
@@ -1226,6 +1275,8 @@ func (c OauthClient) ListPosition(listPositionID uint) (*Position, error) {
 	return l.(*Position), nil
 }
 
+// UpdateListPosition updates the provided ListPosition.
+// This will reorder the Lists.
 func (c OauthClient) UpdateListPosition(listPosition Position) (*Position, error) {
 	body, err := c.jsonHelper.Marshal(listPosition)
 	if err != nil {
@@ -1256,6 +1307,9 @@ func (c OauthClient) UpdateListPosition(listPosition Position) (*Position, error
 	return p.(*Position), nil
 }
 
+// TaskPositionsForListID returns the positions of all Tasks in the List
+// associated with the provided listID.
+// The returned TaskPosition.Values might be empty if the Tasks have never been reordered.
 func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
 
 	if listID == 0 {
@@ -1286,6 +1340,7 @@ func (c OauthClient) TaskPositionsForListID(listID uint) (*[]Position, error) {
 	return l.(*[]Position), nil
 }
 
+// TaskPosition returns the TaskPosition associated with the provided taskPositionID.
 func (c OauthClient) TaskPosition(taskPositionID uint) (*Position, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_positions/%d", apiURL, taskPositionID))
 	if err != nil {
@@ -1311,6 +1366,8 @@ func (c OauthClient) TaskPosition(taskPositionID uint) (*Position, error) {
 	return l.(*Position), nil
 }
 
+// UpdateTaskPosition updates the provided TaskPosition.
+// This will reorder the Tasks.
 func (c OauthClient) UpdateTaskPosition(taskPosition Position) (*Position, error) {
 	body, err := c.jsonHelper.Marshal(taskPosition)
 	if err != nil {
@@ -1341,6 +1398,9 @@ func (c OauthClient) UpdateTaskPosition(taskPosition Position) (*Position, error
 	return p.(*Position), nil
 }
 
+// SubtaskPositionsForListID returns the positions of all Subtasks in the List
+// associated with the provided listID.
+// The returned SubtaskPosition.Values might be empty if the Subtasks have never been reordered.
 func (c OauthClient) SubtaskPositionsForListID(listID uint) (*[]Position, error) {
 
 	if listID == 0 {
@@ -1371,6 +1431,9 @@ func (c OauthClient) SubtaskPositionsForListID(listID uint) (*[]Position, error)
 	return l.(*[]Position), nil
 }
 
+// SubtaskPositionsForTaskID returns the positions of all Subtasks in the Task
+// associated with the provided taskID.
+// The returned SubtaskPosition.Values might be empty if the Subtasks have never been reordered.
 func (c OauthClient) SubtaskPositionsForTaskID(taskID uint) (*[]Position, error) {
 
 	if taskID == 0 {
@@ -1401,6 +1464,7 @@ func (c OauthClient) SubtaskPositionsForTaskID(taskID uint) (*[]Position, error)
 	return l.(*[]Position), nil
 }
 
+// SubtaskPosition returns the SubtaskPosition associated with the provided subtaskPositionID.
 func (c OauthClient) SubtaskPosition(subTaskPositionID uint) (*Position, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/subtask_positions/%d", apiURL, subTaskPositionID))
 	if err != nil {
@@ -1426,6 +1490,8 @@ func (c OauthClient) SubtaskPosition(subTaskPositionID uint) (*Position, error) 
 	return l.(*Position), nil
 }
 
+// UpdateSubtaskPosition updates the provided SubtaskPosition.
+// This will reorder the Subtasks.
 func (c OauthClient) UpdateSubtaskPosition(subTaskPosition Position) (*Position, error) {
 	body, err := c.jsonHelper.Marshal(subTaskPosition)
 	if err != nil {
@@ -1456,6 +1522,7 @@ func (c OauthClient) UpdateSubtaskPosition(subTaskPosition Position) (*Position,
 	return p.(*Position), nil
 }
 
+// Memberships returns the memberships the client can access.
 func (c OauthClient) Memberships() (*[]Membership, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships", apiURL))
 	if err != nil {
@@ -1481,6 +1548,7 @@ func (c OauthClient) Memberships() (*[]Membership, error) {
 	return l.(*[]Membership), nil
 }
 
+// Membership returns the Membership associated with the provided membershipID.
 func (c OauthClient) Membership(membershipID uint) (*Membership, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/memberships/%d", apiURL, membershipID))
 	if err != nil {
@@ -1506,6 +1574,8 @@ func (c OauthClient) Membership(membershipID uint) (*Membership, error) {
 	return m.(*Membership), nil
 }
 
+// MembershipsForListID returns the Memberships for the List associated with
+// the provided listID.
 func (c OauthClient) MembershipsForListID(listID uint) (*[]Membership, error) {
 	var resp *http.Response
 	var err error
@@ -1539,6 +1609,8 @@ func (c OauthClient) MembershipsForListID(listID uint) (*[]Membership, error) {
 	return m.(*[]Membership), nil
 }
 
+// AddMemberToListViaUserID creates a new Membership associating the User with
+// the List.
 func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bool) (*Membership, error) {
 	var resp *http.Response
 	var err error
@@ -1576,6 +1648,8 @@ func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 	return m.(*Membership), nil
 }
 
+// AddMemberToListViaEmailAddress creates a new Membership joining the List
+// with the user associated with the provided email address.
 func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID uint, muted bool) (*Membership, error) {
 	var resp *http.Response
 	var err error
@@ -1613,6 +1687,8 @@ func (c OauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 	return m.(*Membership), nil
 }
 
+// AcceptMember updates the provided Membership to reflect the User has
+// accepted the Membership request.
 func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
 	body, err := c.jsonHelper.Marshal(membership)
 	if err != nil {
@@ -1643,6 +1719,7 @@ func (c OauthClient) AcceptMember(membership Membership) (*Membership, error) {
 	return m.(*Membership), nil
 }
 
+// RejectInvite deletes the provided Membership.
 func (c OauthClient) RejectInvite(membership Membership) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision))
 
@@ -1662,6 +1739,7 @@ func (c OauthClient) RejectInvite(membership Membership) error {
 	return nil
 }
 
+// RemoveMemberFromList deletes the provided Membership.
 func (c OauthClient) RemoveMemberFromList(membership Membership) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/memberships/%d?revision=%d", apiURL, membership.ID, membership.Revision))
 
@@ -1681,6 +1759,7 @@ func (c OauthClient) RemoveMemberFromList(membership Membership) error {
 	return nil
 }
 
+// FilesForListID returns the Files associated with the provided List.
 func (c OauthClient) FilesForListID(listID uint) (*[]File, error) {
 	var resp *http.Response
 	var err error
@@ -1714,6 +1793,7 @@ func (c OauthClient) FilesForListID(listID uint) (*[]File, error) {
 	return f.(*[]File), nil
 }
 
+// FilesForTaskID returns the Files associated with the provided Task.
 func (c OauthClient) FilesForTaskID(taskID uint) (*[]File, error) {
 	var resp *http.Response
 	var err error
@@ -1747,6 +1827,7 @@ func (c OauthClient) FilesForTaskID(taskID uint) (*[]File, error) {
 	return f.(*[]File), nil
 }
 
+// File returns the File associated with the provided fileID.
 func (c OauthClient) File(fileID uint) (*File, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/files/%d", apiURL, fileID))
 	if err != nil {
@@ -1772,6 +1853,8 @@ func (c OauthClient) File(fileID uint) (*File, error) {
 	return f.(*File), nil
 }
 
+// FilePreview returns a FilePreview associated with the provided File.
+// Currently this only works for image files.
 func (c OauthClient) FilePreview(fileID uint) (*FilePreview, error) {
 	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/previews?file_id=%d", apiURL, fileID))
 	if err != nil {
@@ -1797,6 +1880,9 @@ func (c OauthClient) FilePreview(fileID uint) (*FilePreview, error) {
 	return f.(*FilePreview), nil
 }
 
+// CreateUpload creates an Upload with the provided paramters.
+// contentType, fileName and fileSize are required; partNumber and md5Sum
+// are optional.
 func (c OauthClient) CreateUpload(
 	contentType string,
 	fileName string,
@@ -1853,6 +1939,8 @@ func (c OauthClient) CreateUpload(
 	return u.(*Upload), nil
 }
 
+// MarkUploadComplete marks as complete the Upload associated with the provided
+// uploadID.
 func (c OauthClient) MarkUploadComplete(uploadID uint) (*Upload, error) {
 	resp, err := c.httpHelper.Patch(fmt.Sprintf("%s/uploads/%d?state=finished", apiURL, uploadID), nil)
 	if err != nil {
@@ -1878,6 +1966,8 @@ func (c OauthClient) MarkUploadComplete(uploadID uint) (*Upload, error) {
 	return u.(*Upload), nil
 }
 
+// ChunkedUploadPart returns an existing Upload with an updated UploadPart,
+// corresponding to the provided partNumber.
 func (c OauthClient) ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum string) (*Upload, error) {
 
 	if uploadID == 0 {
@@ -1918,6 +2008,7 @@ func (c OauthClient) ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum st
 	return u.(*Upload), nil
 }
 
+// DestroyFile deletes the provided File.
 func (c OauthClient) DestroyFile(file File) error {
 	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/files/%d?revision=%d", apiURL, file.ID, file.Revision))
 
@@ -1937,6 +2028,9 @@ func (c OauthClient) DestroyFile(file File) error {
 	return nil
 }
 
+// CreateFile creates a new file with the provided parameters.
+// uploadID and taskID are required; localCreatedAt is optional but recommened,
+// as it assists ordering of file uploads and comments.
 func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt string) (*File, error) {
 
 	if uploadID == 0 {

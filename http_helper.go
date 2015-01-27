@@ -7,10 +7,17 @@ import (
 	"net/http"
 )
 
+// NewHTTPTransportHelper allows for the injection of a HTTPTransportHelper
+// boundary object.
 var NewHTTPTransportHelper = func() HTTPTransportHelper {
-	return NewDefaultHTTPTransportHelper()
+	return &DefaultHTTPTransportHelper{
+		client: http.Client{},
+	}
 }
 
+// HTTPHelper provides a wrapper around a variety of HTTP methods such as GET
+// and POST.
+// It is primarily useful to encapsulate things like authentication headers.
 type HTTPHelper interface {
 	Get(url string) (*http.Response, error)
 	Post(url string, body []byte) (*http.Response, error)
@@ -19,12 +26,16 @@ type HTTPHelper interface {
 	Delete(url string) (*http.Response, error)
 }
 
+// OauthClientHTTPHelper implements HTTPHelper, utilizing oath credentials for
+// authentication.
 type OauthClientHTTPHelper struct {
 	accessToken   string
 	clientID      string
 	httpTransport HTTPTransportHelper
 }
 
+// NewOauthClientHTTPHelper provides a conveinient mechanism for initializing an
+// OauthClientHTTPHelper.
 func NewOauthClientHTTPHelper(accessToken string, clientID string) *OauthClientHTTPHelper {
 	return &OauthClientHTTPHelper{
 		accessToken:   accessToken,
@@ -33,6 +44,7 @@ func NewOauthClientHTTPHelper(accessToken string, clientID string) *OauthClientH
 	}
 }
 
+// Get provides a wrapper around http.Get.
 // Response is guaranteed to be non-nil if error is nil
 func (h OauthClientHTTPHelper) Get(url string) (*http.Response, error) {
 	return h.performHTTPAction(
@@ -43,6 +55,7 @@ func (h OauthClientHTTPHelper) Get(url string) (*http.Response, error) {
 	)
 }
 
+// Put provides a wrapper around http.Put.
 // Response is guaranteed to be non-nil if error is nil
 func (h OauthClientHTTPHelper) Put(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
@@ -53,6 +66,7 @@ func (h OauthClientHTTPHelper) Put(url string, body []byte) (*http.Response, err
 	)
 }
 
+// Post provides a wrapper around http.Post.
 // Response is guaranteed to be non-nil if error is nil
 func (h OauthClientHTTPHelper) Post(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
@@ -62,6 +76,7 @@ func (h OauthClientHTTPHelper) Post(url string, body []byte) (*http.Response, er
 		map[string]string{"Content-Type": "application/json"})
 }
 
+// Patch provides a wrapper around http.Patch.
 // Response is guaranteed to be non-nil if error is nil
 func (h OauthClientHTTPHelper) Patch(url string, body []byte) (*http.Response, error) {
 	return h.performHTTPAction(
@@ -71,6 +86,7 @@ func (h OauthClientHTTPHelper) Patch(url string, body []byte) (*http.Response, e
 		map[string]string{"Content-Type": "application/json"})
 }
 
+// Delete provides a wrapper around http.Delete.
 // Response is guaranteed to be non-nil if error is nil
 func (h OauthClientHTTPHelper) Delete(url string) (*http.Response, error) {
 	return h.performHTTPAction(

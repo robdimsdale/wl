@@ -1,5 +1,6 @@
 package wundergo
 
+// User contains information about a User.
 type User struct {
 	ID         uint   `json:"id"`
 	Name       string `json:"name"`

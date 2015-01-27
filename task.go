@@ -1,5 +1,7 @@
 package wundergo
 
+// Task contains information about tasks.
+// Tasks are children of lists.
 type Task struct {
 	ID              uint   `json:"id"`
 	AssigneeID      uint   `json:"assignee_id"`

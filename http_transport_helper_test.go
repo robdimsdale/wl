@@ -13,7 +13,7 @@ var _ = Describe("Default HTTP Transport Helper", func() {
 	var transportHelper *wundergo.DefaultHTTPTransportHelper
 
 	BeforeEach(func() {
-		transportHelper = wundergo.NewDefaultHTTPTransportHelper()
+		transportHelper = &wundergo.DefaultHTTPTransportHelper{}
 	})
 
 	Describe("NewRequest", func() {

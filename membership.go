@@ -1,5 +1,6 @@
 package wundergo
 
+// Membership joins Users and Lists.
 type Membership struct {
 	ID       uint   `json:"id"`
 	UserID   uint   `json:"user_id"`

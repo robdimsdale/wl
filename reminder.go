@@ -1,5 +1,6 @@
 package wundergo
 
+// Reminder contains information about a task reminder.
 type Reminder struct {
 	ID        uint   `json:"id"`
 	Date      string `json:"date"`
