@@ -71,6 +71,18 @@ func positionContainsValue(position *wundergo.Position, id uint) bool {
 	return false
 }
 
+func taskCommentsContain(taskComments *[]wundergo.TaskComment, taskComment *wundergo.TaskComment) bool {
+	if taskComments == nil || taskComment == nil {
+		return false
+	}
+	for _, t := range *taskComments {
+		if t.ID == taskComment.ID {
+			return true
+		}
+	}
+	return false
+}
+
 var _ = BeforeSuite(func() {
 	accessToken := os.Getenv("WL_ACCESS_TOKEN")
 	clientID := os.Getenv("WL_CLIENT_ID")

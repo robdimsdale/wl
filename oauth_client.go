@@ -2165,7 +2165,33 @@ func (c OauthClient) CreateTaskComment(text string, taskID uint) (*TaskComment, 
 		return nil, err
 	}
 
-	t, err := c.jsonHelper.Unmarshal(b, &Note{})
+	t, err := c.jsonHelper.Unmarshal(b, &TaskComment{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*TaskComment), nil
+}
+
+// TaskComment returns the TaskComment for the corresponding taskCommentID.
+func (c OauthClient) TaskComment(taskCommentID uint) (*TaskComment, error) {
+	resp, err := c.httpHelper.Get(fmt.Sprintf("%s/task_comments/%d", apiURL, taskCommentID))
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &TaskComment{})
 	if err != nil {
 		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
 		return nil, err
