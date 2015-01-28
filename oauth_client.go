@@ -2070,3 +2070,71 @@ func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt strin
 	}
 	return f.(*File), nil
 }
+
+// TaskCommentsForListID returns TaskComments for the provided listID.
+func (c OauthClient) TaskCommentsForListID(listID uint) (*[]TaskComment, error) {
+	var resp *http.Response
+	var err error
+
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/task_comments?list_id=%d", apiURL, listID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &[]TaskComment{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*[]TaskComment), nil
+}
+
+// TaskCommentsForTaskID returns TaskComments for the provided taskID.
+func (c OauthClient) TaskCommentsForTaskID(taskID uint) (*[]TaskComment, error) {
+	var resp *http.Response
+	var err error
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
+	resp, err = c.httpHelper.Get(fmt.Sprintf("%s/task_comments?task_id=%d", apiURL, taskID))
+
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	n, err := c.jsonHelper.Unmarshal(b, &[]TaskComment{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return n.(*[]TaskComment), nil
+}

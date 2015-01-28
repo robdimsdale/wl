@@ -99,4 +99,7 @@ type Client interface {
 	MarkUploadComplete(uploadID uint) (*Upload, error)
 
 	FilePreview(fileID uint) (*FilePreview, error)
+
+	TaskCommentsForListID(listID uint) (*[]TaskComment, error)
+	TaskCommentsForTaskID(taskID uint) (*[]TaskComment, error)
 }
