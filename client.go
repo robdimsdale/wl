@@ -104,4 +104,5 @@ type Client interface {
 	TaskCommentsForTaskID(taskID uint) (*[]TaskComment, error)
 	CreateTaskComment(text string, taskID uint) (*TaskComment, error)
 	TaskComment(taskCommentID uint) (*TaskComment, error)
+	DeleteTaskComment(taskComment TaskComment) error
 }

@@ -2198,3 +2198,23 @@ func (c OauthClient) TaskComment(taskCommentID uint) (*TaskComment, error) {
 	}
 	return t.(*TaskComment), nil
 }
+
+// DeleteTaskComment deletes the provided TaskComment.
+func (c OauthClient) DeleteTaskComment(taskComment TaskComment) error {
+	resp, err := c.httpHelper.Delete(fmt.Sprintf("%s/task_comments/%d?revision=%d", apiURL, taskComment.ID, taskComment.Revision))
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
+	}
+
+	_, err = c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return err
+	}
+	return nil
+}
