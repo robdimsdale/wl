@@ -257,7 +257,122 @@ var _ = Describe("Client - TaskComment operations", func() {
 		})
 	})
 
-	Describe("getting task comments for task", func() {
+	Describe("creating a new task comment", func() {
+		text := "someText"
+		taskID := uint(1)
 
+		BeforeEach(func() {
+			dummyResponse.StatusCode = http.StatusCreated
+			fakeHTTPHelper.PostReturns(dummyResponse, nil)
+		})
+
+		It("performs POST requests to /task_comments with new task_comment content in body", func() {
+			expectedUrl := fmt.Sprintf("%s/task_comments", apiURL)
+			expectedBody := []byte(fmt.Sprintf(`{"text":"%s","task_id":%d}`, text, taskID))
+
+			fakeJSONHelper.UnmarshalReturns(&wundergo.TaskComment{}, nil)
+			client.CreateTaskComment(text, taskID)
+
+			Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
+			arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
+			Expect(arg0).To(Equal(expectedUrl))
+			Expect(arg1).To(Equal(expectedBody))
+		})
+
+		Context("when taskID == 0", func() {
+			taskID := uint(0)
+
+			It("returns an error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when httpHelper.Post returns an error", func() {
+			expectedError := errors.New("httpHelper POST error")
+
+			BeforeEach(func() {
+				fakeHTTPHelper.PostReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			BeforeEach(func() {
+				dummyResponse.StatusCode = http.StatusBadRequest
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			BeforeEach(func() {
+				dummyResponse.Body = nil
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when reading body returns an error", func() {
+			expectedError := errors.New("read error")
+			BeforeEach(func() {
+				dummyResponse.Body = erroringReadCloser{
+					readError: expectedError,
+				}
+				fakeHTTPHelper.PostReturns(dummyResponse, nil)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			expectedError := errors.New("jsonHelper error")
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(nil, expectedError)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(Equal(expectedError))
+			})
+		})
+
+		Context("when valid response is received", func() {
+			expectedTaskComment := &wundergo.TaskComment{
+				Text: "Test Text",
+			}
+
+			BeforeEach(func() {
+				fakeJSONHelper.UnmarshalReturns(expectedTaskComment, nil)
+			})
+
+			It("returns the unmarshalled task comment without error", func() {
+				expectedTaskComment, err := client.CreateTaskComment(text, taskID)
+
+				Expect(err).To(BeNil())
+				Expect(expectedTaskComment).To(Equal(expectedTaskComment))
+			})
+		})
 	})
 })

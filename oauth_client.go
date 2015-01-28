@@ -2138,3 +2138,37 @@ func (c OauthClient) TaskCommentsForTaskID(taskID uint) (*[]TaskComment, error) 
 	}
 	return n.(*[]TaskComment), nil
 }
+
+// CreateTaskComment creates a TaskComment with the provided content associated with the
+// Task for the corresponding taskID.
+func (c OauthClient) CreateTaskComment(text string, taskID uint) (*TaskComment, error) {
+
+	if taskID == 0 {
+		return nil, errors.New("taskID must be > 0")
+	}
+
+	body := []byte(fmt.Sprintf(`{"text":"%s","task_id":%d}`, text, taskID))
+
+	resp, err := c.httpHelper.Post(fmt.Sprintf("%s/task_comments", apiURL), body)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+	}
+
+	b, err := c.readResponseBody(resp)
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+
+	t, err := c.jsonHelper.Unmarshal(b, &Note{})
+	if err != nil {
+		c.logger.LogLine(fmt.Sprintf("response: %v", resp))
+		return nil, err
+	}
+	return t.(*TaskComment), nil
+}
