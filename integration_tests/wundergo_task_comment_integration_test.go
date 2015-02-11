@@ -7,7 +7,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Basic task comment functionality", func() {
+var _ = Describe("basic task comment functionality", func() {
 	It("correctly creates and deletes a task comment", func() {
 		var lists []wundergo.List
 		Eventually(func() error {

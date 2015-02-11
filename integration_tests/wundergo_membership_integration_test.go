@@ -6,7 +6,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Basic membership functionality", func() {
+var _ = Describe("basic membership functionality", func() {
 	muted := true
 
 	It("can add members via userID", func() {

@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - List position operations", func() {
+var _ = Describe("client - List position operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {

@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - Task position operations", func() {
+var _ = Describe("client - Task position operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {

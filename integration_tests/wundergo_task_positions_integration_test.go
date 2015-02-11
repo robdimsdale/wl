@@ -7,7 +7,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Basic task position functionality", func() {
+var _ = Describe("basic task position functionality", func() {
 	It("reorders task positions", func() {
 
 		// Create lists

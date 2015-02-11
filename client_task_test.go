@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - Task operations", func() {
+var _ = Describe("client - Task operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - Task operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting tasks for list", func() {
+	Describe("getting tasks for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - Task operations", func() {
 		})
 	})
 
-	Describe("Getting completed tasks for list", func() {
+	Describe("getting completed tasks for list", func() {
 		listID := uint(1)
 		completed := true
 

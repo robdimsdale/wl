@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - TaskComment operations", func() {
+var _ = Describe("client - TaskComment operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - TaskComment operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting task comments for list", func() {
+	Describe("getting task comments for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - TaskComment operations", func() {
 		})
 	})
 
-	Describe("Getting task comments for task", func() {
+	Describe("getting task comments for task", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {

@@ -11,15 +11,15 @@ type testStruct struct {
 	Counter uint
 }
 
-var _ = Describe("Default JSON Helper", func() {
+var _ = Describe("default JSON Helper", func() {
 	var jsonHelper *wundergo.DefaultJSONHelper
 
 	BeforeEach(func() {
 		jsonHelper = &wundergo.DefaultJSONHelper{}
 	})
 
-	Describe("Marshal", func() {
-		It("Marshals into json without error", func() {
+	Describe("marshal", func() {
+		It("marshals into json without error", func() {
 			expectedReturn := []byte(`{"Name":"myName","Counter":2}`)
 			ts := testStruct{
 				Name:    "myName",
@@ -33,8 +33,8 @@ var _ = Describe("Default JSON Helper", func() {
 		})
 	})
 
-	Describe("Unmarshal", func() {
-		It("Unmarshals from json without error", func() {
+	Describe("unmarshal", func() {
+		It("unmarshals from json without error", func() {
 			jsonInput := []byte(`{"Name":"myName","Counter":2}`)
 			expectedReturn := testStruct{
 				Name:    "myName",

@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - File operations", func() {
+var _ = Describe("client - File operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - File operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting files for list", func() {
+	Describe("getting files for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - File operations", func() {
 		})
 	})
 
-	Describe("Getting files for task", func() {
+	Describe("getting files for task", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {

@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - Reminder operations", func() {
+var _ = Describe("client - Reminder operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting reminders for list", func() {
+	Describe("getting reminders for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 	})
 
-	Describe("Getting reminders for task", func() {
+	Describe("getting reminders for task", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {
@@ -257,7 +257,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 	})
 
-	Describe("Getting Reminder by ID", func() {
+	Describe("getting Reminder by ID", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {
@@ -361,7 +361,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 	})
 
-	Describe("Creating a new Reminder", func() {
+	Describe("creating a new Reminder", func() {
 		reminderDate := "new-reminder-date"
 		var createdByDeviceUdid string
 		taskID := uint(1)
@@ -536,7 +536,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 	})
 
-	Describe("Updating a Reminder", func() {
+	Describe("updating a Reminder", func() {
 		var Reminder wundergo.Reminder
 
 		BeforeEach(func() {
@@ -664,7 +664,7 @@ var _ = Describe("Client - Reminder operations", func() {
 		})
 	})
 
-	Describe("Deleting a Reminder", func() {
+	Describe("deleting a Reminder", func() {
 		reminder := wundergo.Reminder{
 			ID:       uint(1),
 			Revision: 3,

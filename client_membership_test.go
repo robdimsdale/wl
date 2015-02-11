@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - Membership operations", func() {
+var _ = Describe("client - Membership operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - Membership operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting memberships for list", func() {
+	Describe("getting memberships for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - Membership operations", func() {
 		})
 	})
 
-	Describe("Getting memberships", func() {
+	Describe("getting memberships", func() {
 
 		BeforeEach(func() {
 			dummyResponse.StatusCode = http.StatusOK

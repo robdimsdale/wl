@@ -7,7 +7,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Basic task functionality", func() {
+var _ = Describe("basic task functionality", func() {
 	It("can perform CRUD for tasks", func() {
 		var lists []wundergo.List
 		Eventually(func() error {

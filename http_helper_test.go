@@ -11,7 +11,7 @@ import (
 	"github.com/robdimsdale/wundergo/fakes"
 )
 
-var _ = Describe("HTTPHelper", func() {
+var _ = Describe("http helper", func() {
 	var fakeHTTPTransportHelper fakes.FakeHTTPTransportHelper
 
 	var httpHelper wundergo.HTTPHelper

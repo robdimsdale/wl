@@ -12,7 +12,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Client - Subtask operations", func() {
+var _ = Describe("client - Subtask operations", func() {
 	var dummyResponse *http.Response
 
 	BeforeEach(func() {
@@ -23,7 +23,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		dummyResponse.Body = ioutil.NopCloser(bytes.NewBuffer([]byte{}))
 	})
 
-	Describe("Getting subtasks for list", func() {
+	Describe("getting subtasks for list", func() {
 		listID := uint(1)
 
 		BeforeEach(func() {
@@ -140,7 +140,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Getting subtasks for task", func() {
+	Describe("getting subtasks for task", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {
@@ -257,7 +257,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Getting completed subtasks for list", func() {
+	Describe("getting completed subtasks for list", func() {
 		listID := uint(1)
 		completed := true
 
@@ -375,7 +375,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Getting completed subtasks for task", func() {
+	Describe("getting completed subtasks for task", func() {
 		taskID := uint(1)
 		completed := true
 
@@ -493,7 +493,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Getting subtask by ID", func() {
+	Describe("getting subtask by ID", func() {
 		taskID := uint(1)
 
 		BeforeEach(func() {
@@ -597,7 +597,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Creating a new subtask", func() {
+	Describe("creating a new subtask", func() {
 		subtaskTitle := "newSubtaskTitle"
 		taskID := uint(1)
 
@@ -748,7 +748,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Updating a subtask", func() {
+	Describe("updating a subtask", func() {
 		var subtask wundergo.Subtask
 
 		BeforeEach(func() {
@@ -876,7 +876,7 @@ var _ = Describe("Client - Subtask operations", func() {
 		})
 	})
 
-	Describe("Deleting a subtask", func() {
+	Describe("deleting a subtask", func() {
 		subtask := wundergo.Subtask{
 			ID:       uint(1),
 			Revision: 3,

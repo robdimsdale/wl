@@ -9,7 +9,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("Basic list functionality", func() {
+var _ = Describe("basic list functionality", func() {
 	It("performs CRUD for lists", func() {
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
