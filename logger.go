@@ -6,14 +6,14 @@ import (
 
 // Logger provides the ability to log a message.
 type Logger interface {
-	LogLine(message string)
+	Println(message string)
 }
 
 // PrintlnLogger is an implementation of Logger.
-type PrintlnLogger struct {
+type defaultLogger struct {
 }
 
-// LogLine writes the message to std out
-func (l PrintlnLogger) LogLine(message string) {
+// Println writes the message to std out
+func (l defaultLogger) Println(message string) {
 	log.Println(message)
 }

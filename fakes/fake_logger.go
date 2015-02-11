@@ -7,31 +7,31 @@ import (
 )
 
 type FakeLogger struct {
-	LogLineStub        func(message string)
+	PrintlnStub        func(message string)
 	logLineMutex       sync.RWMutex
 	logLineArgsForCall []struct {
 		message string
 	}
 }
 
-func (fake *FakeLogger) LogLine(message string) {
+func (fake *FakeLogger) Println(message string) {
 	fake.logLineMutex.Lock()
 	defer fake.logLineMutex.Unlock()
 	fake.logLineArgsForCall = append(fake.logLineArgsForCall, struct {
 		message string
 	}{message})
-	if fake.LogLineStub != nil {
-		fake.LogLineStub(message)
+	if fake.PrintlnStub != nil {
+		fake.PrintlnStub(message)
 	}
 }
 
-func (fake *FakeLogger) LogLineCallCount() int {
+func (fake *FakeLogger) PrintlnCallCount() int {
 	fake.logLineMutex.RLock()
 	defer fake.logLineMutex.RUnlock()
 	return len(fake.logLineArgsForCall)
 }
 
-func (fake *FakeLogger) LogLineArgsForCall(i int) string {
+func (fake *FakeLogger) PrintlnArgsForCall(i int) string {
 	fake.logLineMutex.RLock()
 	defer fake.logLineMutex.RUnlock()
 	return fake.logLineArgsForCall[i].message
