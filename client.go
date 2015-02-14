@@ -1,5 +1,7 @@
 package wundergo
 
+import "time"
+
 // Client represents the methods that the API supports.
 type Client interface {
 	User() (*User, error)
@@ -86,7 +88,7 @@ type Client interface {
 	FilesForListID(listID uint) (*[]File, error)
 	FilesForTaskID(taskID uint) (*[]File, error)
 	File(fileID uint) (*File, error)
-	CreateFile(uploadID uint, taskID uint, localCreatedAt string) (*File, error)
+	CreateFile(uploadID uint, taskID uint, localCreatedAt time.Time) (*File, error)
 	DestroyFile(file File) error
 	CreateUpload(
 		contentType string,

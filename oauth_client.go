@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // NewLogger allows for the injection of a Logger boundary object.
@@ -2029,9 +2030,11 @@ func (c OauthClient) DestroyFile(file File) error {
 }
 
 // CreateFile creates a new file with the provided parameters.
-// uploadID and taskID are required; localCreatedAt is optional but recommened,
+// All fields are required, uploadID and taskID must be > 0.
+// If localCreatedAt is uninitialized it is ignored.
+// Using initialized values for localCreatedAt is recommened,
 // as it assists ordering of file uploads and comments.
-func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt string) (*File, error) {
+func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt time.Time) (*File, error) {
 
 	if uploadID == 0 {
 		return nil, errors.New("uploadID must be > 0")
@@ -2043,7 +2046,7 @@ func (c OauthClient) CreateFile(uploadID uint, taskID uint, localCreatedAt strin
 
 	url := fmt.Sprintf("%s/files?upload_id=%d&task_id=%d", apiURL, uploadID, taskID)
 
-	if localCreatedAt != "" {
+	if !localCreatedAt.IsZero() {
 		url = fmt.Sprintf("%s&local_created_at=%s", url, localCreatedAt)
 	}
 

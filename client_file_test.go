@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -364,12 +365,12 @@ var _ = Describe("client - File operations", func() {
 	Describe("creating a file", func() {
 		var uploadID uint
 		var taskID uint
-		var localCreatedAt string
+		var localCreatedAt time.Time
 
 		BeforeEach(func() {
 			uploadID = 1
 			taskID = 1
-			localCreatedAt = ""
+			localCreatedAt = time.Time{}
 
 			dummyResponse.StatusCode = http.StatusCreated
 			fakeHTTPHelper.PostReturns(dummyResponse, nil)
@@ -419,9 +420,9 @@ var _ = Describe("client - File operations", func() {
 			})
 		})
 
-		Context("when localCreatedAt is not empty", func() {
+		Context("when localCreatedAt is initialized", func() {
 			BeforeEach(func() {
-				localCreatedAt = "some_time"
+				localCreatedAt = time.Now()
 			})
 
 			It("includes local_created_at in the url params", func() {
