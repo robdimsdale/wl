@@ -11,19 +11,22 @@ import (
 
 var _ = Describe("basic list functionality", func() {
 	It("performs CRUD for lists", func() {
+
+		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle1 := fmt.Sprintf("%s-original", uuid1.String())
-
-		uuid2, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
 		var newList *wundergo.List
 		Eventually(func() error {
 			newList, err = client.CreateList(newListTitle1)
 			return err
 		}).Should(Succeed())
+
+		By("Updating a list")
+		uuid2, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
 		newList.Revision = newList.Revision + 1
 		newList.Title = newListTitle2
@@ -41,6 +44,7 @@ var _ = Describe("basic list functionality", func() {
 			return listContains(newLists, newList), err
 		}).Should(BeTrue())
 
+		By("Deleting a list")
 		Eventually(func() error {
 			newList, err = client.List(newList.ID)
 			return client.DeleteList(*newList)

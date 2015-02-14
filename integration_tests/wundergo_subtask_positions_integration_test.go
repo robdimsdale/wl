@@ -10,19 +10,10 @@ import (
 var _ = Describe("basic subtask position functionality", func() {
 	It("reorders subtask positions", func() {
 
-		// Create task and subtasks
-
+		By("Creating a new task")
 		uuidTask, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuidTask.String()
-
-		uuid1, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newSubtaskTitle1 := uuid1.String()
-
-		uuid2, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newSubtaskTitle2 := uuid2.String()
 
 		var firstList *wundergo.List
 		Eventually(func() error {
@@ -47,6 +38,15 @@ var _ = Describe("basic subtask position functionality", func() {
 			return err
 		}).Should(Succeed())
 
+		By("Creating associated subtasks")
+		uuid1, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newSubtaskTitle1 := uuid1.String()
+
+		uuid2, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newSubtaskTitle2 := uuid2.String()
+
 		var newSubtask1 *wundergo.Subtask
 		Eventually(func() error {
 			newSubtask1, err = client.CreateSubtask(
@@ -70,6 +70,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		// We have to reorder the subtasks before they are present in the
 		// returned response. This seems like a bug in Wunderlist API
 
+		By("Reordering subtasks")
 		var firstListTasks []wundergo.Task
 		Eventually(func() error {
 			flt, err := client.TasksForListID(firstList.ID)
@@ -109,8 +110,7 @@ var _ = Describe("basic subtask position functionality", func() {
 			return task1Contained && task2Contained, err
 		}).Should(BeTrue())
 
-		// Delete task
-
+		By("Deleting task (and hence associated subtasks)")
 		Eventually(func() error {
 			newTask, err = client.Task(newTask.ID)
 			return client.DeleteTask(*newTask)

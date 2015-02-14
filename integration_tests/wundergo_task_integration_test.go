@@ -8,24 +8,30 @@ import (
 )
 
 var _ = Describe("basic task functionality", func() {
-	It("can perform CRUD for tasks", func() {
+
+	var firstList *wundergo.List
+	var newTask *wundergo.Task
+	var err error
+
+	BeforeEach(func() {
+		By("Getting first list")
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
 			lists = *l
 			return err
 		}).Should(Succeed())
-		list := lists[0]
+		firstList = &lists[0]
 
+		By("Creating task in first list")
 		uuid, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuid.String()
 
-		var task *wundergo.Task
 		Eventually(func() error {
-			task, err = client.CreateTask(
+			newTask, err = client.CreateTask(
 				newTaskTitle,
-				list.ID,
+				firstList.ID,
 				0,
 				false,
 				"",
@@ -35,52 +41,50 @@ var _ = Describe("basic task functionality", func() {
 			)
 			return err
 		}).ShouldNot(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		By("Deleting task")
+		Eventually(func() error {
+			newTask, err = client.Task(newTask.ID)
+			return client.DeleteTask(*newTask)
+		}).Should(Succeed())
+
+		var tasks *[]wundergo.Task
+		Eventually(func() (bool, error) {
+			tasks, err = client.TasksForListID(firstList.ID)
+			return taskContains(tasks, newTask), err
+		}).Should(BeFalse())
+	})
+
+	It("can update tasks", func() {
 
 		var completedTasks *[]wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(list.ID, showCompletedTasks)
-			return taskContains(completedTasks, task), err
+			completedTasks, err = client.CompletedTasksForListID(firstList.ID, showCompletedTasks)
+			return taskContains(completedTasks, newTask), err
 		}).Should(BeFalse())
 
-		// Update (and complete) task
-
-		task.DueDate = "1971-01-01"
-		task.Completed = true
+		By("Updating task")
+		newTask.DueDate = "1971-01-01"
+		newTask.Completed = true
 		Eventually(func() error {
-			task, err = client.UpdateTask(*task)
+			newTask, err = client.UpdateTask(*newTask)
 			return err
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(list.ID, showCompletedTasks)
-			return taskContains(completedTasks, task), err
+			completedTasks, err = client.CompletedTasksForListID(firstList.ID, showCompletedTasks)
+			return taskContains(completedTasks, newTask), err
 		}).Should(BeTrue())
+	})
 
-		// Note
-
-		var note *wundergo.Note
-		Eventually(func() error {
-			note, err = client.CreateNote("myContent", task.ID)
-			return err
-		}).Should(Succeed())
-
-		note.Content = "newContent"
-		Eventually(func() error {
-			note, err = client.UpdateNote(*note)
-			return err
-		}).Should(Succeed())
-
-		Eventually(func() error {
-			return client.DeleteNote(*note)
-		}).Should(Succeed())
-
-		// Subtask
-
+	It("can perform subtask CRUD", func() {
 		var subtask *wundergo.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
-			subtask, err = client.CreateSubtask("mySubtaskTitle", task.ID, subtaskComplete)
+			subtask, err = client.CreateSubtask("mySubtaskTitle", newTask.ID, subtaskComplete)
 			return err
 		}).Should(Succeed())
 
@@ -93,14 +97,14 @@ var _ = Describe("basic task functionality", func() {
 		Eventually(func() error {
 			return client.DeleteSubtask(*subtask)
 		}).Should(Succeed())
+	})
 
-		// Reminder
-
+	It("can perform reminder CRUD", func() {
 		var reminder *wundergo.Reminder
 		reminderDate := "1970-08-30T08:29:46.203Z"
 		createdByDeviceUdid := ""
 		Eventually(func() error {
-			reminder, err = client.CreateReminder(reminderDate, task.ID, createdByDeviceUdid)
+			reminder, err = client.CreateReminder(reminderDate, newTask.ID, createdByDeviceUdid)
 			return err
 		}).Should(Succeed())
 
@@ -113,18 +117,5 @@ var _ = Describe("basic task functionality", func() {
 		Eventually(func() error {
 			return client.DeleteReminder(*reminder)
 		}).Should(Succeed())
-
-		// Delete task
-
-		Eventually(func() error {
-			task, err = client.Task(task.ID)
-			return client.DeleteTask(*task)
-		}).Should(Succeed())
-
-		var tasks *[]wundergo.Task
-		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(list.ID)
-			return taskContains(tasks, task), err
-		}).Should(BeFalse())
 	})
 })

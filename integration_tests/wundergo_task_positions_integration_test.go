@@ -10,16 +10,7 @@ import (
 var _ = Describe("basic task position functionality", func() {
 	It("reorders task positions", func() {
 
-		// Create lists
-
-		uuid1, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newTaskTitle1 := uuid1.String()
-
-		uuid2, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newTaskTitle2 := uuid2.String()
-
+		By("Getting first list")
 		var firstList *wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
@@ -27,6 +18,15 @@ var _ = Describe("basic task position functionality", func() {
 			firstList = &lists[0]
 			return err
 		}).Should(Succeed())
+
+		By("Creating new tasks")
+		uuid1, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newTaskTitle1 := uuid1.String()
+
+		uuid2, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newTaskTitle2 := uuid2.String()
 
 		var newTask1 *wundergo.Task
 		Eventually(func() error {
@@ -63,6 +63,7 @@ var _ = Describe("basic task position functionality", func() {
 
 		// Assume tasks are in first TaskPosition
 
+		By("Reordering tasks")
 		var taskPosition *wundergo.Position
 
 		Eventually(func() error {
@@ -81,8 +82,7 @@ var _ = Describe("basic task position functionality", func() {
 			return task1Contained && task2Contained, err
 		}).Should(BeTrue())
 
-		// Delete tasks
-
+		By("Deleting tasks")
 		Eventually(func() error {
 			newTask1, err = client.Task(newTask1.ID)
 			return client.DeleteTask(*newTask1)

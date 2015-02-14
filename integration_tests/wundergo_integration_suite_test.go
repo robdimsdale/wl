@@ -1,7 +1,6 @@
 package wundergo_integration_test
 
 import (
-	"log"
 	"os"
 
 	. "github.com/onsi/ginkgo"
@@ -84,15 +83,17 @@ func taskCommentsContain(taskComments *[]wundergo.TaskComment, taskComment *wund
 }
 
 var _ = BeforeSuite(func() {
+	By("Logging in")
+
 	accessToken := os.Getenv("WL_ACCESS_TOKEN")
 	clientID := os.Getenv("WL_CLIENT_ID")
 
 	if accessToken == "" {
-		log.Fatal("Error - WL_ACCESS_TOKEN must be provided")
+		Fail("Error - WL_ACCESS_TOKEN must be provided")
 	}
 
 	if clientID == "" {
-		log.Fatal("Error - WL_CLIENT_ID must be provided")
+		Fail("Error - WL_CLIENT_ID must be provided")
 	}
 
 	client = wundergo.NewOauthClient(accessToken, clientID)

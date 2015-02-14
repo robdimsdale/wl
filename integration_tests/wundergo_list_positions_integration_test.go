@@ -10,8 +10,7 @@ import (
 var _ = Describe("basic list position functionality", func() {
 	It("reorders list positions", func() {
 
-		// Create lists
-
+		By("Creating new lists")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle1 := uuid1.String()
@@ -35,6 +34,7 @@ var _ = Describe("basic list position functionality", func() {
 		// We have to reorder the lists before they are present in the
 		// returned response. This seems like a bug in Wunderlist API
 
+		By("Reordering lists")
 		var listPosition *wundergo.Position
 
 		Eventually(func() error {
@@ -53,8 +53,7 @@ var _ = Describe("basic list position functionality", func() {
 			return list1Contained && list2Contained, err
 		}).Should(BeTrue())
 
-		// Delete lists
-
+		By("Deleting lists")
 		Eventually(func() error {
 			newList1, err = client.List(newList1.ID)
 			return client.DeleteList(*newList1)

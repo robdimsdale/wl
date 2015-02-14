@@ -9,6 +9,8 @@ import (
 
 var _ = Describe("basic task comment functionality", func() {
 	It("correctly creates and deletes a task comment", func() {
+
+		By("Creating a task")
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
@@ -36,6 +38,7 @@ var _ = Describe("basic task comment functionality", func() {
 			return err
 		}).ShouldNot(HaveOccurred())
 
+		By("Creating an associated task comment")
 		taskComment, err := client.CreateTaskComment("someText", task.ID)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -62,8 +65,7 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeFalse())
 
-		// Delete task
-
+		By("Deleting task (and hence associated subtasks)")
 		Eventually(func() error {
 			task, err = client.Task(task.ID)
 			return client.DeleteTask(*task)

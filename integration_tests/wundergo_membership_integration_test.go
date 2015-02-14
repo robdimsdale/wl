@@ -10,6 +10,7 @@ var _ = Describe("basic membership functionality", func() {
 	muted := true
 
 	It("can add members via userID", func() {
+
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
@@ -35,6 +36,7 @@ var _ = Describe("basic membership functionality", func() {
 	})
 
 	It("can add members via emailAddress", func() {
+
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
