@@ -1,6 +1,8 @@
 package wundergo_integration_test
 
 import (
+	"errors"
+
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -90,6 +92,9 @@ var _ = Describe("basic subtask position functionality", func() {
 		Eventually(func() error {
 			subtaskPositions, err := client.SubtaskPositionsForListID(firstList.ID)
 			tp := *subtaskPositions
+			if len(tp) < index {
+				return errors.New("subtasks not long enough to contain expected subtask")
+			}
 			subtaskPosition = &tp[index]
 			return err
 		}).Should(Succeed())

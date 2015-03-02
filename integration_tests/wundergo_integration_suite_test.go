@@ -8,6 +8,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 
 	"testing"
+	"time"
 )
 
 func TestMain(t *testing.T) {
@@ -83,6 +84,9 @@ func taskCommentsContain(taskComments *[]wundergo.TaskComment, taskComment *wund
 }
 
 var _ = BeforeSuite(func() {
+
+	SetDefaultEventuallyTimeout(5 * time.Second)
+
 	By("Logging in")
 
 	accessToken := os.Getenv("WL_ACCESS_TOKEN")
