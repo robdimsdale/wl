@@ -2,6 +2,7 @@ package wundergo_integration_test
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
@@ -17,11 +18,8 @@ var _ = Describe("basic list functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle1 := fmt.Sprintf("%s-original", uuid1.String())
 
-		var newList *wundergo.List
-		Eventually(func() error {
-			newList, err = client.CreateList(newListTitle1)
-			return err
-		}).Should(Succeed())
+		newList, err := client.CreateList(newListTitle1)
+		Expect(err).NotTo(HaveOccurred())
 
 		By("Updating a list")
 		uuid2, err := uuid.NewV4()
@@ -31,12 +29,14 @@ var _ = Describe("basic list functionality", func() {
 		newList.Revision = newList.Revision + 1
 		newList.Title = newListTitle2
 		var updatedList *wundergo.List
-		Eventually(func() error {
-			updatedList, err = client.UpdateList(*newList)
-			return err
-		}).Should(Succeed())
+		updatedList, err = client.UpdateList(*newList)
+		Expect(err).NotTo(HaveOccurred())
+
 		newList.Revision = newList.Revision + 1
-		Expect(updatedList).To(Equal(newList))
+		Eventually(func() (bool, error) {
+			aList, err := client.List(newList.ID)
+			return reflect.DeepEqual(updatedList, aList), err
+		}).Should(BeTrue())
 
 		var newLists *[]wundergo.List
 		Eventually(func() (bool, error) {
@@ -45,10 +45,9 @@ var _ = Describe("basic list functionality", func() {
 		}).Should(BeTrue())
 
 		By("Deleting a list")
-		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(*newList)
-		}).Should(Succeed())
+		newList, err = client.List(newList.ID)
+		err = client.DeleteList(*newList)
+		Expect(err).NotTo(HaveOccurred())
 
 		Eventually(func() (bool, error) {
 			lists, err := client.Lists()
