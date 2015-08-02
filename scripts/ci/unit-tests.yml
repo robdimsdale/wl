@@ -1,0 +1,11 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wundergo
+
+inputs:
+- name: wundergo
+
+run:
+  path: wundergo/scripts/ci/unit_tests
+
