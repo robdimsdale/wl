@@ -1,0 +1,95 @@
+---
+resources:
+- name: wundergo
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/wundergo
+    branch: develop
+    private_key: {{private-key}}
+
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: {{slack-url}}
+
+jobs:
+- name: golang-1.2
+  plan:
+  - get: wundergo
+    trigger: true
+  - task: unit-tests
+    file: wundergo/scripts/ci/golang-1.2/unit-tests.yml
+    on_success:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-2-slack-success-text}}
+    on_failure:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-2-slack-failure-text}}
+- name: golang-1.3
+  plan:
+  - get: wundergo
+    trigger: true
+  - task: unit-tests
+    file: wundergo/scripts/ci/golang-1.3/unit-tests.yml
+    on_success:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-3-slack-success-text}}
+    on_failure:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-3-slack-failure-text}}
+- name: golang-1.4
+  plan:
+  - get: wundergo
+    trigger: true
+  - task: unit-tests
+    file: wundergo/scripts/ci/golang-1.4/unit-tests.yml
+    on_success:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-4-slack-success-text}}
+    on_failure:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-4-slack-failure-text}}
+- name: golang-1.5
+  plan:
+  - get: wundergo
+    trigger: true
+  - task: unit-tests
+    file: wundergo/scripts/ci/golang-1.5/unit-tests.yml
+    on_success:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-5-slack-success-text}}
+    on_failure:
+      put: slack-alert
+      params:
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-5-slack-failure-text}}
