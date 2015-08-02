@@ -8,5 +8,6 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$( cd ${MY_DIR}/.. && pwd )"
 
 pushd ${BASE_DIR}
-  ginkgo -p -r -race -randomizeAllSpecs "$@" integration_tests
+  go tool vet -composites=false $(ls -d */ )
+  go tool vet -composites=false *.go
 popd

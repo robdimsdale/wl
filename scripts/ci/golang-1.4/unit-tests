@@ -4,8 +4,8 @@ set -eux
 
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# This script expects that it lives two directories below the base directory.
-BASE_DIR="$( cd ${MY_DIR}/../.. && pwd )"
+# This script expects that it lives three directories below the base directory.
+BASE_DIR="$( cd ${MY_DIR}/../../.. && pwd )"
 
 # And that scripts/ lives one directory below the base directory.
 SCRIPTS_DIR="$( cd ${BASE_DIR}/scripts/ && pwd )"
@@ -16,5 +16,12 @@ pushd ${BASE_DIR}
 
   go get -v -t -d ./...
 
+  set +e
+  ${SCRIPTS_DIR}/go-vet
+  result_code=$?
   ${SCRIPTS_DIR}/unit-tests
+  result_code=$result_code || $?
+  set -e
 popd
+
+exit $result_code
