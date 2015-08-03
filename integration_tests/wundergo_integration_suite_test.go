@@ -84,7 +84,6 @@ func taskCommentsContain(taskComments *[]wundergo.TaskComment, taskComment *wund
 }
 
 var _ = BeforeSuite(func() {
-
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	By("Logging in")
@@ -101,4 +100,6 @@ var _ = BeforeSuite(func() {
 	}
 
 	client = wundergo.NewOauthClient(accessToken, clientID)
+	_, err := client.Lists()
+	Expect(err).To(BeNil())
 })
