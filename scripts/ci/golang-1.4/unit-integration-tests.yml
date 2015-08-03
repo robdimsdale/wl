@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wundergo-1.4
+
+inputs:
+- name: wundergo
+
+params:
+  WL_ACCESS_TOKEN:
+  WL_CLIENT_ID:
+
+run:
+  path: wundergo/scripts/ci/golang-1.4/unit-integration-tests
+

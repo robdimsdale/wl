@@ -21,6 +21,8 @@ pushd ${BASE_DIR}
   result_code=$?
   ${SCRIPTS_DIR}/unit-tests
   result_code=$result_code || $?
+  ${SCRIPTS_DIR}/integration-tests
+  result_code=$result_code || $?
   set -e
 popd
 

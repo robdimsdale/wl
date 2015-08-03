@@ -17,8 +17,12 @@ jobs:
   plan:
   - get: wundergo
     trigger: true
-  - task: unit-tests
-    file: wundergo/scripts/ci/golang-1.2/unit-tests.yml
+  - task: unit-integration-tests
+    file: wundergo/scripts/ci/golang-1.2/unit-integration-tests.yml
+    config:
+      params:
+        WL_ACCESS_TOKEN: {{wl-access-token}}
+        WL_CLIENT_ID: {{wl-client-id}}
     on_success:
       put: slack-alert
       params:
@@ -37,8 +41,12 @@ jobs:
   plan:
   - get: wundergo
     trigger: true
-  - task: unit-tests
-    file: wundergo/scripts/ci/golang-1.3/unit-tests.yml
+  - task: unit-integration-tests
+    file: wundergo/scripts/ci/golang-1.3/unit-integration-tests.yml
+    config:
+      params:
+        WL_ACCESS_TOKEN: {{wl-access-token}}
+        WL_CLIENT_ID: {{wl-client-id}}
     on_success:
       put: slack-alert
       params:
@@ -57,8 +65,12 @@ jobs:
   plan:
   - get: wundergo
     trigger: true
-  - task: unit-tests
-    file: wundergo/scripts/ci/golang-1.4/unit-tests.yml
+  - task: unit-integration-tests
+    file: wundergo/scripts/ci/golang-1.4/unit-integration-tests.yml
+    config:
+      params:
+        WL_ACCESS_TOKEN: {{wl-access-token}}
+        WL_CLIENT_ID: {{wl-client-id}}
     on_success:
       put: slack-alert
       params:
@@ -77,8 +89,12 @@ jobs:
   plan:
   - get: wundergo
     trigger: true
-  - task: unit-tests
-    file: wundergo/scripts/ci/golang-1.5/unit-tests.yml
+  - task: unit-integration-tests
+    file: wundergo/scripts/ci/golang-1.5/unit-integration-tests.yml
+    config:
+      params:
+        WL_ACCESS_TOKEN: {{wl-access-token}}
+        WL_CLIENT_ID: {{wl-client-id}}
     on_success:
       put: slack-alert
       params:
