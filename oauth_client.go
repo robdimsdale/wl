@@ -1624,7 +1624,14 @@ func (c OauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 		return nil, errors.New("listID must be > 0")
 	}
 
-	resp, err = c.httpHelper.Post(fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiURL, userID, listID, muted), nil)
+	url := fmt.Sprintf("%s/memberships", apiURL)
+	body := []byte(
+		fmt.Sprintf(`{"user_id":%d,"list_id":%d,"muted":%t}`,
+			userID,
+			listID,
+			muted,
+		))
+	resp, err = c.httpHelper.Post(url, body)
 
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
