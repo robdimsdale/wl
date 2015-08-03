@@ -22,3 +22,5 @@ pushd ${BASE_DIR}
   result_code=$(( result_code+=$? ))
   set -e
 popd
+
+exit $result_code
