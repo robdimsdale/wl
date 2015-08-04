@@ -26,7 +26,6 @@ var _ = Describe("basic list functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
-		newList.Revision = newList.Revision + 1
 		newList.Title = newListTitle2
 		var updatedList *wundergo.List
 		updatedList, err = client.UpdateList(*newList)
