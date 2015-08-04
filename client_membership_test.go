@@ -363,15 +363,17 @@ var _ = Describe("client - Membership operations", func() {
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
 			})
 
-			It("performs POST requests to /memberships?user_id=:userID&list_id=:listID&muted=:muted", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?user_id=%d&list_id=%d&muted=%t", apiURL, userID, listID, muted)
+			It("performs POST requests to /memberships with correct body", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships", apiURL)
+				expectedBody := []byte(fmt.Sprintf(`{"user_id":%d,"list_id":%d,"muted":%t}`, userID, listID, muted))
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
 				client.AddMemberToListViaUserID(userID, listID, muted)
 
 				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
-				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
 				Expect(arg0).To(Equal(expectedUrl))
+				Expect(arg1).To(Equal(expectedBody))
 			})
 
 			Context("when userID == 0", func() {
@@ -490,15 +492,17 @@ var _ = Describe("client - Membership operations", func() {
 				fakeHTTPHelper.PostReturns(dummyResponse, nil)
 			})
 
-			It("performs POST requests to /memberships?email=:emailAddress&list_id=:listID&muted=:muted", func() {
-				expectedUrl := fmt.Sprintf("%s/memberships?email=%s&list_id=%d&muted=%t", apiURL, emailAddress, listID, muted)
+			It("performs POST requests to /memberships with correct body", func() {
+				expectedUrl := fmt.Sprintf("%s/memberships", apiURL)
+				expectedBody := []byte(fmt.Sprintf(`{"email":"%s","list_id":%d,"muted":%t}`, emailAddress, listID, muted))
 
 				fakeJSONHelper.UnmarshalReturns(&wundergo.Membership{}, nil)
 				client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 
 				Expect(fakeHTTPHelper.PostCallCount()).To(Equal(1))
-				arg0, _ := fakeHTTPHelper.PostArgsForCall(0)
+				arg0, arg1 := fakeHTTPHelper.PostArgsForCall(0)
 				Expect(arg0).To(Equal(expectedUrl))
+				Expect(arg1).To(Equal(expectedBody))
 			})
 
 			Context("when emailAddress is empty", func() {
