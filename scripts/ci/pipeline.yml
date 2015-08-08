@@ -7,10 +7,25 @@ resources:
     branch: develop
     private_key: {{private-key}}
 
+- name: wundergo-master
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/wundergo
+    branch: master
+    private_key: {{private-key}}
+
 - name: slack-alert
   type: slack-notification
   source:
     url: {{slack-url}}
+
+- name: version
+  type: semver
+  source:
+    bucket: wundergo-releases
+    key: current-version
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
 
 jobs:
 - name: golang-1.2
@@ -116,3 +131,20 @@ jobs:
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
         channel: {{slack-channel}}
         text: {{v1-5-slack-failure-text}}
+
+- name: shipit
+  public: false
+  plan:
+  - aggregate:
+    - get: wundergo
+      passed: [golang-1.2,golang-1.3,golang-1.4,golang-1.5]
+    - get: version
+      params: {bump: minor}
+  - aggregate:
+    - put: version
+      params: {file: version/number}
+    - put: wundergo-master
+      params:
+        repository: wundergo
+        tag: version/number
+        tag_prefix: v
