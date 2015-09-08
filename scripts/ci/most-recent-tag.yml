@@ -1,0 +1,14 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wundergo.5
+
+inputs:
+- name: wundergo-master
+
+run:
+  path: sh
+  args:
+  - -c
+  - |
+    git -C wundergo-master tag | tail -1 > tagname

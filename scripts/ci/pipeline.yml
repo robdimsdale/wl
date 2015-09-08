@@ -50,6 +50,13 @@ resources:
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
+- name: github-release
+  type: github-release
+  source:
+    access_token: {{github-release-access-token}}
+    repository: garagepi
+    user: robdimsdale
+
 - name: docker-wundergo-1.2
   type: docker-image
   source:
@@ -243,6 +250,22 @@ jobs:
         tag: version/number
         tag_prefix: v
 
+- name: github-release
+  plan:
+  - aggregate:
+    - get: wundergo
+      passed: [shipit]
+      trigger: true
+    - get: wundergo-master
+      passed: [shipit]
+      trigger: true
+  - task: most-recent-tag
+    file: wundergo/scripts/ci/most-recent-tag.yml
+  - put: github-release
+    params:
+      name: most-recent-tag/tagname
+      tag: most-recent-tag/tagname
+
 - name: major
   public: true
   serial_groups: [version]
@@ -353,6 +376,7 @@ groups:
   - golang-1.5
   - rc
   - shipit
+  - github-release
   - major
   - minor
   - patch
