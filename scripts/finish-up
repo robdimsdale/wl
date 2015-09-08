@@ -8,14 +8,14 @@ MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BASE_DIR="$( cd ${MY_DIR}/.. && pwd )"
 
 pushd ${BASE_DIR}
-  ginkgo \
-    -p \
-    -r \
-    -race \
-    -randomizeAllSpecs \
-    -failOnPending \
-    -randomizeSuites \
-    -skipPackage="integration_tests" \
-    "$@" \
-    .
+  if [ "$#" != "0" ]; then
+    ids=""
+    for id in "$@"; do
+      ids="$ids #${id}"
+    done
+  fi
+
+  echo "[finishes${ids}]" | git ci --file -
+
+  git ci --amend
 popd
