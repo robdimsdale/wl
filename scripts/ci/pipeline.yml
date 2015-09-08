@@ -31,6 +31,13 @@ resources:
   source:
     url: {{slack-url}}
 
+- name: tracker
+  type: tracker
+  source:
+    token: {{tracker-token}}
+    project_id: {{tracker-project-id}}
+    tracker_url: https://www.pivotaltracker.com
+
 - name: version
   type: semver
   source:
@@ -183,8 +190,12 @@ jobs:
       - get: version
         params: {pre: rc}
         trigger: true
-    - put: version
-      params: {file: version/number}
+    - aggregate:
+      - put: version
+        params: {file: version/number}
+      - put: tracker
+        params:
+          repos: [wundergo]
     on_failure:
       put: slack-alert
       params:
