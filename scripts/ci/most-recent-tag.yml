@@ -1,7 +1,7 @@
 ---
 platform: linux
 
-image: docker:///robdimsdale/wundergo.5
+image: docker:///robdimsdale/wundergo-1.5
 
 inputs:
 - name: wundergo-master
