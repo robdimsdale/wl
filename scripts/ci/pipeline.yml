@@ -54,7 +54,7 @@ resources:
   type: github-release
   source:
     access_token: {{github-release-access-token}}
-    repository: garagepi
+    repository: wundergo
     user: robdimsdale
 
 - name: docker-wundergo-1.2
