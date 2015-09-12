@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// AvatarURL returns the URL of the user associated with userID
+// sized is checked to ensure it is positive, but is not validate otherwise.
 func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, error) {
 	url := fmt.Sprintf(
 		"%s/avatar?user_id=%d",
