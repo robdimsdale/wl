@@ -8,10 +8,11 @@ import (
 )
 
 var _ = Describe("basic task functionality", func() {
-
-	var firstList *wundergo.List
-	var newTask *wundergo.Task
-	var err error
+	var (
+		firstList *wundergo.List
+		newTask   *wundergo.Task
+		err       error
+	)
 
 	BeforeEach(func() {
 		By("Getting first list")
@@ -58,7 +59,6 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can update tasks", func() {
-
 		var completedTasks *[]wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {

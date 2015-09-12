@@ -1,7 +1,5 @@
 package wundergo
 
-import "time"
-
 // Client represents the methods that the API supports.
 type Client interface {
 	User() (*User, error)
@@ -11,7 +9,6 @@ type Client interface {
 
 	Lists() (*[]List, error)
 	List(listID uint) (*List, error)
-	ListTaskCount(listID uint) (*ListTaskCount, error)
 	CreateList(title string) (*List, error)
 	UpdateList(list List) (*List, error)
 	DeleteList(list List) error
@@ -84,23 +81,6 @@ type Client interface {
 	RejectInvite(membership Membership) error
 	RemoveMemberFromList(membership Membership) error
 	AcceptMember(membership Membership) (*Membership, error)
-
-	FilesForListID(listID uint) (*[]File, error)
-	FilesForTaskID(taskID uint) (*[]File, error)
-	File(fileID uint) (*File, error)
-	CreateFile(uploadID uint, taskID uint, localCreatedAt time.Time) (*File, error)
-	DestroyFile(file File) error
-	CreateUpload(
-		contentType string,
-		fileName string,
-		fileSize uint,
-		partNumber uint,
-		md5Sum string,
-	) (*Upload, error)
-	ChunkedUploadPart(uploadID uint, partNumber uint, md5Sum string) (*Upload, error)
-	MarkUploadComplete(uploadID uint) (*Upload, error)
-
-	FilePreview(fileID uint) (*FilePreview, error)
 
 	TaskCommentsForListID(listID uint) (*[]TaskComment, error)
 	TaskCommentsForTaskID(taskID uint) (*[]TaskComment, error)

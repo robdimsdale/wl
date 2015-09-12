@@ -9,11 +9,11 @@ type Logger interface {
 	Println(message string)
 }
 
-// PrintlnLogger is an implementation of Logger.
-type defaultLogger struct {
+// DefaultLogger is an implementation of Logger.
+type DefaultLogger struct {
 }
 
 // Println writes the message to std out
-func (l defaultLogger) Println(message string) {
+func (l DefaultLogger) Println(message string) {
 	log.Println(message)
 }

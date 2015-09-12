@@ -6,9 +6,14 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wundergo/oauth"
 
 	"testing"
 	"time"
+)
+
+const (
+	apiURL = "https://a.wunderlist.com/api/v1"
 )
 
 func TestMain(t *testing.T) {
@@ -99,7 +104,11 @@ var _ = BeforeSuite(func() {
 		Fail("Error - WL_CLIENT_ID must be provided")
 	}
 
-	client = wundergo.NewOauthClient(accessToken, clientID)
+	client = oauth.NewClient(
+		accessToken,
+		clientID,
+		apiURL,
+	)
 	_, err := client.Lists()
 	Expect(err).To(BeNil())
 })
