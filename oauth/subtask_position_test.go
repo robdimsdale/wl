@@ -49,13 +49,13 @@ var _ = Describe("client - Subtask position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtaskPositions := &[]wundergo.Position{{ID: 2345}}
+				expectedSubtaskPositions := []wundergo.Position{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtaskPositions)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtaskPositions)
+				err = json.Unmarshal(expectedBody, &expectedSubtaskPositions)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -67,7 +67,7 @@ var _ = Describe("client - Subtask position operations", func() {
 				subtaskPositions, err := client.SubtaskPositionsForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtaskPositions).To(Equal(*expectedSubtaskPositions))
+				Expect(subtaskPositions).To(Equal(expectedSubtaskPositions))
 			})
 		})
 
@@ -171,13 +171,13 @@ var _ = Describe("client - Subtask position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtaskPositions := &[]wundergo.Position{{ID: 2345}}
+				expectedSubtaskPositions := []wundergo.Position{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtaskPositions)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtaskPositions)
+				err = json.Unmarshal(expectedBody, &expectedSubtaskPositions)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -189,7 +189,7 @@ var _ = Describe("client - Subtask position operations", func() {
 				subtaskPositions, err := client.SubtaskPositionsForTaskID(taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtaskPositions).To(Equal(*expectedSubtaskPositions))
+				Expect(subtaskPositions).To(Equal(expectedSubtaskPositions))
 			})
 		})
 
@@ -277,13 +277,13 @@ var _ = Describe("client - Subtask position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtaskPosition := &wundergo.Position{ID: 1234}
+				expectedSubtaskPosition := wundergo.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtaskPosition)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtaskPosition)
+				err = json.Unmarshal(expectedBody, &expectedSubtaskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -295,7 +295,7 @@ var _ = Describe("client - Subtask position operations", func() {
 				subtaskPosition, err := client.SubtaskPosition(subTaskPositionID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtaskPosition).To(Equal(*expectedSubtaskPosition))
+				Expect(subtaskPosition).To(Equal(expectedSubtaskPosition))
 			})
 		})
 
@@ -375,21 +375,21 @@ var _ = Describe("client - Subtask position operations", func() {
 	})
 
 	Describe("updating a subtask position", func() {
-		var subTaskPosition *wundergo.Position
+		var subTaskPosition wundergo.Position
 
 		BeforeEach(func() {
-			subTaskPosition = &wundergo.Position{ID: 1234}
+			subTaskPosition = wundergo.Position{ID: 1234}
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtaskPosition := &wundergo.Position{ID: 1234}
+				expectedSubtaskPosition := wundergo.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtaskPosition)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtaskPosition)
+				err = json.Unmarshal(expectedBody, &expectedSubtaskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -398,10 +398,10 @@ var _ = Describe("client - Subtask position operations", func() {
 					),
 				)
 
-				actualSubtaskPosition, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				actualSubtaskPosition, err := client.UpdateSubtaskPosition(subTaskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualSubtaskPosition).To(Equal(*expectedSubtaskPosition))
+				Expect(actualSubtaskPosition).To(Equal(expectedSubtaskPosition))
 			})
 		})
 
@@ -409,7 +409,7 @@ var _ = Describe("client - Subtask position operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				_, err := client.UpdateSubtaskPosition(subTaskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -419,7 +419,7 @@ var _ = Describe("client - Subtask position operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				_, err := client.UpdateSubtaskPosition(subTaskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -433,7 +433,7 @@ var _ = Describe("client - Subtask position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				_, err := client.UpdateSubtaskPosition(subTaskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -447,7 +447,7 @@ var _ = Describe("client - Subtask position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				_, err := client.UpdateSubtaskPosition(subTaskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -461,7 +461,7 @@ var _ = Describe("client - Subtask position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateSubtaskPosition(*subTaskPosition)
+				_, err := client.UpdateSubtaskPosition(subTaskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})

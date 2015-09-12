@@ -49,13 +49,13 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNotes := &[]wundergo.Note{{ID: 2345}}
+				expectedNotes := []wundergo.Note{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedNotes)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedNotes)
+				err = json.Unmarshal(expectedBody, &expectedNotes)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -67,7 +67,7 @@ var _ = Describe("client - Note operations", func() {
 				notes, err := client.NotesForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*notes).To(Equal(*expectedNotes))
+				Expect(notes).To(Equal(expectedNotes))
 			})
 		})
 
@@ -171,13 +171,13 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNotes := &[]wundergo.Note{{ID: 2345}}
+				expectedNotes := []wundergo.Note{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedNotes)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedNotes)
+				err = json.Unmarshal(expectedBody, &expectedNotes)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -189,7 +189,7 @@ var _ = Describe("client - Note operations", func() {
 				notes, err := client.NotesForTaskID(taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*notes).To(Equal(*expectedNotes))
+				Expect(notes).To(Equal(expectedNotes))
 			})
 		})
 
@@ -293,13 +293,13 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := &wundergo.Note{ID: 2345}
+				expectedNote := wundergo.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedNote)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedNote)
+				err = json.Unmarshal(expectedBody, &expectedNote)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -311,7 +311,7 @@ var _ = Describe("client - Note operations", func() {
 				note, err := client.Note(noteID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*note).To(Equal(*expectedNote))
+				Expect(note).To(Equal(expectedNote))
 			})
 		})
 
@@ -419,13 +419,13 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := &wundergo.Note{ID: 2345}
+				expectedNote := wundergo.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedNote)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedNote)
+				err = json.Unmarshal(expectedBody, &expectedNote)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -437,7 +437,7 @@ var _ = Describe("client - Note operations", func() {
 				note, err := client.CreateNote(content, taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*note).To(Equal(*expectedNote))
+				Expect(note).To(Equal(expectedNote))
 			})
 		})
 
@@ -517,10 +517,10 @@ var _ = Describe("client - Note operations", func() {
 	})
 
 	Describe("updating a note", func() {
-		var note *wundergo.Note
+		var note wundergo.Note
 
 		BeforeEach(func() {
-			note = &wundergo.Note{ID: 1234}
+			note = wundergo.Note{ID: 1234}
 		})
 
 		It("performs PUT requests with correct headers to /notes/1234", func() {
@@ -534,20 +534,20 @@ var _ = Describe("client - Note operations", func() {
 				),
 			)
 
-			client.UpdateNote(*note)
+			client.UpdateNote(note)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := &wundergo.Note{ID: 2345}
+				expectedNote := wundergo.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedNote)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedNote)
+				err = json.Unmarshal(expectedBody, &expectedNote)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -556,10 +556,10 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				note, err := client.UpdateNote(*note)
+				note, err := client.UpdateNote(note)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*note).To(Equal(*expectedNote))
+				Expect(note).To(Equal(expectedNote))
 			})
 		})
 
@@ -567,7 +567,7 @@ var _ = Describe("client - Note operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateNote(*note)
+				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -577,7 +577,7 @@ var _ = Describe("client - Note operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateNote(*note)
+				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -591,7 +591,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				_, err := client.UpdateNote(*note)
+				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -605,7 +605,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				_, err := client.UpdateNote(*note)
+				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -619,7 +619,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				_, err := client.UpdateNote(*note)
+				_, err := client.UpdateNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -627,10 +627,10 @@ var _ = Describe("client - Note operations", func() {
 	})
 
 	Describe("deleting a note", func() {
-		var note *wundergo.Note
+		var note wundergo.Note
 
 		BeforeEach(func() {
-			note = &wundergo.Note{ID: 1234, Revision: 23}
+			note = wundergo.Note{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /notes/1234", func() {
@@ -644,7 +644,7 @@ var _ = Describe("client - Note operations", func() {
 				),
 			)
 
-			client.DeleteNote(*note)
+			client.DeleteNote(note)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
@@ -657,7 +657,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 				Expect(err).NotTo(HaveOccurred())
 			})
 		})
@@ -666,7 +666,7 @@ var _ = Describe("client - Note operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -676,7 +676,7 @@ var _ = Describe("client - Note operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -690,7 +690,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -704,7 +704,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -718,7 +718,7 @@ var _ = Describe("client - Note operations", func() {
 					),
 				)
 
-				err := client.DeleteNote(*note)
+				err := client.DeleteNote(note)
 
 				Expect(err).To(HaveOccurred())
 			})

@@ -9,8 +9,8 @@ import (
 
 var _ = Describe("basic task functionality", func() {
 	var (
-		firstList *wundergo.List
-		newTask   *wundergo.Task
+		firstList wundergo.List
+		newTask   wundergo.Task
 		err       error
 	)
 
@@ -19,10 +19,10 @@ var _ = Describe("basic task functionality", func() {
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
-			lists = *l
+			lists = l
 			return err
 		}).Should(Succeed())
-		firstList = &lists[0]
+		firstList = lists[0]
 
 		By("Creating task in first list")
 		uuid, err := uuid.NewV4()
@@ -48,10 +48,10 @@ var _ = Describe("basic task functionality", func() {
 		By("Deleting task")
 		Eventually(func() error {
 			newTask, err = client.Task(newTask.ID)
-			return client.DeleteTask(*newTask)
+			return client.DeleteTask(newTask)
 		}).Should(Succeed())
 
-		var tasks *[]wundergo.Task
+		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
 			tasks, err = client.TasksForListID(firstList.ID)
 			return taskContains(tasks, newTask), err
@@ -59,7 +59,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can update tasks", func() {
-		var completedTasks *[]wundergo.Task
+		var completedTasks []wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
 			completedTasks, err = client.CompletedTasksForListID(firstList.ID, showCompletedTasks)
@@ -70,7 +70,7 @@ var _ = Describe("basic task functionality", func() {
 		newTask.DueDate = "1971-01-01"
 		newTask.Completed = true
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(*newTask)
+			newTask, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
 
@@ -81,7 +81,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can perform subtask CRUD", func() {
-		var subtask *wundergo.Subtask
+		var subtask wundergo.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
 			subtask, err = client.CreateSubtask("mySubtaskTitle", newTask.ID, subtaskComplete)
@@ -90,17 +90,17 @@ var _ = Describe("basic task functionality", func() {
 
 		subtask.Title = "newSubtaskTitle"
 		Eventually(func() error {
-			subtask, err = client.UpdateSubtask(*subtask)
+			subtask, err = client.UpdateSubtask(subtask)
 			return err
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			return client.DeleteSubtask(*subtask)
+			return client.DeleteSubtask(subtask)
 		}).Should(Succeed())
 	})
 
 	It("can perform reminder CRUD", func() {
-		var reminder *wundergo.Reminder
+		var reminder wundergo.Reminder
 		reminderDate := "1970-08-30T08:29:46.203Z"
 		createdByDeviceUdid := ""
 		Eventually(func() error {
@@ -110,12 +110,12 @@ var _ = Describe("basic task functionality", func() {
 
 		reminder.Date = "1971-08-30T08:29:46.203Z"
 		Eventually(func() error {
-			reminder, err = client.UpdateReminder(*reminder)
+			reminder, err = client.UpdateReminder(reminder)
 			return err
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			return client.DeleteReminder(*reminder)
+			return client.DeleteReminder(reminder)
 		}).Should(Succeed())
 	})
 })

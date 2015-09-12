@@ -50,13 +50,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := &[]wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtasks)
+				err = json.Unmarshal(expectedBody, &expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -68,7 +68,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtasks, err := client.SubtasksForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtasks).To(Equal(*expectedSubtasks))
+				Expect(subtasks).To(Equal(expectedSubtasks))
 			})
 		})
 
@@ -172,13 +172,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := &[]wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtasks)
+				err = json.Unmarshal(expectedBody, &expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -190,7 +190,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtasks, err := client.SubtasksForTaskID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtasks).To(Equal(*expectedSubtasks))
+				Expect(subtasks).To(Equal(expectedSubtasks))
 			})
 		})
 
@@ -298,13 +298,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := &[]wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtasks)
+				err = json.Unmarshal(expectedBody, &expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -316,7 +316,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtasks, err := client.CompletedSubtasksForListID(listID, completed)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtasks).To(Equal(*expectedSubtasks))
+				Expect(subtasks).To(Equal(expectedSubtasks))
 			})
 		})
 
@@ -424,13 +424,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := &[]wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtasks)
+				err = json.Unmarshal(expectedBody, &expectedSubtasks)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -442,7 +442,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtasks, err := client.CompletedSubtasksForTaskID(taskID, completed)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtasks).To(Equal(*expectedSubtasks))
+				Expect(subtasks).To(Equal(expectedSubtasks))
 			})
 		})
 
@@ -546,13 +546,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := &wundergo.Subtask{ID: 2345}
+				expectedSubtask := wundergo.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtask)
+				err = json.Unmarshal(expectedBody, &expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -564,7 +564,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtask, err := client.Subtask(subtaskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtask).To(Equal(*expectedSubtask))
+				Expect(subtask).To(Equal(expectedSubtask))
 			})
 		})
 
@@ -682,13 +682,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := &wundergo.Subtask{ID: 2345}
+				expectedSubtask := wundergo.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtask)
+				err = json.Unmarshal(expectedBody, &expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -700,7 +700,7 @@ var _ = Describe("client - Subtask operations", func() {
 				subtask, err := client.CreateSubtask(title, taskID, completed)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*subtask).To(Equal(*expectedSubtask))
+				Expect(subtask).To(Equal(expectedSubtask))
 			})
 		})
 
@@ -804,13 +804,13 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := &wundergo.Subtask{ID: 2345}
+				expectedSubtask := wundergo.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedSubtask)
+				err = json.Unmarshal(expectedBody, &expectedSubtask)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -822,7 +822,7 @@ var _ = Describe("client - Subtask operations", func() {
 				actualSubtask, err := client.UpdateSubtask(subtask)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualSubtask).To(Equal(*expectedSubtask))
+				Expect(actualSubtask).To(Equal(expectedSubtask))
 			})
 		})
 

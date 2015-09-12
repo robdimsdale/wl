@@ -10,7 +10,7 @@ import (
 )
 
 // TaskCommentsForListID returns TaskComments for the provided listID.
-func (c oauthClient) TaskCommentsForListID(listID uint) (*[]wundergo.TaskComment, error) {
+func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -36,8 +36,8 @@ func (c oauthClient) TaskCommentsForListID(listID uint) (*[]wundergo.TaskComment
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComments := &[]wundergo.TaskComment{}
-	err = json.NewDecoder(resp.Body).Decode(taskComments)
+	taskComments := []wundergo.TaskComment{}
+	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -46,7 +46,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) (*[]wundergo.TaskComment
 }
 
 // TaskCommentsForTaskID returns TaskComments for the provided taskID.
-func (c oauthClient) TaskCommentsForTaskID(taskID uint) (*[]wundergo.TaskComment, error) {
+func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment, error) {
 	if taskID == 0 {
 		return nil, errors.New("taskID must be > 0")
 	}
@@ -72,8 +72,8 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) (*[]wundergo.TaskComment
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComments := &[]wundergo.TaskComment{}
-	err = json.NewDecoder(resp.Body).Decode(taskComments)
+	taskComments := []wundergo.TaskComment{}
+	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -83,9 +83,9 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) (*[]wundergo.TaskComment
 
 // CreateTaskComment creates a TaskComment with the provided content associated with the
 // Task for the corresponding taskID.
-func (c oauthClient) CreateTaskComment(text string, taskID uint) (*wundergo.TaskComment, error) {
+func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskComment, error) {
 	if taskID == 0 {
-		return nil, errors.New("taskID must be > 0")
+		return wundergo.TaskComment{}, errors.New("taskID must be > 0")
 	}
 
 	body := []byte(fmt.Sprintf(`{"text":"%s","task_id":%d}`, text, taskID))
@@ -94,36 +94,36 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (*wundergo.Task
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wundergo.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	taskComment := &wundergo.TaskComment{}
-	err = json.NewDecoder(resp.Body).Decode(taskComment)
+	taskComment := wundergo.TaskComment{}
+	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil
 }
 
 // TaskComment returns the TaskComment for the corresponding taskCommentID.
-func (c oauthClient) TaskComment(taskCommentID uint) (*wundergo.TaskComment, error) {
+func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, error) {
 	if taskCommentID == 0 {
-		return nil, errors.New("taskCommentID must be > 0")
+		return wundergo.TaskComment{}, errors.New("taskCommentID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -134,24 +134,24 @@ func (c oauthClient) TaskComment(taskCommentID uint) (*wundergo.TaskComment, err
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wundergo.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComment := &wundergo.TaskComment{}
-	err = json.NewDecoder(resp.Body).Decode(taskComment)
+	taskComment := wundergo.TaskComment{}
+	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil
 }

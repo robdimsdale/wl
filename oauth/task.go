@@ -10,7 +10,7 @@ import (
 )
 
 // TasksForListID returns Tasks for the provided listID.
-func (c oauthClient) TasksForListID(listID uint) (*[]wundergo.Task, error) {
+func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -40,8 +40,8 @@ func (c oauthClient) TasksForListID(listID uint) (*[]wundergo.Task, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := &[]wundergo.Task{}
-	err = json.NewDecoder(resp.Body).Decode(tasks)
+	tasks := []wundergo.Task{}
+	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -50,7 +50,7 @@ func (c oauthClient) TasksForListID(listID uint) (*[]wundergo.Task, error) {
 }
 
 // CompletedTasksForListID returns tasks filtered by whether they are completed.
-func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]wundergo.Task, error) {
+func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wundergo.Task, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -77,8 +77,8 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]wu
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := &[]wundergo.Task{}
-	err = json.NewDecoder(resp.Body).Decode(tasks)
+	tasks := []wundergo.Task{}
+	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -87,7 +87,7 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) (*[]wu
 }
 
 // Task returns the Task for the corresponding taskID.
-func (c oauthClient) Task(taskID uint) (*wundergo.Task, error) {
+func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
 	url := fmt.Sprintf(
 		"%s/tasks/%d",
 		c.apiURL,
@@ -96,24 +96,24 @@ func (c oauthClient) Task(taskID uint) (*wundergo.Task, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	task := &wundergo.Task{}
-	err = json.NewDecoder(resp.Body).Decode(task)
+	task := wundergo.Task{}
+	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Task{}, err
 	}
 	return task, nil
 }
@@ -152,15 +152,15 @@ func (c oauthClient) CreateTask(
 	recurrenceCount uint,
 	dueDate string,
 	starred bool,
-) (*wundergo.Task, error) {
+) (wundergo.Task, error) {
 
 	if listID == 0 {
-		return nil, errors.New("listID must be > 0")
+		return wundergo.Task{}, errors.New("listID must be > 0")
 	}
 
 	err := c.validateRecurrence(recurrenceType, recurrenceCount)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	tcc := taskCreateConfig{
@@ -176,49 +176,49 @@ func (c oauthClient) CreateTask(
 
 	body, err := json.Marshal(tcc)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	url := fmt.Sprintf("%s/tasks", c.apiURL)
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	task := &wundergo.Task{}
-	err = json.NewDecoder(resp.Body).Decode(task)
+	task := wundergo.Task{}
+	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Task{}, err
 	}
 	return task, nil
 }
 
 // UpdateTask updates the provided Task.
-func (c oauthClient) UpdateTask(task wundergo.Task) (*wundergo.Task, error) {
+func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 	err := c.validateRecurrence(task.RecurrenceType, task.RecurrenceCount)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	origTask, err := c.Task(task.ID)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	tuc := TaskUpdateConfig{
@@ -266,7 +266,7 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (*wundergo.Task, error) {
 
 	body, err := json.Marshal(tuc)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -277,24 +277,24 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (*wundergo.Task, error) {
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedTask := &wundergo.Task{}
-	err = json.NewDecoder(resp.Body).Decode(returnedTask)
+	returnedTask := wundergo.Task{}
+	err = json.NewDecoder(resp.Body).Decode(&returnedTask)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Task{}, err
 	}
 	return returnedTask, nil
 }

@@ -48,7 +48,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMemberships := &[]wundergo.Membership{{ID: 2345}}
+				expectedMemberships := []wundergo.Membership{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -59,7 +59,7 @@ var _ = Describe("client - Membership operations", func() {
 				memberships, err := client.MembershipsForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*memberships).To(Equal(*expectedMemberships))
+				Expect(memberships).To(Equal(expectedMemberships))
 			})
 		})
 
@@ -157,7 +157,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMemberships := &[]wundergo.Membership{{ID: 2345}}
+				expectedMemberships := []wundergo.Membership{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -168,7 +168,7 @@ var _ = Describe("client - Membership operations", func() {
 				memberships, err := client.Memberships()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*memberships).To(Equal(*expectedMemberships))
+				Expect(memberships).To(Equal(expectedMemberships))
 			})
 		})
 
@@ -260,7 +260,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMembership := &wundergo.Membership{ID: id}
+				expectedMembership := wundergo.Membership{ID: id}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -271,7 +271,7 @@ var _ = Describe("client - Membership operations", func() {
 				membership, err := client.Membership(id)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*membership).To(Equal(*expectedMembership))
+				Expect(membership).To(Equal(expectedMembership))
 			})
 		})
 
@@ -387,7 +387,7 @@ var _ = Describe("client - Membership operations", func() {
 
 			Context("when the request is valid", func() {
 				It("returns successfully", func() {
-					expectedMembership := &wundergo.Membership{ID: 3456}
+					expectedMembership := wundergo.Membership{ID: 3456}
 
 					server.AppendHandlers(
 						ghttp.CombineHandlers(
@@ -398,7 +398,7 @@ var _ = Describe("client - Membership operations", func() {
 					membership, err := client.AddMemberToListViaUserID(userID, listID, muted)
 					Expect(err).NotTo(HaveOccurred())
 
-					Expect(*membership).To(Equal(*expectedMembership))
+					Expect(membership).To(Equal(expectedMembership))
 				})
 			})
 
@@ -515,7 +515,7 @@ var _ = Describe("client - Membership operations", func() {
 
 			Context("when the request is valid", func() {
 				It("returns successfully", func() {
-					expectedMembership := &wundergo.Membership{ID: 3456}
+					expectedMembership := wundergo.Membership{ID: 3456}
 
 					server.AppendHandlers(
 						ghttp.CombineHandlers(
@@ -526,7 +526,7 @@ var _ = Describe("client - Membership operations", func() {
 					membership, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
 					Expect(err).NotTo(HaveOccurred())
 
-					Expect(*membership).To(Equal(*expectedMembership))
+					Expect(membership).To(Equal(expectedMembership))
 				})
 			})
 
@@ -608,15 +608,15 @@ var _ = Describe("client - Membership operations", func() {
 
 	Describe("marking member as accepted", func() {
 		var (
-			membership *wundergo.Membership
+			membership wundergo.Membership
 		)
 
 		BeforeEach(func() {
-			membership = &wundergo.Membership{ID: 1234}
+			membership = wundergo.Membership{ID: 1234}
 		})
 
 		It("performs POST requests with correct headers to /memberships/:userID", func() {
-			expectedMembership := &wundergo.Membership{
+			expectedMembership := wundergo.Membership{
 				ID:    membership.ID,
 				State: "accepted",
 			}
@@ -631,27 +631,27 @@ var _ = Describe("client - Membership operations", func() {
 				),
 			)
 
-			client.AcceptMember(*membership)
+			client.AcceptMember(membership)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMembership := &wundergo.Membership{
+				expectedMembership := wundergo.Membership{
 					ID: membership.ID,
 				}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
-						ghttp.RespondWithJSONEncoded(http.StatusOK, expectedMembership),
+						ghttp.RespondWithJSONEncoded(http.StatusOK, &expectedMembership),
 					),
 				)
 
-				actualMembership, err := client.AcceptMember(*membership)
+				actualMembership, err := client.AcceptMember(membership)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualMembership).To(Equal(*expectedMembership))
+				Expect(actualMembership).To(Equal(expectedMembership))
 			})
 		})
 
@@ -659,7 +659,7 @@ var _ = Describe("client - Membership operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.AcceptMember(*membership)
+				_, err := client.AcceptMember(membership)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -669,7 +669,7 @@ var _ = Describe("client - Membership operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.AcceptMember(*membership)
+				_, err := client.AcceptMember(membership)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -683,7 +683,7 @@ var _ = Describe("client - Membership operations", func() {
 					),
 				)
 
-				_, err := client.AcceptMember(*membership)
+				_, err := client.AcceptMember(membership)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -697,7 +697,7 @@ var _ = Describe("client - Membership operations", func() {
 					),
 				)
 
-				_, err := client.AcceptMember(*membership)
+				_, err := client.AcceptMember(membership)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -711,7 +711,7 @@ var _ = Describe("client - Membership operations", func() {
 					),
 				)
 
-				_, err := client.AcceptMember(*membership)
+				_, err := client.AcceptMember(membership)
 
 				Expect(err).To(HaveOccurred())
 			})

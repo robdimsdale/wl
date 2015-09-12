@@ -49,13 +49,13 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminders := &[]wundergo.Reminder{{ID: 2345}}
+				expectedReminders := []wundergo.Reminder{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedReminders)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedReminders)
+				err = json.Unmarshal(expectedBody, &expectedReminders)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -67,7 +67,7 @@ var _ = Describe("client - Reminder operations", func() {
 				reminders, err := client.RemindersForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*reminders).To(Equal(*expectedReminders))
+				Expect(reminders).To(Equal(expectedReminders))
 			})
 		})
 
@@ -171,13 +171,13 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminders := &[]wundergo.Reminder{{ID: 2345}}
+				expectedReminders := []wundergo.Reminder{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedReminders)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedReminders)
+				err = json.Unmarshal(expectedBody, &expectedReminders)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -189,7 +189,7 @@ var _ = Describe("client - Reminder operations", func() {
 				reminders, err := client.RemindersForTaskID(taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*reminders).To(Equal(*expectedReminders))
+				Expect(reminders).To(Equal(expectedReminders))
 			})
 		})
 
@@ -293,13 +293,13 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := &wundergo.Reminder{ID: 2345}
+				expectedReminder := wundergo.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedReminder)
+				err = json.Unmarshal(expectedBody, &expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -311,7 +311,7 @@ var _ = Describe("client - Reminder operations", func() {
 				reminder, err := client.Reminder(reminderID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*reminder).To(Equal(*expectedReminder))
+				Expect(reminder).To(Equal(expectedReminder))
 			})
 		})
 
@@ -410,13 +410,13 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := &wundergo.Reminder{ID: 2345}
+				expectedReminder := wundergo.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedReminder)
+				err = json.Unmarshal(expectedBody, &expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -428,7 +428,7 @@ var _ = Describe("client - Reminder operations", func() {
 				reminder, err := client.CreateReminder(date, taskID, createdByDeviceUdid)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*reminder).To(Equal(*expectedReminder))
+				Expect(reminder).To(Equal(expectedReminder))
 			})
 		})
 
@@ -497,11 +497,11 @@ var _ = Describe("client - Reminder operations", func() {
 
 	Describe("updating a Reminder", func() {
 		var (
-			reminder *wundergo.Reminder
+			reminder wundergo.Reminder
 		)
 
 		BeforeEach(func() {
-			reminder = &wundergo.Reminder{ID: 1234}
+			reminder = wundergo.Reminder{ID: 1234}
 		})
 
 		It("performs GET requests with correct headers to /reminders/:id", func() {
@@ -516,20 +516,20 @@ var _ = Describe("client - Reminder operations", func() {
 				),
 			)
 
-			client.UpdateReminder(*reminder)
+			client.UpdateReminder(reminder)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := &wundergo.Reminder{ID: 2345}
+				expectedReminder := wundergo.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedReminder)
+				err = json.Unmarshal(expectedBody, &expectedReminder)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -538,10 +538,10 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				reminder, err := client.UpdateReminder(*reminder)
+				reminder, err := client.UpdateReminder(reminder)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*reminder).To(Equal(*expectedReminder))
+				Expect(reminder).To(Equal(expectedReminder))
 			})
 		})
 
@@ -549,7 +549,7 @@ var _ = Describe("client - Reminder operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateReminder(*reminder)
+				_, err := client.UpdateReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -559,7 +559,7 @@ var _ = Describe("client - Reminder operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateReminder(*reminder)
+				_, err := client.UpdateReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -573,7 +573,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				_, err := client.UpdateReminder(*reminder)
+				_, err := client.UpdateReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -587,7 +587,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				_, err := client.UpdateReminder(*reminder)
+				_, err := client.UpdateReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -601,7 +601,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				_, err := client.UpdateReminder(*reminder)
+				_, err := client.UpdateReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -610,11 +610,11 @@ var _ = Describe("client - Reminder operations", func() {
 
 	Describe("deleting a Reminder", func() {
 		var (
-			reminder *wundergo.Reminder
+			reminder wundergo.Reminder
 		)
 
 		BeforeEach(func() {
-			reminder = &wundergo.Reminder{ID: 1234, Revision: 23}
+			reminder = wundergo.Reminder{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /reminders/:id", func() {
@@ -628,7 +628,7 @@ var _ = Describe("client - Reminder operations", func() {
 				),
 			)
 
-			client.DeleteReminder(*reminder)
+			client.DeleteReminder(reminder)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
@@ -641,7 +641,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 				Expect(err).NotTo(HaveOccurred())
 			})
 		})
@@ -650,7 +650,7 @@ var _ = Describe("client - Reminder operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -660,7 +660,7 @@ var _ = Describe("client - Reminder operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -674,7 +674,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -688,7 +688,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -702,7 +702,7 @@ var _ = Describe("client - Reminder operations", func() {
 					),
 				)
 
-				err := client.DeleteReminder(*reminder)
+				err := client.DeleteReminder(reminder)
 
 				Expect(err).To(HaveOccurred())
 			})

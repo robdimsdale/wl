@@ -25,12 +25,8 @@ var (
 	client wundergo.Client
 )
 
-func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
-	if lists == nil || list == nil {
-		return false
-	}
-
-	for _, l := range *lists {
+func listContains(lists []wundergo.List, list wundergo.List) bool {
+	for _, l := range lists {
 		if l.ID == list.ID {
 			return true
 		}
@@ -38,11 +34,8 @@ func listContains(lists *[]wundergo.List, list *wundergo.List) bool {
 	return false
 }
 
-func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
-	if tasks == nil || task == nil {
-		return false
-	}
-	for _, t := range *tasks {
+func taskContains(tasks []wundergo.Task, task wundergo.Task) bool {
+	for _, t := range tasks {
 		if t.ID == task.ID {
 			return true
 		}
@@ -50,24 +43,20 @@ func taskContains(tasks *[]wundergo.Task, task *wundergo.Task) bool {
 	return false
 }
 
-func positionsContainValue(position *[]wundergo.Position, id uint) bool {
+func positionsContainValue(position []wundergo.Position, id uint) bool {
 	if position == nil {
 		return false
 	}
 
-	for _, p := range *position {
-		if positionContainsValue(&p, id) {
+	for _, p := range position {
+		if positionContainsValue(p, id) {
 			return true
 		}
 	}
 	return false
 }
 
-func positionContainsValue(position *wundergo.Position, id uint) bool {
-	if position == nil {
-		return false
-	}
-
+func positionContainsValue(position wundergo.Position, id uint) bool {
 	for _, v := range position.Values {
 		if v == id {
 			return true
@@ -76,11 +65,8 @@ func positionContainsValue(position *wundergo.Position, id uint) bool {
 	return false
 }
 
-func taskCommentsContain(taskComments *[]wundergo.TaskComment, taskComment *wundergo.TaskComment) bool {
-	if taskComments == nil || taskComment == nil {
-		return false
-	}
-	for _, t := range *taskComments {
+func taskCommentsContain(taskComments []wundergo.TaskComment, taskComment wundergo.TaskComment) bool {
+	for _, t := range taskComments {
 		if t.ID == taskComment.ID {
 			return true
 		}

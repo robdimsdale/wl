@@ -11,7 +11,7 @@ import (
 
 // RemindersForListID returns the Reminders for the List associated with the
 // provided listID.
-func (c oauthClient) RemindersForListID(listID uint) (*[]wundergo.Reminder, error) {
+func (c oauthClient) RemindersForListID(listID uint) ([]wundergo.Reminder, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -37,8 +37,8 @@ func (c oauthClient) RemindersForListID(listID uint) (*[]wundergo.Reminder, erro
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	reminders := &[]wundergo.Reminder{}
-	err = json.NewDecoder(resp.Body).Decode(reminders)
+	reminders := []wundergo.Reminder{}
+	err = json.NewDecoder(resp.Body).Decode(&reminders)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -48,7 +48,7 @@ func (c oauthClient) RemindersForListID(listID uint) (*[]wundergo.Reminder, erro
 
 // RemindersForTaskID returns the Reminders for the Task associated with the
 // provided taskID.
-func (c oauthClient) RemindersForTaskID(taskID uint) (*[]wundergo.Reminder, error) {
+func (c oauthClient) RemindersForTaskID(taskID uint) ([]wundergo.Reminder, error) {
 	if taskID == 0 {
 		return nil, errors.New("taskID must be > 0")
 	}
@@ -74,8 +74,8 @@ func (c oauthClient) RemindersForTaskID(taskID uint) (*[]wundergo.Reminder, erro
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	reminders := &[]wundergo.Reminder{}
-	err = json.NewDecoder(resp.Body).Decode(reminders)
+	reminders := []wundergo.Reminder{}
+	err = json.NewDecoder(resp.Body).Decode(&reminders)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
 		return nil, err
@@ -84,7 +84,7 @@ func (c oauthClient) RemindersForTaskID(taskID uint) (*[]wundergo.Reminder, erro
 }
 
 // Reminder returns the Reminder associated with the provided reminderID.
-func (c oauthClient) Reminder(reminderID uint) (*wundergo.Reminder, error) {
+func (c oauthClient) Reminder(reminderID uint) (wundergo.Reminder, error) {
 	url := fmt.Sprintf(
 		"%s/reminders/%d",
 		c.apiURL,
@@ -93,24 +93,24 @@ func (c oauthClient) Reminder(reminderID uint) (*wundergo.Reminder, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wundergo.Reminder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	reminder := &wundergo.Reminder{}
-	err = json.NewDecoder(resp.Body).Decode(reminder)
+	reminder := wundergo.Reminder{}
+	err = json.NewDecoder(resp.Body).Decode(&reminder)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 	return reminder, nil
 }
@@ -120,10 +120,10 @@ func (c oauthClient) CreateReminder(
 	date string,
 	taskID uint,
 	createdByDeviceUdid string,
-) (*wundergo.Reminder, error) {
+) (wundergo.Reminder, error) {
 
 	if taskID == 0 {
-		return nil, errors.New("taskID must be > 0")
+		return wundergo.Reminder{}, errors.New("taskID must be > 0")
 	}
 
 	var body []byte
@@ -137,37 +137,33 @@ func (c oauthClient) CreateReminder(
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
-	}
-	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wundergo.Reminder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	reminder := &wundergo.Reminder{}
-	err = json.NewDecoder(resp.Body).Decode(reminder)
+	reminder := wundergo.Reminder{}
+	err = json.NewDecoder(resp.Body).Decode(&reminder)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 	return reminder, nil
 }
 
 // UpdateReminder updates the provided Reminder.
-func (c oauthClient) UpdateReminder(reminder wundergo.Reminder) (*wundergo.Reminder, error) {
+func (c oauthClient) UpdateReminder(reminder wundergo.Reminder) (wundergo.Reminder, error) {
 	body, err := json.Marshal(reminder)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -178,24 +174,24 @@ func (c oauthClient) UpdateReminder(reminder wundergo.Reminder) (*wundergo.Remin
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wundergo.Reminder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedReminder := &wundergo.Reminder{}
-	err = json.NewDecoder(resp.Body).Decode(returnedReminder)
+	returnedReminder := wundergo.Reminder{}
+	err = json.NewDecoder(resp.Body).Decode(&returnedReminder)
 	if err != nil {
 		c.logger.Println(fmt.Sprintf("response: %v", resp))
-		return nil, err
+		return wundergo.Reminder{}, err
 	}
 	return returnedReminder, nil
 }

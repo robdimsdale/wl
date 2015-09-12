@@ -42,7 +42,7 @@ var _ = Describe("client - List position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPositions := &[]wundergo.Position{{ID: 2345}}
+				expectedListPositions := []wundergo.Position{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -53,7 +53,7 @@ var _ = Describe("client - List position operations", func() {
 				listPositions, err := client.ListPositions()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*listPositions).To(Equal(*expectedListPositions))
+				Expect(listPositions).To(Equal(expectedListPositions))
 			})
 		})
 
@@ -145,7 +145,7 @@ var _ = Describe("client - List position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPosition := &wundergo.Position{ID: 2345}
+				expectedListPosition := wundergo.Position{ID: 2345}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -156,7 +156,7 @@ var _ = Describe("client - List position operations", func() {
 				listPosition, err := client.ListPosition(listPositionID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*listPosition).To(Equal(*expectedListPosition))
+				Expect(listPosition).To(Equal(expectedListPosition))
 			})
 		})
 
@@ -224,10 +224,10 @@ var _ = Describe("client - List position operations", func() {
 	})
 
 	Describe("updating a list position", func() {
-		var listPosition *wundergo.Position
+		var listPosition wundergo.Position
 
 		BeforeEach(func() {
-			listPosition = &wundergo.Position{
+			listPosition = wundergo.Position{
 				ID: 1234,
 			}
 		})
@@ -244,14 +244,14 @@ var _ = Describe("client - List position operations", func() {
 				),
 			)
 
-			client.UpdateListPosition(*listPosition)
+			client.UpdateListPosition(listPosition)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPosition := &wundergo.Position{
+				expectedListPosition := wundergo.Position{
 					ID: listPosition.ID,
 				}
 
@@ -261,10 +261,10 @@ var _ = Describe("client - List position operations", func() {
 					),
 				)
 
-				actualListPosition, err := client.UpdateListPosition(*listPosition)
+				actualListPosition, err := client.UpdateListPosition(listPosition)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualListPosition).To(Equal(*expectedListPosition))
+				Expect(actualListPosition).To(Equal(expectedListPosition))
 			})
 		})
 
@@ -272,7 +272,7 @@ var _ = Describe("client - List position operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateListPosition(*listPosition)
+				_, err := client.UpdateListPosition(listPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -282,7 +282,7 @@ var _ = Describe("client - List position operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateListPosition(*listPosition)
+				_, err := client.UpdateListPosition(listPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -296,7 +296,7 @@ var _ = Describe("client - List position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateListPosition(*listPosition)
+				_, err := client.UpdateListPosition(listPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -310,7 +310,7 @@ var _ = Describe("client - List position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateListPosition(*listPosition)
+				_, err := client.UpdateListPosition(listPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -324,7 +324,7 @@ var _ = Describe("client - List position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateListPosition(*listPosition)
+				_, err := client.UpdateListPosition(listPosition)
 
 				Expect(err).To(HaveOccurred())
 			})

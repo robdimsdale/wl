@@ -43,13 +43,13 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedLists := &[]wundergo.List{{ID: 2345}}
+				expectedLists := []wundergo.List{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedLists)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedLists)
+				err = json.Unmarshal(expectedBody, &expectedLists)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -61,7 +61,7 @@ var _ = Describe("client - List operations", func() {
 				lists, err := client.Lists()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*lists).To(Equal(*expectedLists))
+				Expect(lists).To(Equal(expectedLists))
 			})
 		})
 
@@ -153,7 +153,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := &wundergo.List{
+				expectedList := wundergo.List{
 					ID: listID,
 				}
 
@@ -161,7 +161,7 @@ var _ = Describe("client - List operations", func() {
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedList)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedList)
+				err = json.Unmarshal(expectedBody, &expectedList)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -173,7 +173,7 @@ var _ = Describe("client - List operations", func() {
 				list, err := client.List(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*list).To(Equal(*expectedList))
+				Expect(list).To(Equal(expectedList))
 			})
 		})
 
@@ -266,13 +266,13 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := &wundergo.List{ID: 2345}
+				expectedList := wundergo.List{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedList)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedList)
+				err = json.Unmarshal(expectedBody, &expectedList)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -284,7 +284,7 @@ var _ = Describe("client - List operations", func() {
 				actualList, err := client.CreateList(title)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualList).To(Equal(*expectedList))
+				Expect(actualList).To(Equal(expectedList))
 			})
 		})
 
@@ -364,10 +364,10 @@ var _ = Describe("client - List operations", func() {
 	})
 
 	Describe("updating a list", func() {
-		var list *wundergo.List
+		var list wundergo.List
 
 		BeforeEach(func() {
-			list = &wundergo.List{
+			list = wundergo.List{
 				ID: 1234,
 			}
 		})
@@ -384,20 +384,20 @@ var _ = Describe("client - List operations", func() {
 				),
 			)
 
-			client.UpdateList(*list)
+			client.UpdateList(list)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := &wundergo.List{ID: list.ID}
+				expectedList := wundergo.List{ID: list.ID}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedList)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedList)
+				err = json.Unmarshal(expectedBody, &expectedList)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -406,10 +406,10 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				actualList, err := client.UpdateList(*list)
+				actualList, err := client.UpdateList(list)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualList).To(Equal(*expectedList))
+				Expect(actualList).To(Equal(expectedList))
 			})
 		})
 
@@ -417,7 +417,7 @@ var _ = Describe("client - List operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateList(*list)
+				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -427,7 +427,7 @@ var _ = Describe("client - List operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateList(*list)
+				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -441,7 +441,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				_, err := client.UpdateList(*list)
+				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -455,7 +455,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				_, err := client.UpdateList(*list)
+				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -469,7 +469,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				_, err := client.UpdateList(*list)
+				_, err := client.UpdateList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -477,10 +477,10 @@ var _ = Describe("client - List operations", func() {
 	})
 
 	Describe("deleting a list", func() {
-		var list *wundergo.List
+		var list wundergo.List
 
 		BeforeEach(func() {
-			list = &wundergo.List{
+			list = wundergo.List{
 				ID: 1234,
 			}
 		})
@@ -496,7 +496,7 @@ var _ = Describe("client - List operations", func() {
 				),
 			)
 
-			client.DeleteList(*list)
+			client.DeleteList(list)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
@@ -509,7 +509,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 				Expect(err).NotTo(HaveOccurred())
 			})
 		})
@@ -518,7 +518,7 @@ var _ = Describe("client - List operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -528,7 +528,7 @@ var _ = Describe("client - List operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -542,7 +542,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -556,7 +556,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -570,7 +570,7 @@ var _ = Describe("client - List operations", func() {
 					),
 				)
 
-				err := client.DeleteList(*list)
+				err := client.DeleteList(list)
 
 				Expect(err).To(HaveOccurred())
 			})

@@ -43,13 +43,13 @@ var _ = Describe("client - User operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUser := &wundergo.User{Name: "some user"}
+				expectedUser := wundergo.User{Name: "some user"}
 				expectedBody, err := json.Marshal(expectedUser)
 				Expect(err).NotTo(HaveOccurred())
 
 				// Unmarshal to ensure exact object is returned
 				// avoids odd behavior with the time fields
-				err = json.Unmarshal(expectedBody, expectedUser)
+				err = json.Unmarshal(expectedBody, &expectedUser)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -61,7 +61,7 @@ var _ = Describe("client - User operations", func() {
 				user, err := client.User()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*user).To(Equal(*expectedUser))
+				Expect(user).To(Equal(expectedUser))
 			})
 
 		})
@@ -155,13 +155,13 @@ var _ = Describe("client - User operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUser := &wundergo.User{Name: "some user"}
-				expectedBody, err := json.Marshal(expectedUser)
-				Expect(err).NotTo(HaveOccurred())
+				expectedUser := wundergo.User{Name: "some user"}
 
 				// Unmarshal to ensure exact object is returned
 				// avoids odd behavior with the time fields
-				err = json.Unmarshal(expectedBody, expectedUser)
+				expectedBody, err := json.Marshal(expectedUser)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(expectedBody, &expectedUser)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -170,10 +170,10 @@ var _ = Describe("client - User operations", func() {
 					),
 				)
 
-				user, err := client.UpdateUser(*expectedUser)
+				user, err := client.UpdateUser(expectedUser)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*user).To(Equal(*expectedUser))
+				Expect(user).To(Equal(expectedUser))
 			})
 		})
 
@@ -301,13 +301,13 @@ var _ = Describe("client - User operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUsers := &[]wundergo.User{{Name: "some user"}}
-				expectedBody, err := json.Marshal(expectedUsers)
-				Expect(err).NotTo(HaveOccurred())
+				expectedUsers := []wundergo.User{{Name: "some user"}}
 
 				// Unmarshal to ensure exact object is returned
 				// avoids odd behavior with the time fields
-				err = json.Unmarshal(expectedBody, expectedUsers)
+				expectedBody, err := json.Marshal(expectedUsers)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(expectedBody, &expectedUsers)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(

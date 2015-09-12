@@ -27,8 +27,8 @@ var _ = Describe("basic list functionality", func() {
 		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
 		newList.Title = newListTitle2
-		var updatedList *wundergo.List
-		updatedList, err = client.UpdateList(*newList)
+		var updatedList wundergo.List
+		updatedList, err = client.UpdateList(newList)
 		Expect(err).NotTo(HaveOccurred())
 
 		newList.Revision = newList.Revision + 1
@@ -37,7 +37,7 @@ var _ = Describe("basic list functionality", func() {
 			return reflect.DeepEqual(updatedList, aList), err
 		}).Should(BeTrue())
 
-		var newLists *[]wundergo.List
+		var newLists []wundergo.List
 		Eventually(func() (bool, error) {
 			newLists, err = client.Lists()
 			return listContains(newLists, newList), err
@@ -45,7 +45,7 @@ var _ = Describe("basic list functionality", func() {
 
 		By("Deleting a list")
 		newList, err = client.List(newList.ID)
-		err = client.DeleteList(*newList)
+		err = client.DeleteList(newList)
 		Expect(err).NotTo(HaveOccurred())
 
 		Eventually(func() (bool, error) {

@@ -49,13 +49,13 @@ var _ = Describe("client - Task position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPositions := &[]wundergo.Position{{ID: 2345}}
+				expectedTaskPositions := []wundergo.Position{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskPositions)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskPositions)
+				err = json.Unmarshal(expectedBody, &expectedTaskPositions)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -67,7 +67,7 @@ var _ = Describe("client - Task position operations", func() {
 				taskPositions, err := client.TaskPositionsForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskPositions).To(Equal(*expectedTaskPositions))
+				Expect(taskPositions).To(Equal(expectedTaskPositions))
 			})
 		})
 
@@ -155,13 +155,13 @@ var _ = Describe("client - Task position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPosition := &wundergo.Position{ID: 1234}
+				expectedTaskPosition := wundergo.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskPosition)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskPosition)
+				err = json.Unmarshal(expectedBody, &expectedTaskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -173,7 +173,7 @@ var _ = Describe("client - Task position operations", func() {
 				taskPosition, err := client.TaskPosition(taskPositionID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskPosition).To(Equal(*expectedTaskPosition))
+				Expect(taskPosition).To(Equal(expectedTaskPosition))
 			})
 		})
 
@@ -253,21 +253,21 @@ var _ = Describe("client - Task position operations", func() {
 	})
 
 	Describe("updating a task position", func() {
-		var taskPosition *wundergo.Position
+		var taskPosition wundergo.Position
 
 		BeforeEach(func() {
-			taskPosition = &wundergo.Position{ID: 1234}
+			taskPosition = wundergo.Position{ID: 1234}
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPosition := &wundergo.Position{ID: 1234}
+				expectedTaskPosition := wundergo.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskPosition)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskPosition)
+				err = json.Unmarshal(expectedBody, &expectedTaskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -276,10 +276,10 @@ var _ = Describe("client - Task position operations", func() {
 					),
 				)
 
-				actualTaskPosition, err := client.UpdateTaskPosition(*taskPosition)
+				actualTaskPosition, err := client.UpdateTaskPosition(taskPosition)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*actualTaskPosition).To(Equal(*expectedTaskPosition))
+				Expect(actualTaskPosition).To(Equal(expectedTaskPosition))
 			})
 		})
 
@@ -287,7 +287,7 @@ var _ = Describe("client - Task position operations", func() {
 			client := oauth.NewClient("", "", "")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateTaskPosition(*taskPosition)
+				_, err := client.UpdateTaskPosition(taskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -297,7 +297,7 @@ var _ = Describe("client - Task position operations", func() {
 			client := oauth.NewClient("", "", "http://not-a-real-url.com")
 
 			It("forwards the error", func() {
-				_, err := client.UpdateTaskPosition(*taskPosition)
+				_, err := client.UpdateTaskPosition(taskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -311,7 +311,7 @@ var _ = Describe("client - Task position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateTaskPosition(*taskPosition)
+				_, err := client.UpdateTaskPosition(taskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -325,7 +325,7 @@ var _ = Describe("client - Task position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateTaskPosition(*taskPosition)
+				_, err := client.UpdateTaskPosition(taskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -339,7 +339,7 @@ var _ = Describe("client - Task position operations", func() {
 					),
 				)
 
-				_, err := client.UpdateTaskPosition(*taskPosition)
+				_, err := client.UpdateTaskPosition(taskPosition)
 
 				Expect(err).To(HaveOccurred())
 			})

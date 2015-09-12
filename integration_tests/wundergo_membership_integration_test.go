@@ -14,7 +14,7 @@ var _ = Describe("basic membership functionality", func() {
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
-			lists = *l
+			lists = l
 			return err
 		}).Should(Succeed())
 		list := lists[0]
@@ -22,7 +22,7 @@ var _ = Describe("basic membership functionality", func() {
 		var user wundergo.User
 		Eventually(func() error {
 			u, err := client.User()
-			user = *u
+			user = u
 			return err
 		}).Should(Succeed())
 
@@ -40,7 +40,7 @@ var _ = Describe("basic membership functionality", func() {
 		var lists []wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
-			lists = *l
+			lists = l
 			return err
 		}).Should(Succeed())
 		list := lists[0]
@@ -48,7 +48,7 @@ var _ = Describe("basic membership functionality", func() {
 		var user wundergo.User
 		Eventually(func() error {
 			u, err := client.User()
-			user = *u
+			user = u
 			return err
 		}).Should(Succeed())
 

@@ -11,11 +11,11 @@ var _ = Describe("basic task position functionality", func() {
 	It("reorders task positions", func() {
 
 		By("Getting first list")
-		var firstList *wundergo.List
+		var firstList wundergo.List
 		Eventually(func() error {
 			l, err := client.Lists()
-			lists := *l
-			firstList = &lists[0]
+			lists := l
+			firstList = lists[0]
 			return err
 		}).Should(Succeed())
 
@@ -28,7 +28,7 @@ var _ = Describe("basic task position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle2 := uuid2.String()
 
-		var newTask1 *wundergo.Task
+		var newTask1 wundergo.Task
 		Eventually(func() error {
 			newTask1, err = client.CreateTask(
 				newTaskTitle1,
@@ -43,7 +43,7 @@ var _ = Describe("basic task position functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		var newTask2 *wundergo.Task
+		var newTask2 wundergo.Task
 		Eventually(func() error {
 			newTask2, err = client.CreateTask(
 				newTaskTitle2,
@@ -64,19 +64,19 @@ var _ = Describe("basic task position functionality", func() {
 		// Assume tasks are in first TaskPosition
 
 		By("Reordering tasks")
-		var taskPosition *wundergo.Position
+		var taskPosition wundergo.Position
 
 		Eventually(func() error {
 			taskPositions, err := client.TaskPositionsForListID(firstList.ID)
-			tp := *taskPositions
-			taskPosition = &tp[0]
+			tp := taskPositions
+			taskPosition = tp[0]
 			return err
 		}).Should(Succeed())
 
 		taskPosition.Values = append(taskPosition.Values, newTask1.ID, newTask2.ID)
 
 		Eventually(func() (bool, error) {
-			taskPosition, err := client.UpdateTaskPosition(*taskPosition)
+			taskPosition, err := client.UpdateTaskPosition(taskPosition)
 			task1Contained := positionContainsValue(taskPosition, newTask1.ID)
 			task2Contained := positionContainsValue(taskPosition, newTask2.ID)
 			return task1Contained && task2Contained, err
@@ -85,12 +85,12 @@ var _ = Describe("basic task position functionality", func() {
 		By("Deleting tasks")
 		Eventually(func() error {
 			newTask1, err = client.Task(newTask1.ID)
-			return client.DeleteTask(*newTask1)
+			return client.DeleteTask(newTask1)
 		}).Should(Succeed())
 
 		Eventually(func() error {
 			newTask2, err = client.Task(newTask2.ID)
-			return client.DeleteTask(*newTask2)
+			return client.DeleteTask(newTask2)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

@@ -51,13 +51,13 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComments := &[]wundergo.TaskComment{{ID: 2345}}
+				expectedTaskComments := []wundergo.TaskComment{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskComments)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskComments)
+				err = json.Unmarshal(expectedBody, &expectedTaskComments)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -68,7 +68,7 @@ var _ = Describe("client - TaskComment operations", func() {
 				taskComments, err := client.TaskCommentsForListID(listID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskComments).To(Equal(*expectedTaskComments))
+				Expect(taskComments).To(Equal(expectedTaskComments))
 			})
 		})
 
@@ -174,13 +174,13 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComments := &[]wundergo.TaskComment{{ID: 2345}}
+				expectedTaskComments := []wundergo.TaskComment{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskComments)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskComments)
+				err = json.Unmarshal(expectedBody, &expectedTaskComments)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -191,7 +191,7 @@ var _ = Describe("client - TaskComment operations", func() {
 				taskComments, err := client.TaskCommentsForTaskID(taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskComments).To(Equal(*expectedTaskComments))
+				Expect(taskComments).To(Equal(expectedTaskComments))
 			})
 		})
 
@@ -300,13 +300,13 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComment := &wundergo.TaskComment{ID: 1234}
+				expectedTaskComment := wundergo.TaskComment{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskComment)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskComment)
+				err = json.Unmarshal(expectedBody, &expectedTaskComment)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -318,7 +318,7 @@ var _ = Describe("client - TaskComment operations", func() {
 				taskComment, err := client.CreateTaskComment(text, taskID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskComment).To(Equal(*expectedTaskComment))
+				Expect(taskComment).To(Equal(expectedTaskComment))
 			})
 		})
 
@@ -424,13 +424,13 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComment := &wundergo.TaskComment{ID: 2345}
+				expectedTaskComment := wundergo.TaskComment{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
 				expectedBody, err := json.Marshal(expectedTaskComment)
 				Expect(err).NotTo(HaveOccurred())
-				err = json.Unmarshal(expectedBody, expectedTaskComment)
+				err = json.Unmarshal(expectedBody, &expectedTaskComment)
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -442,7 +442,7 @@ var _ = Describe("client - TaskComment operations", func() {
 				taskComment, err := client.TaskComment(taskCommentID)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(*taskComment).To(Equal(*expectedTaskComment))
+				Expect(taskComment).To(Equal(expectedTaskComment))
 			})
 		})
 
