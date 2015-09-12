@@ -87,4 +87,6 @@ type Client interface {
 	CreateTaskComment(text string, taskID uint) (*TaskComment, error)
 	TaskComment(taskCommentID uint) (*TaskComment, error)
 	DeleteTaskComment(taskComment TaskComment) error
+
+	AvatarURL(userID uint, size int, fallback bool) (string, error)
 }
