@@ -93,4 +93,6 @@ type Client interface {
 	CreateWebhook(listID uint, url string, processorType string, configuration string) (Webhook, error)
 	DeleteWebhook(webhook Webhook) error
 	WebhooksForListID(listID uint) ([]Webhook, error)
+
+	Folders() ([]Folder, error)
 }
