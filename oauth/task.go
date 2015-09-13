@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -32,7 +33,7 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	}
 
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 
@@ -43,7 +44,7 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	tasks := []wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return tasks, nil
@@ -80,7 +81,7 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wun
 	tasks := []wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return tasks, nil
@@ -112,7 +113,7 @@ func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
 	task := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Task{}, err
 	}
 	return task, nil
@@ -192,7 +193,7 @@ func (c oauthClient) CreateTask(
 		return wundergo.Task{}, err
 	}
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Task{}, err
 	}
 
@@ -203,7 +204,7 @@ func (c oauthClient) CreateTask(
 	task := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Task{}, err
 	}
 	return task, nil
@@ -293,7 +294,7 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 	returnedTask := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedTask)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Task{}, err
 	}
 	return returnedTask, nil

@@ -6,22 +6,16 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
-
-// NewLogger allows for the injection of a Logger boundary object.
-// Isolates the client from logging implementation details.
-// Defaults to return NewPrintlnLogger.
-var NewLogger = func() wundergo.Logger {
-	return &wundergo.DefaultLogger{}
-}
 
 // oauthClient is an implementation of wundergo.Client.
 type oauthClient struct {
 	apiURL      string
 	accessToken string
 	clientID    string
-	logger      wundergo.Logger
+	logger      lager.Logger
 }
 
 // NewClient is a utility method to simplify initialization
@@ -29,12 +23,14 @@ type oauthClient struct {
 func NewClient(
 	accessToken string,
 	clientID string,
-	apiURL string) wundergo.Client {
+	apiURL string,
+	logger lager.Logger,
+) wundergo.Client {
 	return &oauthClient{
 		apiURL:      apiURL,
 		accessToken: accessToken,
 		clientID:    clientID,
-		logger:      NewLogger(),
+		logger:      logger,
 	}
 }
 

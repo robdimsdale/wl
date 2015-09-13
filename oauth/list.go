@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -33,7 +34,7 @@ func (c oauthClient) Lists() ([]wundergo.List, error) {
 	lists := []wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&lists)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return lists, err
 	}
 	return lists, nil
@@ -65,7 +66,7 @@ func (c oauthClient) List(listID uint) (wundergo.List, error) {
 	list := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.List{}, err
 	}
 	return list, nil
@@ -98,7 +99,7 @@ func (c oauthClient) CreateList(title string) (wundergo.List, error) {
 	list := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.List{}, err
 	}
 	return list, nil
@@ -135,7 +136,7 @@ func (c oauthClient) UpdateList(list wundergo.List) (wundergo.List, error) {
 	returnedList := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedList)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.List{}, err
 	}
 	return returnedList, nil

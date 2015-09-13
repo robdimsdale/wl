@@ -12,18 +12,6 @@ import (
 )
 
 var _ = Describe("client - List operations", func() {
-	BeforeEach(func() {
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
-	})
-
 	Describe("getting lists", func() {
 		It("performs GET requests with correct headers to /lists", func() {
 			server.AppendHandlers(
@@ -66,7 +54,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Lists()
@@ -76,7 +64,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Lists()
@@ -178,7 +166,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.List(listID)
@@ -188,7 +176,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.List(listID)
@@ -301,7 +289,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("returns an error", func() {
 				_, err := client.CreateList(title)
@@ -311,7 +299,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.CreateList(title)
@@ -414,7 +402,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateList(list)
@@ -424,7 +412,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateList(list)
@@ -515,7 +503,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				err := client.DeleteList(list)
@@ -525,7 +513,7 @@ var _ = Describe("client - List operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				err := client.DeleteList(list)

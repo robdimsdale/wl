@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -39,7 +40,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment,
 	taskComments := []wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return taskComments, nil
@@ -75,7 +76,7 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment,
 	taskComments := []wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return taskComments, nil
@@ -103,7 +104,7 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 		return wundergo.TaskComment{}, err
 	}
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.TaskComment{}, err
 	}
 
@@ -114,7 +115,7 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 	taskComment := wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil
@@ -150,7 +151,7 @@ func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, erro
 	taskComment := wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil

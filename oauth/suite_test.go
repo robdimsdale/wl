@@ -4,8 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
+	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/fakes"
 	"github.com/robdimsdale/wundergo/oauth"
 
 	"testing"
@@ -17,12 +17,12 @@ const (
 )
 
 var (
-	fakeLogger fakes.FakeLogger
-
 	client wundergo.Client
 
 	server *ghttp.Server
 	apiURL string
+
+	logger *lagertest.TestLogger
 )
 
 func TestWundergo(t *testing.T) {
@@ -31,24 +31,18 @@ func TestWundergo(t *testing.T) {
 }
 
 var _ = BeforeEach(func() {
-	fakeLogger = fakes.FakeLogger{}
-
 	server = ghttp.NewServer()
 	apiURL = server.URL()
+
+	logger = lagertest.NewTestLogger("wundergo oauth client")
+	client = oauth.NewClient(
+		dummyAccessToken,
+		dummyClientID,
+		apiURL,
+		logger,
+	)
 })
 
 var _ = AfterEach(func() {
 	server.Close()
 })
-
-var initializeClient = func() {
-	oauth.NewLogger = func() wundergo.Logger {
-		return &fakeLogger
-	}
-
-	client = oauth.NewClient(
-		dummyAccessToken,
-		dummyClientID,
-		apiURL,
-	)
-}

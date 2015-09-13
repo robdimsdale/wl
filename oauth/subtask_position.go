@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -41,7 +42,7 @@ func (c oauthClient) SubtaskPositionsForListID(listID uint) ([]wundergo.Position
 	subtaskPositions := []wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&subtaskPositions)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtaskPositions, nil
@@ -79,7 +80,7 @@ func (c oauthClient) SubtaskPositionsForTaskID(taskID uint) ([]wundergo.Position
 	subtaskPositions := []wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&subtaskPositions)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtaskPositions, nil
@@ -115,7 +116,7 @@ func (c oauthClient) SubtaskPosition(subTaskPositionID uint) (wundergo.Position,
 	subtaskPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&subtaskPosition)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Position{}, err
 	}
 	return subtaskPosition, nil
@@ -153,7 +154,7 @@ func (c oauthClient) UpdateSubtaskPosition(subTaskPosition wundergo.Position) (w
 	returnedSubtaskPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedSubtaskPosition)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Position{}, err
 	}
 	return returnedSubtaskPosition, nil

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -39,7 +40,7 @@ func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
 	notes := []wundergo.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&notes)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return notes, nil
@@ -75,7 +76,7 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
 	notes := []wundergo.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&notes)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return notes, nil
@@ -111,7 +112,7 @@ func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
 	note := wundergo.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&note)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Note{}, err
 	}
 	return note, nil
@@ -147,7 +148,7 @@ func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, err
 	note := wundergo.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&note)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Note{}, err
 	}
 	return note, nil
@@ -184,7 +185,7 @@ func (c oauthClient) UpdateNote(note wundergo.Note) (wundergo.Note, error) {
 	returnedNote := wundergo.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedNote)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Note{}, err
 	}
 	return returnedNote, nil

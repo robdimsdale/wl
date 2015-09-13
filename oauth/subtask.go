@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -39,7 +40,7 @@ func (c oauthClient) SubtasksForListID(listID uint) ([]wundergo.Subtask, error) 
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtasks, nil
@@ -69,7 +70,7 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wundergo.Subtask, error) 
 	}
 
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 
@@ -80,7 +81,7 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wundergo.Subtask, error) 
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtasks, nil
@@ -112,7 +113,7 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 	}
 
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 
@@ -123,7 +124,7 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtasks, nil
@@ -155,7 +156,7 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 	}
 
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 
@@ -166,7 +167,7 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return nil, err
 	}
 	return subtasks, nil
@@ -202,7 +203,7 @@ func (c oauthClient) Subtask(subtaskID uint) (wundergo.Subtask, error) {
 	subtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtask)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Subtask{}, err
 	}
 	return subtask, nil
@@ -239,7 +240,7 @@ func (c oauthClient) CreateSubtask(
 		return wundergo.Subtask{}, err
 	}
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Subtask{}, err
 	}
 
@@ -250,7 +251,7 @@ func (c oauthClient) CreateSubtask(
 	subtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtask)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Subtask{}, err
 	}
 	return subtask, nil
@@ -287,7 +288,7 @@ func (c oauthClient) UpdateSubtask(subtask wundergo.Subtask) (wundergo.Subtask, 
 	returnedSubtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedSubtask)
 	if err != nil {
-		c.logger.Println(fmt.Sprintf("response: %v", resp))
+		c.logger.Debug("", lager.Data{"response": resp})
 		return wundergo.Subtask{}, err
 	}
 	return returnedSubtask, nil

@@ -11,18 +11,6 @@ import (
 )
 
 var _ = Describe("client - Membership operations", func() {
-	BeforeEach(func() {
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
-	})
-
 	Describe("getting memberships for list", func() {
 		var listID uint
 
@@ -76,7 +64,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.MembershipsForListID(listID)
@@ -86,7 +74,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.MembershipsForListID(listID)
@@ -173,7 +161,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Memberships()
@@ -183,7 +171,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Memberships()
@@ -288,7 +276,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Membership(id)
@@ -298,7 +286,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Membership(id)
@@ -427,7 +415,7 @@ var _ = Describe("client - Membership operations", func() {
 			})
 
 			Context("when creating request fails with error", func() {
-				client := oauth.NewClient("", "", "")
+				client := oauth.NewClient("", "", "", logger)
 
 				It("forwards the error", func() {
 					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
@@ -437,7 +425,7 @@ var _ = Describe("client - Membership operations", func() {
 			})
 
 			Context("when executing request fails with error", func() {
-				client := oauth.NewClient("", "", "http://not-a-real-url.com")
+				client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 				It("forwards the error", func() {
 					_, err := client.AddMemberToListViaUserID(userID, listID, muted)
@@ -543,7 +531,7 @@ var _ = Describe("client - Membership operations", func() {
 			})
 
 			Context("when creating request fails with error", func() {
-				client := oauth.NewClient("", "", "")
+				client := oauth.NewClient("", "", "", logger)
 
 				It("forwards the error", func() {
 					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
@@ -553,7 +541,7 @@ var _ = Describe("client - Membership operations", func() {
 			})
 
 			Context("when executing request fails with error", func() {
-				client := oauth.NewClient("", "", "http://not-a-real-url.com")
+				client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 				It("forwards the error", func() {
 					_, err := client.AddMemberToListViaEmailAddress(emailAddress, listID, muted)
@@ -656,7 +644,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.AcceptMember(membership)
@@ -666,7 +654,7 @@ var _ = Describe("client - Membership operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.AcceptMember(membership)

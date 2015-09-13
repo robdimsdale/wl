@@ -12,18 +12,6 @@ import (
 )
 
 var _ = Describe("client - Reminder operations", func() {
-	BeforeEach(func() {
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
-	})
-
 	Describe("getting reminders for list", func() {
 		var listID uint
 
@@ -84,7 +72,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.RemindersForListID(listID)
@@ -94,7 +82,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.RemindersForListID(listID)
@@ -206,7 +194,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.RemindersForTaskID(taskID)
@@ -216,7 +204,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.RemindersForTaskID(taskID)
@@ -316,7 +304,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Reminder(reminderID)
@@ -326,7 +314,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.Reminder(reminderID)
@@ -433,7 +421,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.CreateReminder(date, taskID, createdByDeviceUdid)
@@ -443,7 +431,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.CreateReminder(date, taskID, createdByDeviceUdid)
@@ -546,7 +534,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateReminder(reminder)
@@ -556,7 +544,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateReminder(reminder)
@@ -647,7 +635,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				err := client.DeleteReminder(reminder)
@@ -657,7 +645,7 @@ var _ = Describe("client - Reminder operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				err := client.DeleteReminder(reminder)

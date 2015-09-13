@@ -11,18 +11,6 @@ import (
 )
 
 var _ = Describe("client - List position operations", func() {
-	BeforeEach(func() {
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
-	})
-
 	Describe("getting list positions", func() {
 		It("performs GET requests with correct headers to /list_positions", func() {
 			server.AppendHandlers(
@@ -58,7 +46,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.ListPositions()
@@ -68,7 +56,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.ListPositions()
@@ -161,7 +149,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.ListPosition(listPositionID)
@@ -171,7 +159,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.ListPosition(listPositionID)
@@ -269,7 +257,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateListPosition(listPosition)
@@ -279,7 +267,7 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateListPosition(listPosition)

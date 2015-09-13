@@ -12,18 +12,6 @@ import (
 )
 
 var _ = Describe("client - Task position operations", func() {
-	BeforeEach(func() {
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
-	})
-
 	Describe("getting task positions for task", func() {
 		var listID uint
 
@@ -84,7 +72,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.TaskPositionsForListID(listID)
@@ -94,7 +82,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.TaskPositionsForListID(listID)
@@ -190,7 +178,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.TaskPosition(taskPositionID)
@@ -200,7 +188,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.TaskPosition(taskPositionID)
@@ -284,7 +272,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateTaskPosition(taskPosition)
@@ -294,7 +282,7 @@ var _ = Describe("client - Task position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.UpdateTaskPosition(taskPosition)

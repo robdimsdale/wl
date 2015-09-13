@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/robdimsdale/wundergo"
 	"github.com/robdimsdale/wundergo/oauth"
 
@@ -90,10 +91,12 @@ var _ = BeforeSuite(func() {
 		Fail("Error - WL_CLIENT_ID must be provided")
 	}
 
+	logger := lagertest.NewTestLogger("wundergo integration tests")
 	client = oauth.NewClient(
 		accessToken,
 		clientID,
 		apiURL,
+		logger,
 	)
 	_, err := client.Lists()
 	Expect(err).To(BeNil())

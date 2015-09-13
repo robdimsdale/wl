@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
 	"github.com/robdimsdale/wundergo/oauth"
 )
 
@@ -22,16 +21,6 @@ var _ = Describe("client - Avatar operations", func() {
 		userID = uint(1234)
 		size = 0
 		fallback = true
-
-		oauth.NewLogger = func() wundergo.Logger {
-			return &fakeLogger
-		}
-
-		client = oauth.NewClient(
-			dummyAccessToken,
-			dummyClientID,
-			apiURL,
-		)
 	})
 
 	Describe("getting avatar", func() {
@@ -115,7 +104,7 @@ var _ = Describe("client - Avatar operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "")
+			client := oauth.NewClient("", "", "", logger)
 
 			It("forwards the error", func() {
 				_, err := client.AvatarURL(userID, size, fallback)
@@ -125,7 +114,7 @@ var _ = Describe("client - Avatar operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com")
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
 
 			It("forwards the error", func() {
 				_, err := client.AvatarURL(userID, size, fallback)
