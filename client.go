@@ -89,4 +89,6 @@ type Client interface {
 	DeleteTaskComment(taskComment TaskComment) error
 
 	AvatarURL(userID uint, size int, fallback bool) (string, error)
+
+	CreateWebhook(listID uint, url string, processorType string, configuration string) (Webhook, error)
 }
