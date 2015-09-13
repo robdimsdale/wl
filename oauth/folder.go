@@ -136,3 +136,30 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 	}
 	return folder, nil
 }
+
+// DeleteFolder deletes the provided folder.
+func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
+	url := fmt.Sprintf(
+		"%s/folders/%d?revision=%d",
+		c.apiURL,
+		folder.ID,
+		folder.Revision,
+	)
+
+	req, err := c.newDeleteRequest(url)
+	if err != nil {
+		return err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
+	}
+
+	return nil
+}

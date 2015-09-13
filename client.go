@@ -96,5 +96,6 @@ type Client interface {
 
 	Folders() ([]Folder, error)
 	CreateFolder(title string, listIDs []uint) (Folder, error)
-	Folder(folderId uint) (Folder, error)
+	Folder(folderID uint) (Folder, error)
+	DeleteFolder(folder Folder) error
 }

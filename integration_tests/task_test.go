@@ -15,7 +15,6 @@ var _ = Describe("basic task functionality", func() {
 	)
 
 	BeforeEach(func() {
-
 		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())

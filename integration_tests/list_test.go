@@ -21,6 +21,13 @@ var _ = Describe("basic list functionality", func() {
 		newList, err := client.CreateList(newListTitle1)
 		Expect(err).NotTo(HaveOccurred())
 
+		By("Verifying list exists in lists")
+		var newLists []wundergo.List
+		Eventually(func() (bool, error) {
+			newLists, err = client.Lists()
+			return listContains(newLists, newList), err
+		}).Should(BeTrue())
+
 		By("Updating a list")
 		uuid2, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
@@ -35,12 +42,6 @@ var _ = Describe("basic list functionality", func() {
 		Eventually(func() (bool, error) {
 			aList, err := client.List(newList.ID)
 			return reflect.DeepEqual(updatedList, aList), err
-		}).Should(BeTrue())
-
-		var newLists []wundergo.List
-		Eventually(func() (bool, error) {
-			newLists, err = client.Lists()
-			return listContains(newLists, newList), err
 		}).Should(BeTrue())
 
 		By("Deleting a list")

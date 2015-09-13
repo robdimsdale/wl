@@ -415,4 +415,107 @@ var _ = Describe("client - Folder operations", func() {
 			})
 		})
 	})
+
+	Describe("deleting a folder", func() {
+		var folder wundergo.Folder
+
+		BeforeEach(func() {
+			folder = wundergo.Folder{ID: 1234, Revision: 23}
+		})
+
+		It("performs DELETE requests with correct headers to /folders/1234", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("DELETE", "/folders/1234", "revision=23"),
+					ghttp.VerifyHeader(http.Header{
+						"X-Access-Token": []string{dummyAccessToken},
+						"X-Client-ID":    []string{dummyClientID},
+					}),
+				),
+			)
+
+			client.DeleteFolder(folder)
+
+			Expect(server.ReceivedRequests()).Should(HaveLen(1))
+		})
+
+		Context("when the request is valid", func() {
+			It("returns successfully", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWithJSONEncoded(http.StatusNoContent, nil),
+					),
+				)
+
+				err := client.DeleteFolder(folder)
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+
+		Context("when creating request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteFolder(folder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when executing request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
+
+			It("forwards the error", func() {
+				err := client.DeleteFolder(folder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusNotFound, nil),
+					),
+				)
+
+				err := client.DeleteFolder(folder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, nil),
+					),
+				)
+
+				err := client.DeleteFolder(folder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, "invalid json response"),
+					),
+				)
+
+				err := client.DeleteFolder(folder)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
 })

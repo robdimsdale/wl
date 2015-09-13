@@ -38,6 +38,17 @@ var _ = Describe("basic webhook functionality", func() {
 			return client.Folder(newFolder.ID)
 		}).Should(Equal(newFolder))
 
+		By("Deleting new folder")
+		Eventually(func() error {
+			newFolder, err = client.Folder(newFolder.ID)
+			return client.DeleteFolder(newFolder)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			folders, err := client.Folders()
+			return folderContains(folders, newFolder), err
+		}).Should(BeFalse())
+
 		By("Deleting new list")
 		Eventually(func() error {
 			newList, err = client.List(newList.ID)
