@@ -12,6 +12,127 @@ import (
 )
 
 var _ = Describe("client - Webhook operations", func() {
+	Describe("getting webhooks for list", func() {
+		var listID uint
+
+		BeforeEach(func() {
+			listID = 1234
+		})
+
+		It("performs GET requests with correct headers to /webhooks", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/webhooks", "list_id=1234"),
+					ghttp.VerifyHeader(http.Header{
+						"X-Access-Token": []string{dummyAccessToken},
+						"X-Client-ID":    []string{dummyClientID},
+					}),
+				),
+			)
+
+			client.WebhooksForListID(listID)
+
+			Expect(server.ReceivedRequests()).Should(HaveLen(1))
+		})
+
+		Context("when the request is valid", func() {
+			It("returns successfully", func() {
+				expectedWebhooks := []wundergo.Webhook{{ID: 2345}}
+
+				// Marshal and unmarshal to ensure exact object is returned
+				// - this avoids odd behavior with the time fields
+				expectedBody, err := json.Marshal(expectedWebhooks)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(expectedBody, &expectedWebhooks)
+				Expect(err).NotTo(HaveOccurred())
+
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWithJSONEncoded(http.StatusOK, expectedWebhooks),
+					),
+				)
+
+				webhooks, err := client.WebhooksForListID(listID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(webhooks).To(Equal(expectedWebhooks))
+			})
+		})
+
+		Context("when ListID == 0", func() {
+			BeforeEach(func() {
+				listID = 0
+			})
+
+			It("returns an error", func() {
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when creating request fails with error", func() {
+			client := oauth.NewClient("", "", "", logger)
+
+			It("forwards the error", func() {
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when executing request fails with error", func() {
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+
+			It("forwards the error", func() {
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusNotFound, nil),
+					),
+				)
+
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, nil),
+					),
+				)
+
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, "invalid json response"),
+					),
+				)
+
+				_, err := client.WebhooksForListID(listID)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
 
 	Describe("creating a new webhook", func() {
 		var (
@@ -79,7 +200,7 @@ var _ = Describe("client - Webhook operations", func() {
 			})
 		})
 
-		Context("when NoteID == 0", func() {
+		Context("when listID == 0", func() {
 			BeforeEach(func() {
 				listID = 0
 			})

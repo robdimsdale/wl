@@ -11,6 +11,42 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// WebhooksForListID returns Webhooks for the provided listID.
+func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) {
+	if listID == 0 {
+		return nil, errors.New("listID must be > 0")
+	}
+
+	url := fmt.Sprintf(
+		"%s/webhooks?list_id=%d",
+		c.apiURL,
+		listID,
+	)
+
+	req, err := c.newGetRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	webhooks := []wundergo.Webhook{}
+	err = json.NewDecoder(resp.Body).Decode(&webhooks)
+	if err != nil {
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return nil, err
+	}
+	return webhooks, nil
+}
+
 // CreateWebhook creates a new webhook with the provided parameters.
 // listID must be non-zero; the remaining parameters are not validated.
 func (c oauthClient) CreateWebhook(

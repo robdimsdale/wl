@@ -45,7 +45,12 @@ var _ = Describe("basic webhook functionality", func() {
 		}).Should(BeFalse())
 	})
 
-	It("can create and delete webhooks", func() {
+	It("can list, create and delete webhooks", func() {
+
+		By("Listing existing webhooks")
+		webhooks, err := client.WebhooksForListID(newList.ID)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(len(webhooks)).To(BeZero())
 
 		By("Creating a new webhook")
 		url := "https://some-fake-url.com"
@@ -59,9 +64,29 @@ var _ = Describe("basic webhook functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(newWebhook.URL).To(Equal(url))
 
-		By("Deleting the new webhook")
+		By("Validating the new webhook is present in list")
+		Eventually(func() (bool, error) {
+			webhooks, err := client.WebhooksForListID(newList.ID)
+			return webhooksContain(webhooks, newWebhook), err
+		}).Should(BeTrue())
 
+		By("Deleting the new webhook")
 		err = client.DeleteWebhook(newWebhook)
 		Expect(err).NotTo(HaveOccurred())
+
+		By("Validating the new webhook is not present in list")
+		Eventually(func() (bool, error) {
+			webhooks, err := client.WebhooksForListID(newList.ID)
+			return webhooksContain(webhooks, newWebhook), err
+		}).Should(BeFalse())
 	})
 })
+
+func webhooksContain(webhooks []wundergo.Webhook, webhook wundergo.Webhook) bool {
+	for _, w := range webhooks {
+		if w.ID == webhook.ID {
+			return true
+		}
+	}
+	return false
+}
