@@ -41,7 +41,7 @@ func (c oauthClient) RemindersForListID(listID uint) ([]wundergo.Reminder, error
 	reminders := []wundergo.Reminder{}
 	err = json.NewDecoder(resp.Body).Decode(&reminders)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return reminders, nil
@@ -78,7 +78,7 @@ func (c oauthClient) RemindersForTaskID(taskID uint) ([]wundergo.Reminder, error
 	reminders := []wundergo.Reminder{}
 	err = json.NewDecoder(resp.Body).Decode(&reminders)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return reminders, nil
@@ -110,7 +110,7 @@ func (c oauthClient) Reminder(reminderID uint) (wundergo.Reminder, error) {
 	reminder := wundergo.Reminder{}
 	err = json.NewDecoder(resp.Body).Decode(&reminder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Reminder{}, err
 	}
 	return reminder, nil
@@ -154,7 +154,7 @@ func (c oauthClient) CreateReminder(
 	reminder := wundergo.Reminder{}
 	err = json.NewDecoder(resp.Body).Decode(&reminder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Reminder{}, err
 	}
 	return reminder, nil
@@ -191,7 +191,7 @@ func (c oauthClient) UpdateReminder(reminder wundergo.Reminder) (wundergo.Remind
 	returnedReminder := wundergo.Reminder{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedReminder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Reminder{}, err
 	}
 	return returnedReminder, nil

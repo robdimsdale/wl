@@ -42,7 +42,7 @@ func (c oauthClient) TaskPositionsForListID(listID uint) ([]wundergo.Position, e
 	taskPositions := []wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&taskPositions)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return taskPositions, nil
@@ -78,7 +78,7 @@ func (c oauthClient) TaskPosition(taskPositionID uint) (wundergo.Position, error
 	taskPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&taskPosition)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Position{}, err
 	}
 	return taskPosition, nil
@@ -116,7 +116,7 @@ func (c oauthClient) UpdateTaskPosition(taskPosition wundergo.Position) (wunderg
 	returnedTaskPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedTaskPosition)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": resp})
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Position{}, err
 	}
 	return returnedTaskPosition, nil
