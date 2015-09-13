@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
@@ -57,7 +58,16 @@ func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
 		return nil, err
 	}
 	c.addAuthHeaders(req)
+	c.logRequest(req)
 	return req, nil
+}
+
+func (c oauthClient) logRequest(req *http.Request) {
+	reqDump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		c.logger.Error("received error dumping httpRequest", err)
+	}
+	c.logger.Debug("creating request", lager.Data{"request": string(reqDump)})
 }
 
 func (c oauthClient) newPostRequest(url string, body []byte) (*http.Request, error) {
@@ -70,6 +80,7 @@ func (c oauthClient) newPostRequest(url string, body []byte) (*http.Request, err
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/json")
+	c.logRequest(req)
 	return req, nil
 }
 
@@ -89,6 +100,7 @@ func (c oauthClient) newPutRequest(url string, body []byte) (*http.Request, erro
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	c.logRequest(req)
 	return req, nil
 }
 
@@ -102,6 +114,7 @@ func (c oauthClient) newPatchRequest(url string, body []byte) (*http.Request, er
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/json")
+	c.logRequest(req)
 	return req, nil
 }
 
@@ -111,5 +124,6 @@ func (c oauthClient) newDeleteRequest(url string) (*http.Request, error) {
 		return nil, err
 	}
 	c.addAuthHeaders(req)
+	c.logRequest(req)
 	return req, nil
 }
