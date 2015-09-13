@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-type LoggableRequest struct {
+type loggableRequest struct {
 	Method           string
 	URL              *url.URL
 	Proto            string
@@ -29,7 +29,7 @@ type LoggableRequest struct {
 	TLS              *tls.ConnectionState
 }
 
-func newLoggableRequest(req http.Request) LoggableRequest {
+func newLoggableRequest(req http.Request) loggableRequest {
 	var form, postForm url.Values
 	if req.Form != nil {
 		form = sanitizeCredentialsFromForm(req.Form)
@@ -41,7 +41,7 @@ func newLoggableRequest(req http.Request) LoggableRequest {
 
 	req.Header["Authorization"] = nil
 
-	return LoggableRequest{
+	return loggableRequest{
 		Method:           req.Method,
 		URL:              req.URL,
 		Proto:            req.Proto,

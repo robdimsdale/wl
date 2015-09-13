@@ -17,7 +17,7 @@ type loggableResponse struct {
 
 	Trailer http.Header
 
-	Request LoggableRequest
+	Request loggableRequest
 }
 
 func newLoggableResponse(resp *http.Response) loggableResponse {
