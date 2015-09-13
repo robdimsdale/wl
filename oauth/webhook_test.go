@@ -67,7 +67,7 @@ var _ = Describe("client - Webhook operations", func() {
 					),
 				)
 
-				note, err := client.CreateWebhook(
+				webhook, err := client.CreateWebhook(
 					listID,
 					url,
 					processorType,
@@ -75,7 +75,7 @@ var _ = Describe("client - Webhook operations", func() {
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(note).To(Equal(expectedWebhook))
+				Expect(webhook).To(Equal(expectedWebhook))
 			})
 		})
 
@@ -178,6 +178,105 @@ var _ = Describe("client - Webhook operations", func() {
 					processorType,
 					configuration,
 				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("deleting a webhook", func() {
+		var webhook wundergo.Webhook
+
+		BeforeEach(func() {
+			webhook = wundergo.Webhook{ID: 1234}
+		})
+
+		It("performs DELETE requests with correct headers to /webhooks/1234", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("DELETE", "/webhooks/1234"),
+					ghttp.VerifyHeader(http.Header{
+						"X-Access-Token": []string{dummyAccessToken},
+						"X-Client-ID":    []string{dummyClientID},
+					}),
+				),
+			)
+
+			client.DeleteWebhook(webhook)
+
+			Expect(server.ReceivedRequests()).Should(HaveLen(1))
+		})
+
+		Context("when the request is valid", func() {
+			It("returns successfully", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWithJSONEncoded(http.StatusNoContent, nil),
+					),
+				)
+
+				err := client.DeleteWebhook(webhook)
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+
+		Context("when creating request fails with error", func() {
+			client := oauth.NewClient("", "", "", logger)
+
+			It("forwards the error", func() {
+				err := client.DeleteWebhook(webhook)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when executing request fails with error", func() {
+			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+
+			It("forwards the error", func() {
+				err := client.DeleteWebhook(webhook)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusNotFound, nil),
+					),
+				)
+
+				err := client.DeleteWebhook(webhook)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, nil),
+					),
+				)
+
+				err := client.DeleteWebhook(webhook)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, "invalid json response"),
+					),
+				)
+
+				err := client.DeleteWebhook(webhook)
 
 				Expect(err).To(HaveOccurred())
 			})

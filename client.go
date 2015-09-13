@@ -91,4 +91,5 @@ type Client interface {
 	AvatarURL(userID uint, size int, fallback bool) (string, error)
 
 	CreateWebhook(listID uint, url string, processorType string, configuration string) (Webhook, error)
+	DeleteWebhook(webhook Webhook) error
 }

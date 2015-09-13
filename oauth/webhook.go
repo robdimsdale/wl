@@ -11,6 +11,8 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// CreateWebhook creates a new webhook with the provided parameters.
+// listID must be non-zero; the remaining parameters are not validated.
 func (c oauthClient) CreateWebhook(
 	listID uint,
 	url string,
@@ -55,13 +57,37 @@ func (c oauthClient) CreateWebhook(
 		return wundergo.Webhook{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	note := wundergo.Webhook{}
-	err = json.NewDecoder(resp.Body).Decode(&note)
+	webhook := wundergo.Webhook{}
+	err = json.NewDecoder(resp.Body).Decode(&webhook)
 	if err != nil {
 		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
 		return wundergo.Webhook{}, err
 	}
-	return note, nil
+	return webhook, nil
+}
 
-	return wundergo.Webhook{}, nil
+// DeleteNote deletes the provided webhook.
+func (c oauthClient) DeleteWebhook(webhook wundergo.Webhook) error {
+	url := fmt.Sprintf(
+		"%s/webhooks/%d",
+		c.apiURL,
+		webhook.ID,
+	)
+
+	req, err := c.newDeleteRequest(url)
+	if err != nil {
+		return err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
+	}
+
+	return nil
 }

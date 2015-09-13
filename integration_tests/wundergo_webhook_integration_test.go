@@ -45,7 +45,7 @@ var _ = Describe("basic webhook functionality", func() {
 		}).Should(BeFalse())
 	})
 
-	It("can create webhooks", func() {
+	It("can create and delete webhooks", func() {
 
 		By("Creating a new webhook")
 		url := "https://some-fake-url.com"
@@ -58,5 +58,10 @@ var _ = Describe("basic webhook functionality", func() {
 		)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(newWebhook.URL).To(Equal(url))
+
+		By("Deleting the new webhook")
+
+		err = client.DeleteWebhook(newWebhook)
+		Expect(err).NotTo(HaveOccurred())
 	})
 })
