@@ -72,7 +72,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.NotesForListID(listID)
@@ -82,7 +84,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.NotesForListID(listID)
@@ -194,7 +198,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.NotesForTaskID(taskID)
@@ -204,7 +210,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.NotesForTaskID(taskID)
@@ -316,7 +324,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Note(noteID)
@@ -326,7 +336,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Note(noteID)
@@ -442,7 +454,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CreateNote(content, taskID)
@@ -452,7 +466,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CreateNote(content, taskID)
@@ -552,7 +568,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateNote(note)
@@ -562,7 +580,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateNote(note)
@@ -651,7 +671,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteNote(note)
@@ -661,7 +683,9 @@ var _ = Describe("client - Note operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteNote(note)

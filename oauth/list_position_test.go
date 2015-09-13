@@ -46,7 +46,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.ListPositions()
@@ -56,7 +58,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.ListPositions()
@@ -149,7 +153,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.ListPosition(listPositionID)
@@ -159,7 +165,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.ListPosition(listPositionID)
@@ -257,7 +265,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateListPosition(listPosition)
@@ -267,7 +277,9 @@ var _ = Describe("client - List position operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateListPosition(listPosition)

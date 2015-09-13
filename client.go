@@ -95,4 +95,5 @@ type Client interface {
 	WebhooksForListID(listID uint) ([]Webhook, error)
 
 	Folders() ([]Folder, error)
+	CreateFolder(title string, listIDs []uint) (Folder, error)
 }

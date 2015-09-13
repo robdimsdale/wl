@@ -74,7 +74,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TasksForListID(listID)
@@ -84,7 +86,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TasksForListID(listID)
@@ -200,7 +204,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CompletedTasksForListID(listID, completed)
@@ -210,7 +216,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CompletedTasksForListID(listID, completed)
@@ -312,7 +320,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Task(taskID)
@@ -322,7 +332,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Task(taskID)
@@ -500,7 +512,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("returns an error", func() {
 				_, err := client.CreateTask(
@@ -519,7 +533,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CreateTask(
@@ -1182,7 +1198,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateTask(task)
@@ -1192,7 +1210,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateTask(task)
@@ -1311,7 +1331,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteTask(task)
@@ -1321,7 +1343,9 @@ var _ = Describe("client - Task operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteTask(task)

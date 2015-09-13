@@ -55,7 +55,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.User()
@@ -65,7 +67,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.User()
@@ -166,7 +170,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateUser(user)
@@ -176,7 +182,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.UpdateUser(user)
@@ -313,7 +321,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Users()
@@ -323,7 +333,9 @@ var _ = Describe("client - User operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.Users()

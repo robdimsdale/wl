@@ -2,7 +2,9 @@ package oauth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/pivotal-golang/lager"
@@ -38,4 +40,63 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 		return nil, err
 	}
 	return folders, nil
+}
+
+type folderCreateConfig struct {
+	Title   string `json:"title"`
+	ListIDs []uint `json:"list_ids"`
+}
+
+// CreateFolder creates a new folder with the provided parameters.
+func (c oauthClient) CreateFolder(
+	title string,
+	listIDs []uint,
+) (wundergo.Folder, error) {
+	if title == "" {
+		return wundergo.Folder{}, errors.New("title must be non-empty")
+	}
+
+	if listIDs == nil {
+		return wundergo.Folder{}, errors.New("listIDs must be non-nil")
+	}
+
+	fcc := folderCreateConfig{
+		Title:   title,
+		ListIDs: listIDs,
+	}
+
+	body, err := json.Marshal(fcc)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	reqURL := fmt.Sprintf("%s/folders", c.apiURL)
+
+	req, err := c.newPostRequest(reqURL, body)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		if resp.Body != nil {
+			b, _ := ioutil.ReadAll(resp.Body)
+			c.logger.Debug("", lager.Data{"response.Body": string(b)})
+		}
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+	}
+
+	folder := wundergo.Folder{}
+	err = json.NewDecoder(resp.Body).Decode(&folder)
+	if err != nil {
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return wundergo.Folder{}, err
+	}
+	return folder, nil
 }

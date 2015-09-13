@@ -73,7 +73,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskCommentsForListID(listID)
@@ -83,7 +85,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskCommentsForListID(listID)
@@ -196,7 +200,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskCommentsForTaskID(taskID)
@@ -206,7 +212,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskCommentsForTaskID(taskID)
@@ -323,7 +331,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CreateTaskComment(text, taskID)
@@ -333,7 +343,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.CreateTaskComment(text, taskID)
@@ -447,7 +459,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskComment(taskCommentID)
@@ -457,7 +471,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				_, err := client.TaskComment(taskCommentID)
@@ -548,7 +564,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when creating request fails with error", func() {
-			client := oauth.NewClient("", "", "", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteTaskComment(taskComment)
@@ -558,7 +576,9 @@ var _ = Describe("client - TaskComment operations", func() {
 		})
 
 		Context("when executing request fails with error", func() {
-			client := oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
 
 			It("forwards the error", func() {
 				err := client.DeleteTaskComment(taskComment)

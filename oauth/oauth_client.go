@@ -65,9 +65,12 @@ func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
 func (c oauthClient) logRequest(req *http.Request) {
 	reqDump, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
-		c.logger.Error("received error dumping httpRequest", err)
+		c.logger.Error("received error while dumping httpRequest", err)
+	} else {
+		if reqDump != nil {
+			c.logger.Debug("creating request", lager.Data{"request": string(reqDump)})
+		}
 	}
-	c.logger.Debug("creating request", lager.Data{"request": string(reqDump)})
 }
 
 func (c oauthClient) newPostRequest(url string, body []byte) (*http.Request, error) {
