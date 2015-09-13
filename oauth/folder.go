@@ -100,3 +100,39 @@ func (c oauthClient) CreateFolder(
 	}
 	return folder, nil
 }
+
+// Folder returns the Folder for the corresponding folderID.
+func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
+	if folderID == 0 {
+		return wundergo.Folder{}, errors.New("folderID must be > 0")
+	}
+
+	url := fmt.Sprintf(
+		"%s/folders/%d",
+		c.apiURL,
+		folderID,
+	)
+
+	req, err := c.newGetRequest(url)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	folder := wundergo.Folder{}
+	err = json.NewDecoder(resp.Body).Decode(&folder)
+	if err != nil {
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return wundergo.Folder{}, err
+	}
+	return folder, nil
+}

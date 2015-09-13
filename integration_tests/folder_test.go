@@ -34,6 +34,10 @@ var _ = Describe("basic webhook functionality", func() {
 			return folderContains(folders, newFolder), err
 		}).Should(BeTrue())
 
+		Eventually(func() (wundergo.Folder, error) {
+			return client.Folder(newFolder.ID)
+		}).Should(Equal(newFolder))
+
 		By("Deleting new list")
 		Eventually(func() error {
 			newList, err = client.List(newList.ID)

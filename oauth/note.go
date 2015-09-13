@@ -85,7 +85,7 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
 // Note returns the Note for the corresponding noteID.
 func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
 	if noteID == 0 {
-		return wundergo.Note{}, errors.New("listID must be > 0")
+		return wundergo.Note{}, errors.New("noteID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -121,7 +121,6 @@ func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
 // CreateNote creates a note with the provided content associated with the
 // Task for the corresponding taskID.
 func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, error) {
-
 	if taskID == 0 {
 		return wundergo.Note{}, errors.New("taskID must be > 0")
 	}
