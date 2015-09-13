@@ -11,6 +11,6 @@ type Folder struct {
 	CreatedAt          time.Time `json:"created_at"`
 	CreatedByRequestID uint      `json:"created_by_request_id"`
 	UpdatedAt          time.Time `json:"updated_at"`
-	Type               string    `json:"type"`
+	TypeString         string    `json:"type"`
 	Revision           uint      `json:"revision"`
 }
