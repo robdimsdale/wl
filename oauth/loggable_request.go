@@ -39,7 +39,8 @@ func newLoggableRequest(req http.Request) loggableRequest {
 		postForm = sanitizeCredentialsFromForm(req.PostForm)
 	}
 
-	req.Header["Authorization"] = nil
+	req.Header["X-Access-Token"] = []string{"***"}
+	req.Header["X-Client-ID"] = []string{"***"}
 
 	return loggableRequest{
 		Method:           req.Method,
