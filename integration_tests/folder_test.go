@@ -1,6 +1,8 @@
 package wundergo_integration_test
 
 import (
+	"fmt"
+
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -37,6 +39,20 @@ var _ = Describe("basic webhook functionality", func() {
 		Eventually(func() (wundergo.Folder, error) {
 			return client.Folder(newFolder.ID)
 		}).Should(Equal(newFolder))
+
+		By("Updating a folder")
+		uuid3, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newFolderTitle2 := fmt.Sprintf("%s-updated", uuid3.String())
+
+		newFolder.Title = newFolderTitle2
+		var updatedFolder wundergo.Folder
+		updatedFolder, err = client.UpdateFolder(newFolder)
+		Expect(err).NotTo(HaveOccurred())
+
+		Eventually(func() (wundergo.Folder, error) {
+			return client.Folder(newFolder.ID)
+		}).Should(Equal(updatedFolder))
 
 		By("Deleting new folder")
 		Eventually(func() error {

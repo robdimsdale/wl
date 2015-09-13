@@ -137,6 +137,43 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 	return folder, nil
 }
 
+// UpdateFolder updates the provided Folder.
+func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, error) {
+	body, err := json.Marshal(folder)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	url := fmt.Sprintf(
+		"%s/folders/%d",
+		c.apiURL,
+		folder.ID,
+	)
+
+	req, err := c.newPatchRequest(url, body)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return wundergo.Folder{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	returnedFolder := wundergo.Folder{}
+	err = json.NewDecoder(resp.Body).Decode(&returnedFolder)
+	if err != nil {
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return wundergo.Folder{}, err
+	}
+	return returnedFolder, nil
+}
+
 // DeleteFolder deletes the provided folder.
 func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
 	url := fmt.Sprintf(
