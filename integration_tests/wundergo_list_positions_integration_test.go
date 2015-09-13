@@ -1,6 +1,8 @@
 package wundergo_integration_test
 
 import (
+	"strings"
+
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -37,21 +39,30 @@ var _ = Describe("basic list position functionality", func() {
 		By("Reordering lists")
 		var listPosition wundergo.Position
 
-		Eventually(func() error {
-			listPositions, err := client.ListPositions()
-			lp := listPositions
-			listPosition = lp[0]
-			return err
-		}).Should(Succeed())
+		for {
+			Eventually(func() error {
+				listPositions, err := client.ListPositions()
+				listPosition = listPositions[0]
+				return err
+			}).Should(Succeed())
 
-		listPosition.Values = append(listPosition.Values, newList1.ID, newList2.ID)
+			listPosition.Values = []uint{newList1.ID, newList2.ID}
 
-		Eventually(func() (bool, error) {
-			listPosition, err := client.UpdateListPosition(listPosition)
-			list1Contained := positionContainsValue(listPosition, newList1.ID)
-			list2Contained := positionContainsValue(listPosition, newList2.ID)
-			return list1Contained && list2Contained, err
-		}).Should(BeTrue())
+			listPosition, err = client.UpdateListPosition(listPosition)
+			if err != nil {
+				if strings.Contains(err.Error(), "409") {
+					err = nil
+					continue
+				}
+				break // Unexpected error
+			}
+			break // No error
+		}
+		Expect(err).NotTo(HaveOccurred())
+		list1Contained := positionContainsValue(listPosition, newList1.ID)
+		list2Contained := positionContainsValue(listPosition, newList2.ID)
+		Expect(list1Contained).To(BeTrue())
+		Expect(list2Contained).To(BeTrue())
 
 		By("Deleting lists")
 		Eventually(func() error {

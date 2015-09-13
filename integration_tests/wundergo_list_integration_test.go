@@ -16,7 +16,7 @@ var _ = Describe("basic list functionality", func() {
 		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
-		newListTitle1 := fmt.Sprintf("%s-original", uuid1.String())
+		newListTitle1 := uuid1.String()
 
 		newList, err := client.CreateList(newListTitle1)
 		Expect(err).NotTo(HaveOccurred())

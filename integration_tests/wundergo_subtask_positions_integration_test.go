@@ -12,24 +12,24 @@ import (
 var _ = Describe("basic subtask position functionality", func() {
 	It("reorders subtask positions", func() {
 
+		By("Creating a new list")
+		uuid1, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newListTitle1 := uuid1.String()
+
+		newList, err := client.CreateList(newListTitle1)
+		Expect(err).NotTo(HaveOccurred())
+
 		By("Creating a new task")
 		uuidTask, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuidTask.String()
 
-		var firstList wundergo.List
-		Eventually(func() error {
-			l, err := client.Lists()
-			lists := l
-			firstList = lists[0]
-			return err
-		}).Should(Succeed())
-
 		var newTask wundergo.Task
 		Eventually(func() error {
 			newTask, err = client.CreateTask(
 				newTaskTitle,
-				firstList.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -41,13 +41,13 @@ var _ = Describe("basic subtask position functionality", func() {
 		}).Should(Succeed())
 
 		By("Creating associated subtasks")
-		uuid1, err := uuid.NewV4()
-		Expect(err).NotTo(HaveOccurred())
-		newSubtaskTitle1 := uuid1.String()
-
 		uuid2, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
-		newSubtaskTitle2 := uuid2.String()
+		newSubtaskTitle1 := uuid2.String()
+
+		uuid3, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newSubtaskTitle2 := uuid3.String()
 
 		var newSubtask1 wundergo.Subtask
 		Eventually(func() error {
@@ -75,7 +75,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		By("Reordering subtasks")
 		var firstListTasks []wundergo.Task
 		Eventually(func() error {
-			flt, err := client.TasksForListID(firstList.ID)
+			flt, err := client.TasksForListID(newList.ID)
 			firstListTasks = flt
 			return err
 		}).Should(Succeed())
@@ -90,7 +90,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		var subtaskPosition wundergo.Position
 
 		Eventually(func() error {
-			subtaskPositions, err := client.SubtaskPositionsForListID(firstList.ID)
+			subtaskPositions, err := client.SubtaskPositionsForListID(newList.ID)
 			tp := subtaskPositions
 			if len(tp) < index {
 				return errors.New("subtasks not long enough to contain expected subtask")
@@ -109,7 +109,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		}).Should(BeTrue())
 
 		Eventually(func() (bool, error) {
-			firstListSubtaskPositions, err := client.SubtaskPositionsForListID(firstList.ID)
+			firstListSubtaskPositions, err := client.SubtaskPositionsForListID(newList.ID)
 			task1Contained := positionsContainValue(firstListSubtaskPositions, newSubtask1.ID)
 			task2Contained := positionsContainValue(firstListSubtaskPositions, newSubtask2.ID)
 			return task1Contained && task2Contained, err
@@ -122,8 +122,19 @@ var _ = Describe("basic subtask position functionality", func() {
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
-			tasks, err := client.TasksForListID(firstList.ID)
+			tasks, err := client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
+		}).Should(BeFalse())
+
+		By("Deleting lists")
+		Eventually(func() error {
+			newList, err = client.List(newList.ID)
+			return client.DeleteList(newList)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			lists, err := client.Lists()
+			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
 })

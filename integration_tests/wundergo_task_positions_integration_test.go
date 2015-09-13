@@ -10,29 +10,28 @@ import (
 var _ = Describe("basic task position functionality", func() {
 	It("reorders task positions", func() {
 
-		By("Getting first list")
-		var firstList wundergo.List
-		Eventually(func() error {
-			l, err := client.Lists()
-			lists := l
-			firstList = lists[0]
-			return err
-		}).Should(Succeed())
-
-		By("Creating new tasks")
+		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
-		newTaskTitle1 := uuid1.String()
+		newListTitle := uuid1.String()
 
+		newList, err := client.CreateList(newListTitle)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("Creating new tasks")
 		uuid2, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
-		newTaskTitle2 := uuid2.String()
+		newTaskTitle1 := uuid2.String()
+
+		uuid3, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newTaskTitle2 := uuid3.String()
 
 		var newTask1 wundergo.Task
 		Eventually(func() error {
 			newTask1, err = client.CreateTask(
 				newTaskTitle1,
-				firstList.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -47,7 +46,7 @@ var _ = Describe("basic task position functionality", func() {
 		Eventually(func() error {
 			newTask2, err = client.CreateTask(
 				newTaskTitle2,
-				firstList.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -67,7 +66,7 @@ var _ = Describe("basic task position functionality", func() {
 		var taskPosition wundergo.Position
 
 		Eventually(func() error {
-			taskPositions, err := client.TaskPositionsForListID(firstList.ID)
+			taskPositions, err := client.TaskPositionsForListID(newList.ID)
 			tp := taskPositions
 			taskPosition = tp[0]
 			return err
@@ -94,13 +93,24 @@ var _ = Describe("basic task position functionality", func() {
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
-			tasks, err := client.TasksForListID(firstList.ID)
+			tasks, err := client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask1), err
 		}).Should(BeFalse())
 
 		Eventually(func() (bool, error) {
-			tasks, err := client.TasksForListID(firstList.ID)
+			tasks, err := client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask2), err
+		}).Should(BeFalse())
+
+		By("Deleting new list")
+		Eventually(func() error {
+			newList, err = client.List(newList.ID)
+			return client.DeleteList(newList)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			lists, err := client.Lists()
+			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
 })

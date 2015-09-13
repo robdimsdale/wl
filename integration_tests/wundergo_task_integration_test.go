@@ -9,22 +9,22 @@ import (
 
 var _ = Describe("basic task functionality", func() {
 	var (
-		firstList wundergo.List
-		newTask   wundergo.Task
-		err       error
+		newList wundergo.List
+		newTask wundergo.Task
+		err     error
 	)
 
 	BeforeEach(func() {
-		By("Getting first list")
-		var lists []wundergo.List
-		Eventually(func() error {
-			l, err := client.Lists()
-			lists = l
-			return err
-		}).Should(Succeed())
-		firstList = lists[0]
 
-		By("Creating task in first list")
+		By("Creating a new list")
+		uuid1, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newListTitle := uuid1.String()
+
+		newList, err = client.CreateList(newListTitle)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("Creating task in new list")
 		uuid, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuid.String()
@@ -32,7 +32,7 @@ var _ = Describe("basic task functionality", func() {
 		Eventually(func() error {
 			newTask, err = client.CreateTask(
 				newTaskTitle,
-				firstList.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -53,8 +53,20 @@ var _ = Describe("basic task functionality", func() {
 
 		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(firstList.ID)
+			tasks, err = client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
+		}).Should(BeFalse())
+
+		By("Deleting new list")
+		Eventually(func() error {
+			newList, err = client.List(newList.ID)
+			return client.DeleteList(newList)
+		}).Should(Succeed())
+
+		var lists []wundergo.List
+		Eventually(func() (bool, error) {
+			lists, err = client.Lists()
+			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
 
@@ -62,7 +74,7 @@ var _ = Describe("basic task functionality", func() {
 		var completedTasks []wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(firstList.ID, showCompletedTasks)
+			completedTasks, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 			return taskContains(completedTasks, newTask), err
 		}).Should(BeFalse())
 
@@ -75,7 +87,7 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(firstList.ID, showCompletedTasks)
+			completedTasks, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 			return taskContains(completedTasks, newTask), err
 		}).Should(BeTrue())
 	})
