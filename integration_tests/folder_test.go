@@ -40,6 +40,13 @@ var _ = Describe("basic webhook functionality", func() {
 			return client.Folder(newFolder.ID)
 		}).Should(Equal(newFolder))
 
+		By("Verifying folder revisions exist")
+		var folderRevisions []wundergo.FolderRevision
+		Eventually(func() (bool, error) {
+			folderRevisions, err = client.FolderRevisions()
+			return folderRevisionContainsFolder(folderRevisions, newFolder), err
+		}).Should(BeTrue())
+
 		By("Updating a folder")
 		uuid3, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
@@ -81,6 +88,15 @@ var _ = Describe("basic webhook functionality", func() {
 
 func folderContains(folders []wundergo.Folder, folder wundergo.Folder) bool {
 	for _, f := range folders {
+		if f.ID == folder.ID {
+			return true
+		}
+	}
+	return false
+}
+
+func folderRevisionContainsFolder(folderRevisions []wundergo.FolderRevision, folder wundergo.Folder) bool {
+	for _, f := range folderRevisions {
 		if f.ID == folder.ID {
 			return true
 		}

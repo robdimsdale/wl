@@ -632,4 +632,112 @@ var _ = Describe("client - Folder operations", func() {
 			})
 		})
 	})
+
+	Describe("getting folder revisions", func() {
+		It("performs GET requests with correct headers to /folder_revisions", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/folder_revisions"),
+					ghttp.VerifyHeader(http.Header{
+						"X-Access-Token": []string{dummyAccessToken},
+						"X-Client-ID":    []string{dummyClientID},
+					}),
+				),
+			)
+
+			client.FolderRevisions()
+
+			Expect(server.ReceivedRequests()).Should(HaveLen(1))
+		})
+
+		Context("when the request is valid", func() {
+			It("returns successfully", func() {
+				expectedFolderRevisions := []wundergo.FolderRevision{{ID: 2345}}
+
+				// Marshal and unmarshal to ensure exact object is returned
+				// - this avoids odd behavior with the time fields
+				expectedBody, err := json.Marshal(expectedFolderRevisions)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(expectedBody, &expectedFolderRevisions)
+				Expect(err).NotTo(HaveOccurred())
+
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWithJSONEncoded(http.StatusOK, expectedFolderRevisions),
+					),
+				)
+
+				folderRevisions, err := client.FolderRevisions()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(folderRevisions).To(Equal(expectedFolderRevisions))
+			})
+		})
+
+		Context("when creating request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", logger)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.FolderRevisions()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when executing request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.FolderRevisions()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusNotFound, nil),
+					),
+				)
+
+				_, err := client.FolderRevisions()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, nil),
+					),
+				)
+
+				_, err := client.FolderRevisions()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, "invalid json response"),
+					),
+				)
+
+				_, err := client.FolderRevisions()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
 })

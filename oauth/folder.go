@@ -200,3 +200,34 @@ func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
 
 	return nil
 }
+
+// FolderRevisions returns FolderRevisions created by the current user.
+func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
+	url := fmt.Sprintf(
+		"%s/folder_revisions",
+		c.apiURL,
+	)
+
+	req, err := c.newGetRequest(url)
+	if err != nil {
+		return nil, err
+	}
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+	}
+
+	folders := []wundergo.FolderRevision{}
+	err = json.NewDecoder(resp.Body).Decode(&folders)
+	if err != nil {
+		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		return nil, err
+	}
+	return folders, nil
+}

@@ -99,4 +99,5 @@ type Client interface {
 	Folder(folderID uint) (Folder, error)
 	UpdateFolder(folder Folder) (Folder, error)
 	DeleteFolder(folder Folder) error
+	FolderRevisions() ([]FolderRevision, error)
 }
