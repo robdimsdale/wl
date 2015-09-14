@@ -168,3 +168,44 @@ func (c oauthClient) DeleteList(list wundergo.List) error {
 
 	return nil
 }
+
+// DeleteAllLists gets a list of all lists via Lists() and deletes them
+// via DeleteList(listID)
+// It will not attempt to delete the inbox
+func (c oauthClient) DeleteAllLists() error {
+	lists, err := c.Lists()
+	if err != nil {
+		return err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug("delete-all-lists", lager.Data{"listCount": listCount})
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug("delete-all-lists - deleting list", lager.Data{"listID": l.ID})
+			var err error
+			if l.ListType == "inbox" {
+				err = nil
+			} else {
+				err = c.DeleteList(list)
+			}
+			idErrChan <- idErr{id: list.ID, err: err}
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < len(lists); i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug("delete-all-lists - error received", lager.Data{"id": idErr.id, "err": err})
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return e
+	}
+
+	return nil
+}

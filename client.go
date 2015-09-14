@@ -12,6 +12,7 @@ type Client interface {
 	CreateList(title string) (List, error)
 	UpdateList(list List) (List, error)
 	DeleteList(list List) error
+	DeleteAllLists() error
 
 	NotesForListID(listID uint) ([]Note, error)
 	NotesForTaskID(taskID uint) ([]Note, error)

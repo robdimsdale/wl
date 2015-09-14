@@ -82,4 +82,20 @@ func main() {
 		}
 		fmt.Printf("All folders deleted successfully")
 	}
+
+	if args[0] == "lists" {
+		lists, err := client.Lists()
+		if err != nil {
+			logger.Fatal("exiting", err)
+		}
+		json.NewEncoder(os.Stdout).Encode(lists)
+	}
+
+	if args[0] == "delete-all-lists" {
+		err := client.DeleteAllLists()
+		if err != nil {
+			logger.Fatal("exiting", err)
+		}
+		fmt.Printf("All lists deleted successfully")
+	}
 }
