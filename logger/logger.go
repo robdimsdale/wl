@@ -7,8 +7,10 @@ import (
 	"github.com/pivotal-golang/lager"
 )
 
+// LogLevel is a typedef for a string.
 type LogLevel string
 
+// LogLevels are provided as constants below.
 const (
 	LogLevelInvalid LogLevel = ""
 	LogLevelDebug   LogLevel = "debug"
@@ -17,6 +19,7 @@ const (
 	LogLevelFatal   LogLevel = "fatal"
 )
 
+// InitializeLogger is used to create a lager.Logger with a ReconfigurableSink
 func InitializeLogger(minLogLevel LogLevel) (lager.Logger, *lager.ReconfigurableSink, error) {
 	var minLagerLogLevel lager.LogLevel
 	switch minLogLevel {

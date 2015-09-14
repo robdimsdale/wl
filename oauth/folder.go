@@ -245,7 +245,7 @@ func (c oauthClient) DeleteAllFolders() error {
 	idErrChan := make(chan idErr, folderCount)
 	for _, f := range folders {
 		go func(folder wundergo.Folder) {
-			c.logger.Debug("delete-all-folders - deleting folder", lager.Data{"folderID": f.ID})
+			c.logger.Debug("delete-all-folders - deleting folder", lager.Data{"folderID": folder.ID})
 			err := c.DeleteFolder(folder)
 			idErrChan <- idErr{id: folder.ID, err: err}
 		}(f)

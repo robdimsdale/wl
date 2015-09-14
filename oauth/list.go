@@ -183,9 +183,9 @@ func (c oauthClient) DeleteAllLists() error {
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
 		go func(list wundergo.List) {
-			c.logger.Debug("delete-all-lists - deleting list", lager.Data{"listID": l.ID})
+			c.logger.Debug("delete-all-lists - deleting list", lager.Data{"listID": list.ID})
 			var err error
-			if l.ListType == "inbox" {
+			if list.ListType == "inbox" {
 				err = nil
 			} else {
 				err = c.DeleteList(list)
