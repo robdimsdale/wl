@@ -23,9 +23,7 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
-	c.logResponse(resp)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +76,7 @@ func (c oauthClient) CreateFolder(
 		return wundergo.Folder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Folder{}, err
 	}
@@ -119,8 +116,7 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 		return wundergo.Folder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Folder{}, err
 	}
@@ -156,8 +152,7 @@ func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, erro
 		return wundergo.Folder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Folder{}, err
 	}
@@ -189,8 +184,7 @@ func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}
@@ -214,8 +208,7 @@ func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -22,8 +22,7 @@ func (c oauthClient) Memberships() ([]wundergo.Membership, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +58,7 @@ func (c oauthClient) Membership(membershipID uint) (wundergo.Membership, error) 
 		return wundergo.Membership{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Membership{}, err
 	}
@@ -97,8 +95,7 @@ func (c oauthClient) MembershipsForListID(listID uint) ([]wundergo.Membership, e
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -143,8 +140,7 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 		return wundergo.Membership{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Membership{}, err
 	}
@@ -194,8 +190,7 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 		return wundergo.Membership{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Membership{}, err
 	}
@@ -239,8 +234,7 @@ func (c oauthClient) AcceptMember(membership wundergo.Membership) (wundergo.Memb
 		return wundergo.Membership{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Membership{}, err
 	}
@@ -273,8 +267,7 @@ func (c oauthClient) RejectInvite(membership wundergo.Membership) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}
@@ -300,8 +293,7 @@ func (c oauthClient) RemoveMemberFromList(membership wundergo.Membership) error 
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

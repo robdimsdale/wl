@@ -29,8 +29,7 @@ func (c oauthClient) SubtaskPositionsForListID(listID uint) ([]wundergo.Position
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +66,7 @@ func (c oauthClient) SubtaskPositionsForTaskID(taskID uint) ([]wundergo.Position
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +101,7 @@ func (c oauthClient) SubtaskPosition(subTaskPositionID uint) (wundergo.Position,
 		return wundergo.Position{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Position{}, err
 	}
@@ -141,8 +138,7 @@ func (c oauthClient) UpdateSubtaskPosition(subTaskPosition wundergo.Position) (w
 		return wundergo.Position{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Position{}, err
 	}

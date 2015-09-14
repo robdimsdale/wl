@@ -26,8 +26,7 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +67,7 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wun
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +98,7 @@ func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
 		return wundergo.Task{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Task{}, err
 	}
@@ -187,8 +184,7 @@ func (c oauthClient) CreateTask(
 		return wundergo.Task{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Task{}, err
 	}
@@ -281,8 +277,7 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 		return wundergo.Task{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Task{}, err
 	}
@@ -314,8 +309,7 @@ func (c oauthClient) DeleteTask(task wundergo.Task) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

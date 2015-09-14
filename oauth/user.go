@@ -24,8 +24,7 @@ func (c oauthClient) User() (wundergo.User, error) {
 		return wundergo.User{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.User{}, err
 	}
@@ -59,8 +58,7 @@ func (c oauthClient) UpdateUser(user wundergo.User) (wundergo.User, error) {
 		return wundergo.User{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.User{}, err
 	}
@@ -99,8 +97,7 @@ func (c oauthClient) UsersForListID(listID uint) ([]wundergo.User, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}

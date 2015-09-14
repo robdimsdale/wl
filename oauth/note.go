@@ -27,8 +27,7 @@ func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +62,7 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +97,7 @@ func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
 		return wundergo.Note{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Note{}, err
 	}
@@ -134,8 +131,7 @@ func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, err
 		return wundergo.Note{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Note{}, err
 	}
@@ -171,8 +167,7 @@ func (c oauthClient) UpdateNote(note wundergo.Note) (wundergo.Note, error) {
 		return wundergo.Note{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Note{}, err
 	}
@@ -204,8 +199,7 @@ func (c oauthClient) DeleteNote(note wundergo.Note) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

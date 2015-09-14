@@ -28,8 +28,7 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +77,7 @@ func (c oauthClient) CreateWebhook(
 		return wundergo.Webhook{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Webhook{}, err
 	}
@@ -115,8 +113,7 @@ func (c oauthClient) DeleteWebhook(webhook wundergo.Webhook) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

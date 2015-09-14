@@ -27,8 +27,7 @@ func (c oauthClient) SubtasksForListID(listID uint) ([]wundergo.Subtask, error) 
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +62,7 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wundergo.Subtask, error) 
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -106,8 +104,7 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -149,8 +146,7 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -190,8 +186,7 @@ func (c oauthClient) Subtask(subtaskID uint) (wundergo.Subtask, error) {
 		return wundergo.Subtask{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Subtask{}, err
 	}
@@ -234,8 +229,7 @@ func (c oauthClient) CreateSubtask(
 		return wundergo.Subtask{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Subtask{}, err
 	}
@@ -275,8 +269,7 @@ func (c oauthClient) UpdateSubtask(subtask wundergo.Subtask) (wundergo.Subtask, 
 		return wundergo.Subtask{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Subtask{}, err
 	}
@@ -308,8 +301,7 @@ func (c oauthClient) DeleteSubtask(subtask wundergo.Subtask) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

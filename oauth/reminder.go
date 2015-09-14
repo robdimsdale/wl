@@ -28,8 +28,7 @@ func (c oauthClient) RemindersForListID(listID uint) ([]wundergo.Reminder, error
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +64,7 @@ func (c oauthClient) RemindersForTaskID(taskID uint) ([]wundergo.Reminder, error
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +95,7 @@ func (c oauthClient) Reminder(reminderID uint) (wundergo.Reminder, error) {
 		return wundergo.Reminder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Reminder{}, err
 	}
@@ -141,8 +138,7 @@ func (c oauthClient) CreateReminder(
 		return wundergo.Reminder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Reminder{}, err
 	}
@@ -178,8 +174,7 @@ func (c oauthClient) UpdateReminder(reminder wundergo.Reminder) (wundergo.Remind
 		return wundergo.Reminder{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.Reminder{}, err
 	}
@@ -211,8 +206,7 @@ func (c oauthClient) DeleteReminder(reminder wundergo.Reminder) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

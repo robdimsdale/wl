@@ -21,8 +21,7 @@ func (c oauthClient) Lists() ([]wundergo.List, error) {
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +52,7 @@ func (c oauthClient) List(listID uint) (wundergo.List, error) {
 		return wundergo.List{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.List{}, err
 	}
@@ -86,8 +84,7 @@ func (c oauthClient) CreateList(title string) (wundergo.List, error) {
 		return wundergo.List{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.List{}, err
 	}
@@ -123,8 +120,7 @@ func (c oauthClient) UpdateList(list wundergo.List) (wundergo.List, error) {
 		return wundergo.List{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.List{}, err
 	}
@@ -156,8 +152,7 @@ func (c oauthClient) DeleteList(list wundergo.List) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

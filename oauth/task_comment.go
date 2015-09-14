@@ -27,8 +27,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment,
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +62,7 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment,
 		return nil, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +96,7 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 		return wundergo.TaskComment{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.TaskComment{}, err
 	}
@@ -138,8 +135,7 @@ func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, erro
 		return wundergo.TaskComment{}, err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.TaskComment{}, err
 	}
@@ -171,8 +167,7 @@ func (c oauthClient) DeleteTaskComment(taskComment wundergo.TaskComment) error {
 		return err
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.do(req)
 	if err != nil {
 		return err
 	}

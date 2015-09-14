@@ -58,8 +58,14 @@ func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
 		return nil, err
 	}
 	c.addAuthHeaders(req)
-	c.logRequest(req)
 	return req, nil
+}
+
+func (c oauthClient) do(req *http.Request) (*http.Response, error) {
+	c.logRequest(req)
+	resp, err := (&http.Client{}).Do(req)
+	c.logResponse(resp)
+	return resp, err
 }
 
 func (c oauthClient) logRequest(req *http.Request) {
@@ -68,7 +74,7 @@ func (c oauthClient) logRequest(req *http.Request) {
 		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
-			c.logger.Debug("creating request", lager.Data{"request": string(reqDump)})
+			c.logger.Debug("sending request", lager.Data{"request": string(reqDump)})
 		}
 	}
 }
@@ -99,7 +105,6 @@ func (c oauthClient) newPostRequest(url string, body []byte) (*http.Request, err
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/json")
-	c.logRequest(req)
 	return req, nil
 }
 
@@ -119,7 +124,6 @@ func (c oauthClient) newPutRequest(url string, body []byte) (*http.Request, erro
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	c.logRequest(req)
 	return req, nil
 }
 
@@ -133,7 +137,6 @@ func (c oauthClient) newPatchRequest(url string, body []byte) (*http.Request, er
 	c.addBody(req, body)
 
 	req.Header.Add("Content-Type", "application/json")
-	c.logRequest(req)
 	return req, nil
 }
 
@@ -143,6 +146,5 @@ func (c oauthClient) newDeleteRequest(url string) (*http.Request, error) {
 		return nil, err
 	}
 	c.addAuthHeaders(req)
-	c.logRequest(req)
 	return req, nil
 }
