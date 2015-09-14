@@ -52,7 +52,7 @@ resources:
 
 - name: wl-release-linux
   type: s3
-    source:
+  source:
     bucket: wundergo-releases
     regexp: wundergo-linux-(.*)
     access_key_id: {{pipeline-bucket-access-key}}
