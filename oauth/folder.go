@@ -231,3 +231,38 @@ func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
 	}
 	return folders, nil
 }
+
+// DeleteAllFolders gets a list of all folders via Folders() and deletes them
+// via DeleteFolder(folderID)
+func (c oauthClient) DeleteAllFolders() error {
+	folders, err := c.Folders()
+	if err != nil {
+		return err
+	}
+
+	folderCount := len(folders)
+	c.logger.Debug("delete-all-folders", lager.Data{"folderCount": folderCount})
+	idErrChan := make(chan idErr, folderCount)
+	for _, f := range folders {
+		go func(folder wundergo.Folder) {
+			c.logger.Debug("delete-all-folders - deleting folder", lager.Data{"folderID": f.ID})
+			err := c.DeleteFolder(folder)
+			idErrChan <- idErr{id: folder.ID, err: err}
+		}(f)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < len(folders); i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug("delete-all-folders - error received", lager.Data{"id": idErr.id, "err": err})
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return e
+	}
+
+	return nil
+}

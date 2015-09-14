@@ -100,4 +100,5 @@ type Client interface {
 	UpdateFolder(folder Folder) (Folder, error)
 	DeleteFolder(folder Folder) error
 	FolderRevisions() ([]FolderRevision, error)
+	DeleteAllFolders() error
 }

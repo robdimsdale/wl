@@ -6,5 +6,5 @@ For more information on the API, see https://developer.wunderlist.com/documentat
 package wundergo
 
 const (
-	apiURL = "https://a.wunderlist.com/api/v1"
+	APIURL = "https://a.wunderlist.com/api/v1"
 )
