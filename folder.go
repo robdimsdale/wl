@@ -9,7 +9,7 @@ type Folder struct {
 	Title              string    `json:"title"`
 	ListIDs            []uint    `json:"list_ids"`
 	CreatedAt          time.Time `json:"created_at"`
-	CreatedByRequestID uint      `json:"created_by_request_id"`
+	CreatedByRequestID string    `json:"created_by_request_id"`
 	UpdatedAt          time.Time `json:"updated_at"`
 	TypeString         string    `json:"type"`
 	Revision           uint      `json:"revision"`

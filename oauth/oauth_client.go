@@ -65,10 +65,21 @@ func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
 func (c oauthClient) logRequest(req *http.Request) {
 	reqDump, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
-		c.logger.Error("received error while dumping httpRequest", err)
+		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
 			c.logger.Debug("creating request", lager.Data{"request": string(reqDump)})
+		}
+	}
+}
+
+func (c oauthClient) logResponse(resp *http.Response) {
+	respDump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		c.logger.Error("received error while dumping HTTP Response", err)
+	} else {
+		if respDump != nil {
+			c.logger.Debug("received response", lager.Data{"response": string(respDump)})
 		}
 	}
 }

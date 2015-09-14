@@ -25,6 +25,7 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 
 	client := http.Client{}
 	resp, err := client.Do(req)
+	c.logResponse(resp)
 	if err != nil {
 		return nil, err
 	}
