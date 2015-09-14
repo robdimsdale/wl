@@ -8,4 +8,4 @@ inputs:
 - name: version
 
 run:
-  path: wundergo/scripts/ci/create-wl-candidate-release
+  path: wundergo/scripts/ci/create-wl-release-candidate
