@@ -50,6 +50,14 @@ resources:
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
+- name: wl-release-linux
+  type: s3
+    source:
+    bucket: wundergo-releases
+    regexp: wundergo-linux-(.*)
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
 - name: github-release
   type: github-release
   source:
@@ -210,12 +218,16 @@ jobs:
       - get: version
         params: {pre: rc}
         trigger: true
+    - task: create-wl-release-candidate-linux
+      file: wundergo/scripts/ci/create-wl-release-candidate.yml
     - aggregate:
       - put: version
         params: {file: version/number}
       - put: tracker
         params:
           repos: [wundergo]
+      - put: wl-release-linux
+        params: {from: create-wl-release-candidate-linux/wl-linux-(.*)}
     on_failure:
       put: slack-alert
       params:

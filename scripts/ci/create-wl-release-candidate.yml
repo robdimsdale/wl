@@ -1,0 +1,11 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wundergo-1.5
+
+inputs:
+- name: wundergo
+- name: version
+
+run:
+  path: garagepi/scripts/ci/create-wl-candidate-release
