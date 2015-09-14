@@ -13,7 +13,7 @@ BASE_DIR="$( cd ${MY_DIR}/../.. && pwd )"
 
 pushd ${BASE_DIR}
   mkdir -p $GOPATH/src/github.com/robdimsdale
-  ln -s $PWD $GOPATH/src/github.com/robdimsdale/garagepi
+  ln -s $PWD $GOPATH/src/github.com/robdimsdale/wundergo
 
   go get github.com/tools/godep
 
