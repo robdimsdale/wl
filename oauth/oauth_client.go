@@ -74,6 +74,11 @@ func (c oauthClient) logRequest(req *http.Request) {
 }
 
 func (c oauthClient) logResponse(resp *http.Response) {
+	if resp == nil {
+		c.logger.Debug("nil response received")
+		return
+	}
+
 	respDump, err := httputil.DumpResponse(resp, true)
 	if err != nil {
 		c.logger.Error("received error while dumping HTTP Response", err)
