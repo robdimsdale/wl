@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eux
+
+ROOT="$PWD"
+VERSION="$(cat version/number)"
+GOOS=${GOOS:?}
+GOARCH=${GOARCH:?}
+
+mv wl-release-"${GOOS}-${GOARCH}"/wl-* "${ROOT}"/wl-"${GOOS}-${GOARCH}-${VERSION}"

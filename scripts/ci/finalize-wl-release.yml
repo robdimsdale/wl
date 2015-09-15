@@ -1,0 +1,18 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wundergo-1.5
+
+inputs:
+- name: wl-release-linux-amd64
+- name: wl-release-darwin-amd64
+- name: wl-release-windows-amd64
+- name: wundergo
+- name: version
+
+run:
+  path: wundergo/scripts/ci/finalize-wl-release
+
+params:
+  GOOS:
+  GOARCH:

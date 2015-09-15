@@ -284,6 +284,25 @@ jobs:
     - get: version
       passed: [rc]
       params: {bump: final}
+    - get: wl-release-linux-amd64
+      passed: [rc]
+    - get: wl-release-darwin-amd64
+      passed: [rc]
+    - get: wl-release-windows-amd64
+      passed: [rc]
+  - aggregate:
+    - task: finalize-wl-release-linux-amd64
+      file: wundergo/scripts/ci/finalize-wl-release.yml
+      config:
+        params: {GOOS: linux,GOARCH: amd64}
+    - task: finalize-wl-release-darwin-amd64
+      file: wundergo/scripts/ci/finalize-wl-release.yml
+      config:
+        params: {GOOS: darwin,GOARCH: amd64}
+    - task: finalize-wl-release-windows-amd64
+      file: wundergo/scripts/ci/finalize-wl-release.yml
+      config:
+        params: {GOOS: windows,GOARCH: amd64}
   - aggregate:
     - put: version
       params: {file: version/number}
@@ -292,6 +311,12 @@ jobs:
         repository: wundergo
         tag: version/number
         tag_prefix: v
+    - put: wl-release-linux-amd64
+      params: {from: finalize-wl-release-linux-amd64/wl-linux-(.*)}
+    - put: wl-release-darwin-amd64
+      params: {from: finalize-wl-release-darwin-amd64/wl-darwin-(.*)}
+    - put: wl-release-windows-amd64
+      params: {from: finalize-wl-release-windows-amd64/wl-windows-(.*)}
 
 - name: github-release
   plan:
@@ -302,12 +327,25 @@ jobs:
     - get: wundergo-master
       passed: [shipit]
       trigger: true
+    - get: wl-release-linux-amd64
+      passed: [shipit]
+      trigger: true
+    - get: wl-release-darwin-amd64
+      passed: [shipit]
+      trigger: true
+    - get: wl-release-windows-amd64
+      passed: [shipit]
+      trigger: true
   - task: most-recent-tag
     file: wundergo/scripts/ci/most-recent-tag.yml
   - put: github-release
     params:
       name: most-recent-tag/tagname
       tag: most-recent-tag/tagname
+      globs:
+      - wl-release-linux-amd64/wl-*
+      - wl-release-darwin-amd64/wl-*
+      - wl-release-windows-amd64/wl-*
 
 - name: major
   public: true
