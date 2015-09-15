@@ -4,41 +4,60 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pivotal-golang/lager"
+	"github.com/onsi/ginkgo"
 )
 
-// LogLevel is a typedef for a string.
-type LogLevel string
+type Logger interface {
+	Info(string, ...interface{})
+	Debug(string, ...interface{})
+	Error(string, error, ...interface{})
+}
 
-// LogLevels are provided as constants below.
-const (
-	LogLevelInvalid LogLevel = ""
-	LogLevelDebug   LogLevel = "debug"
-	LogLevelInfo    LogLevel = "info"
-	LogLevelError   LogLevel = "error"
-	LogLevelFatal   LogLevel = "fatal"
-)
+type logger struct {
+	sinks []Sink
+}
 
-// InitializeLogger is used to create a lager.Logger with a ReconfigurableSink
-func InitializeLogger(minLogLevel LogLevel) (lager.Logger, *lager.ReconfigurableSink, error) {
-	var minLagerLogLevel lager.LogLevel
-	switch minLogLevel {
-	case LogLevelDebug:
-		minLagerLogLevel = lager.DEBUG
-	case LogLevelInfo:
-		minLagerLogLevel = lager.INFO
-	case LogLevelError:
-		minLagerLogLevel = lager.ERROR
-	case LogLevelFatal:
-		minLagerLogLevel = lager.FATAL
-	default:
-		return nil, nil, fmt.Errorf("unknown log level: %s", minLogLevel)
+func NewLogger(minLogLevel LogLevel) Logger {
+	sink := writerSink{
+		writer:      os.Stdout,
+		minLogLevel: minLogLevel,
 	}
+	return &logger{
+		sinks: []Sink{sink},
+	}
+}
 
-	logger := lager.NewLogger("wundergo")
+func NewTestLogger() Logger {
+	sink := writerSink{
+		writer:      ginkgo.GinkgoWriter,
+		minLogLevel: DEBUG,
+	}
+	return &logger{
+		sinks: []Sink{sink},
+	}
+}
 
-	sink := lager.NewReconfigurableSink(lager.NewWriterSink(os.Stdout, lager.DEBUG), minLagerLogLevel)
-	logger.RegisterSink(sink)
+func (l logger) Info(message string, data ...interface{}) {
+	for _, sink := range l.sinks {
+		sink.Log(INFO, l.toByteArray(message, data))
+	}
+}
 
-	return logger, sink, nil
+func (l logger) toByteArray(message string, data ...interface{}) []byte {
+	for _, d := range data {
+		message = fmt.Sprintf("%s %v", message, d)
+	}
+	return []byte(message)
+}
+
+func (l logger) Debug(message string, data ...interface{}) {
+	for _, sink := range l.sinks {
+		sink.Log(DEBUG, l.toByteArray(message, data))
+	}
+}
+
+func (l logger) Error(message string, err error, data ...interface{}) {
+	for _, sink := range l.sinks {
+		sink.Log(ERROR, l.toByteArray(message, err, data))
+	}
 }

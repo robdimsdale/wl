@@ -74,7 +74,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "", logger)
+				client = oauth.NewClient("", "", "", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -86,7 +86,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when executing request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -201,7 +201,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "", logger)
+				client = oauth.NewClient("", "", "", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -213,7 +213,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when executing request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -332,7 +332,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "", logger)
+				client = oauth.NewClient("", "", "", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -344,7 +344,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when executing request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -460,7 +460,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "", logger)
+				client = oauth.NewClient("", "", "", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -472,7 +472,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when executing request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -565,7 +565,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "", logger)
+				client = oauth.NewClient("", "", "", testLogger)
 			})
 
 			It("forwards the error", func() {
@@ -577,7 +577,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when executing request fails with error", func() {
 			BeforeEach(func() {
-				client = oauth.NewClient("", "", "http://not-a-real-url.com", logger)
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
 			})
 
 			It("forwards the error", func() {

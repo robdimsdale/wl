@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -35,7 +34,7 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 	folders := []wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return folders, nil
@@ -84,16 +83,16 @@ func (c oauthClient) CreateFolder(
 	if resp.StatusCode != http.StatusCreated {
 		if resp.Body != nil {
 			b, _ := ioutil.ReadAll(resp.Body)
-			c.logger.Debug("", lager.Data{"response.Body": string(b)})
+			c.logger.Debug("", map[string]interface{}{"response.Body": string(b)})
 		}
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	folder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return folder, nil
@@ -128,7 +127,7 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 	folder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return folder, nil
@@ -164,7 +163,7 @@ func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, erro
 	returnedFolder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedFolder)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return returnedFolder, nil
@@ -220,7 +219,7 @@ func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
 	folders := []wundergo.FolderRevision{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return folders, nil
@@ -235,11 +234,11 @@ func (c oauthClient) DeleteAllFolders() error {
 	}
 
 	folderCount := len(folders)
-	c.logger.Debug("delete-all-folders", lager.Data{"folderCount": folderCount})
+	c.logger.Debug("delete-all-folders", map[string]interface{}{"folderCount": folderCount})
 	idErrChan := make(chan idErr, folderCount)
 	for _, f := range folders {
 		go func(folder wundergo.Folder) {
-			c.logger.Debug("delete-all-folders - deleting folder", lager.Data{"folderID": folder.ID})
+			c.logger.Debug("delete-all-folders - deleting folder", map[string]interface{}{"folderID": folder.ID})
 			err := c.DeleteFolder(folder)
 			idErrChan <- idErr{id: folder.ID, err: err}
 		}(f)
@@ -249,7 +248,7 @@ func (c oauthClient) DeleteAllFolders() error {
 	for i := 0; i < len(folders); i++ {
 		idErr := <-idErrChan
 		if idErr.err != nil {
-			c.logger.Debug("delete-all-folders - error received", lager.Data{"id": idErr.id, "err": err})
+			c.logger.Debug("delete-all-folders - error received", map[string]interface{}{"id": idErr.id, "err": err})
 			e.addError(idErr)
 		}
 	}

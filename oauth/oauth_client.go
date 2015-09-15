@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wundergo/logger"
 )
 
 // oauthClient is an implementation of wundergo.Client.
@@ -16,7 +16,7 @@ type oauthClient struct {
 	apiURL      string
 	accessToken string
 	clientID    string
-	logger      lager.Logger
+	logger      logger.Logger
 }
 
 // NewClient is a utility method to simplify initialization
@@ -25,7 +25,7 @@ func NewClient(
 	accessToken string,
 	clientID string,
 	apiURL string,
-	logger lager.Logger,
+	logger logger.Logger,
 ) wundergo.Client {
 	return &oauthClient{
 		apiURL:      apiURL,
@@ -74,7 +74,7 @@ func (c oauthClient) logRequest(req *http.Request) {
 		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
-			c.logger.Debug("sending request", lager.Data{"request": string(reqDump)})
+			c.logger.Debug("sending request", map[string]interface{}{"request": string(reqDump)})
 		}
 	}
 }
@@ -90,7 +90,7 @@ func (c oauthClient) logResponse(resp *http.Response) {
 		c.logger.Error("received error while dumping HTTP Response", err)
 	} else {
 		if respDump != nil {
-			c.logger.Debug("received response", lager.Data{"response": string(respDump)})
+			c.logger.Debug("received response", map[string]interface{}{"response": string(respDump)})
 		}
 	}
 }

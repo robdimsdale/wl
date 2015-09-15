@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -40,7 +39,7 @@ func (c oauthClient) User() (wundergo.User, error) {
 	user := wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.User{}, err
 	}
 
@@ -70,7 +69,7 @@ func (c oauthClient) UpdateUser(user wundergo.User) (wundergo.User, error) {
 	returnedUser := wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedUser)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.User{}, err
 	}
 
@@ -103,7 +102,7 @@ func (c oauthClient) UsersForListID(listID uint) ([]wundergo.User, error) {
 	}
 
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 
@@ -118,7 +117,7 @@ func (c oauthClient) UsersForListID(listID uint) ([]wundergo.User, error) {
 	users := []wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&users)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 

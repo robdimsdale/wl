@@ -16,10 +16,6 @@ pushd ${BASE_DIR}
   mkdir -p $GOPATH/src/github.com/robdimsdale
   ln -s $PWD $GOPATH/src/github.com/robdimsdale/wundergo
 
-  go get github.com/tools/godep
-
-  godep restore
-
   IFS='-' read -ra arrVERSION <<< "${VERSION}"
   stripped_version="${arrVERSION[0]}"
 

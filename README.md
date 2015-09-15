@@ -19,16 +19,17 @@ The [**master**](https://github.com/robdimsdale/wundergo/tree/master) branch poi
 
 ### Go dependencies
 
-Dependencies for the binary are managed using [godep](https://github.com/tools/godep). Install it as follows:
+There are no dependencies for the library or the CLI binary.
+
+There are dependencies for the tests; they are safe to install from HEAD of
+their respective repositories and hence are not vendored in.
+
+Test dependencies are installed as follows:
 
 ```
-go get -u github.com/tools/godep
-```
-
-From within the directory of this cloned repo, fetch the golang dependencies:
-
-```
-godep restore
+go get -u github.com/onsi/ginkgo
+go get -u github.com/onsi/gomega
+go get -u github.com/nu7hatch/gouuid
 ```
 
 ### Running tests

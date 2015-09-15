@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -34,7 +33,7 @@ func (c oauthClient) Memberships() ([]wundergo.Membership, error) {
 	memberships := []wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&memberships)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 
@@ -70,7 +69,7 @@ func (c oauthClient) Membership(membershipID uint) (wundergo.Membership, error) 
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -107,7 +106,7 @@ func (c oauthClient) MembershipsForListID(listID uint) ([]wundergo.Membership, e
 	memberships := []wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&memberships)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 
@@ -146,7 +145,7 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 	}
 
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -157,7 +156,7 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -196,7 +195,7 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 	}
 
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -207,7 +206,7 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -246,7 +245,7 @@ func (c oauthClient) AcceptMember(membership wundergo.Membership) (wundergo.Memb
 	returnedMembership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedMembership)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 

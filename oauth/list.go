@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -33,7 +32,7 @@ func (c oauthClient) Lists() ([]wundergo.List, error) {
 	lists := []wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&lists)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return lists, err
 	}
 	return lists, nil
@@ -64,7 +63,7 @@ func (c oauthClient) List(listID uint) (wundergo.List, error) {
 	list := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.List{}, err
 	}
 	return list, nil
@@ -96,7 +95,7 @@ func (c oauthClient) CreateList(title string) (wundergo.List, error) {
 	list := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.List{}, err
 	}
 	return list, nil
@@ -132,7 +131,7 @@ func (c oauthClient) UpdateList(list wundergo.List) (wundergo.List, error) {
 	returnedList := wundergo.List{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedList)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.List{}, err
 	}
 	return returnedList, nil
@@ -174,11 +173,11 @@ func (c oauthClient) DeleteAllLists() error {
 	}
 
 	listCount := len(lists)
-	c.logger.Debug("delete-all-lists", lager.Data{"listCount": listCount})
+	c.logger.Debug("delete-all-lists", map[string]interface{}{"listCount": listCount})
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
 		go func(list wundergo.List) {
-			c.logger.Debug("delete-all-lists - deleting list", lager.Data{"listID": list.ID})
+			c.logger.Debug("delete-all-lists - deleting list", map[string]interface{}{"listID": list.ID})
 			var err error
 			if list.ListType == "inbox" {
 				err = nil
@@ -193,7 +192,7 @@ func (c oauthClient) DeleteAllLists() error {
 	for i := 0; i < len(lists); i++ {
 		idErr := <-idErrChan
 		if idErr.err != nil {
-			c.logger.Debug("delete-all-lists - error received", lager.Data{"id": idErr.id, "err": err})
+			c.logger.Debug("delete-all-lists - error received", map[string]interface{}{"id": idErr.id, "err": err})
 			e.addError(idErr)
 		}
 	}

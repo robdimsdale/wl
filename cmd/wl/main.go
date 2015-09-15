@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 	"github.com/robdimsdale/wundergo/logger"
 	"github.com/robdimsdale/wundergo/oauth"
@@ -20,7 +19,7 @@ var (
 	accessToken = flag.String("accessToken", "", "Wunderlist access token")
 	clientID    = flag.String("clientID", "", "Wunderlist client ID")
 
-	logLevel = flag.String("logLevel", string(logger.LogLevelInfo), "log level: debug, info, error or fatal")
+	logLevel = flag.String("logLevel", "info", "log level: debug, info, error or fatal")
 )
 
 func main() {
@@ -38,11 +37,7 @@ func main() {
 
 	flag.Parse()
 
-	logger, _, err := logger.InitializeLogger(logger.LogLevel(*logLevel))
-	if err != nil {
-		fmt.Printf("Failed to initialize logger\n")
-		panic(err)
-	}
+	logger := logger.NewLogger(logger.LogLevelFromString(*logLevel))
 
 	if *accessToken == "" {
 		logger.Error("exiting", errors.New("accessToken must be provided"))
@@ -55,9 +50,6 @@ func main() {
 	}
 
 	client := oauth.NewClient(*accessToken, *clientID, wundergo.APIURL, logger)
-	if err != nil {
-		logger.Fatal("exiting", err)
-	}
 
 	args := flag.Args()
 	if len(args) == 0 {
@@ -65,12 +57,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	logger.Info("args", lager.Data{"args": args})
-
 	if args[0] == "folders" {
 		folders, err := client.Folders()
 		if err != nil {
-			logger.Fatal("exiting", err)
+			logger.Error("exiting", err)
+			os.Exit(1)
 		}
 		json.NewEncoder(os.Stdout).Encode(folders)
 	}
@@ -78,7 +69,8 @@ func main() {
 	if args[0] == "delete-all-folders" {
 		err := client.DeleteAllFolders()
 		if err != nil {
-			logger.Fatal("exiting", err)
+			logger.Error("exiting", err)
+			os.Exit(1)
 		}
 		fmt.Printf("All folders deleted successfully")
 	}
@@ -86,7 +78,8 @@ func main() {
 	if args[0] == "lists" {
 		lists, err := client.Lists()
 		if err != nil {
-			logger.Fatal("exiting", err)
+			logger.Error("exiting", err)
+			os.Exit(1)
 		}
 		json.NewEncoder(os.Stdout).Encode(lists)
 	}
@@ -94,7 +87,8 @@ func main() {
 	if args[0] == "delete-all-lists" {
 		err := client.DeleteAllLists()
 		if err != nil {
-			logger.Fatal("exiting", err)
+			logger.Error("exiting", err)
+			os.Exit(1)
 		}
 		fmt.Printf("All lists deleted successfully")
 	}

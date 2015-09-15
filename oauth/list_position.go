@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/pivotal-golang/lager"
 	"github.com/robdimsdale/wundergo"
 )
 
@@ -34,7 +33,7 @@ func (c oauthClient) ListPositions() ([]wundergo.Position, error) {
 	listPositions := []wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&listPositions)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return listPositions, nil
@@ -65,7 +64,7 @@ func (c oauthClient) ListPosition(listPositionID uint) (wundergo.Position, error
 	listPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&listPosition)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Position{}, err
 	}
 	return listPosition, nil
@@ -102,7 +101,7 @@ func (c oauthClient) UpdateListPosition(listPosition wundergo.Position) (wunderg
 	returnedListPosition := wundergo.Position{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedListPosition)
 	if err != nil {
-		c.logger.Debug("", lager.Data{"response": newLoggableResponse(resp)})
+		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Position{}, err
 	}
 	return returnedListPosition, nil
