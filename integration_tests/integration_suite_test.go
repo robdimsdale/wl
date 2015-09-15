@@ -1,10 +1,12 @@
 package wundergo_integration_test
 
 import (
+	"fmt"
 	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
 	"github.com/robdimsdale/wundergo"
 	"github.com/robdimsdale/wundergo/logger"
 	"github.com/robdimsdale/wundergo/oauth"
@@ -15,6 +17,9 @@ import (
 
 const (
 	apiURL = "https://a.wunderlist.com/api/v1"
+
+	wlAccessTokenEnvKey = "WL_ACCESS_TOKEN"
+	wlClientIDEnvKey    = "WL_CLIENT_ID"
 )
 
 func TestMain(t *testing.T) {
@@ -23,7 +28,11 @@ func TestMain(t *testing.T) {
 }
 
 var (
-	client wundergo.Client
+	client    wundergo.Client
+	wlBinPath string
+
+	wlAccessToken string
+	wlClientID    string
 )
 
 func listContains(lists []wundergo.List, list wundergo.List) bool {
@@ -76,28 +85,39 @@ func taskCommentsContain(taskComments []wundergo.TaskComment, taskComment wunder
 }
 
 var _ = BeforeSuite(func() {
+	By("Compiling binary")
+	var err error
+	wlBinPath, err = gexec.Build("github.com/robdimsdale/wundergo/cmd/wl", "-race")
+	Expect(err).ShouldNot(HaveOccurred())
+
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
-	By("Logging in")
+	By("Obtaining credentials from environment")
+	wlAccessToken = os.Getenv(wlAccessTokenEnvKey)
+	wlClientID = os.Getenv(wlClientIDEnvKey)
 
-	accessToken := os.Getenv("WL_ACCESS_TOKEN")
-	clientID := os.Getenv("WL_CLIENT_ID")
-
-	if accessToken == "" {
-		Fail("Error - WL_ACCESS_TOKEN must be provided")
+	if wlAccessToken == "" {
+		Fail(fmt.Sprintf("Error - %s must be provided", wlAccessTokenEnvKey))
 	}
 
-	if clientID == "" {
-		Fail("Error - WL_CLIENT_ID must be provided")
+	if wlClientID == "" {
+		Fail(fmt.Sprintf("Error - %s must be provided", wlClientIDEnvKey))
 	}
 
+	By("Creating client")
 	testLogger := logger.NewTestLogger(GinkgoWriter)
 	client = oauth.NewClient(
-		accessToken,
-		clientID,
+		wlAccessToken,
+		wlClientID,
 		apiURL,
 		testLogger,
 	)
-	_, err := client.Lists()
+
+	By("Logging in")
+	_, err = client.User()
 	Expect(err).To(BeNil())
+})
+
+var _ = AfterSuite(func() {
+	gexec.CleanupBuildArtifacts()
 })

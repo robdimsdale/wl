@@ -54,7 +54,7 @@ func main() {
 	args := flag.Args()
 	if len(args) == 0 {
 		logger.Info("no command specified - exiting")
-		os.Exit(0)
+		os.Exit(2)
 	}
 
 	if args[0] == "folders" {
