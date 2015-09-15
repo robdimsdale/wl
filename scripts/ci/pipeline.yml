@@ -237,13 +237,16 @@ jobs:
     - aggregate:
       - task: create-wl-release-candidate-linux-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
-        config: {GOOS: linux,GOARCH: amd64}
+        config:
+          params: {GOOS: linux,GOARCH: amd64}
       - task: create-wl-release-candidate-darwin-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
-        config: {GOOS: darwin,GOARCH: amd64}
+        config:
+          params: {GOOS: darwin,GOARCH: amd64}
       - task: create-wl-release-candidate-windows-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
-        config: {GOOS: windows,GOARCH: amd64}
+        config:
+          params: {GOOS: windows,GOARCH: amd64}
     - aggregate:
       - put: version
         params: {file: version/number}
