@@ -254,11 +254,11 @@ jobs:
         params:
           repos: [wundergo]
       - put: wl-release-linux-amd64
-        params: {from: create-wl-release-candidate-linux/wl-linux-(.*)}
+        params: {from: create-wl-release-candidate-linux-amd64/wl-linux-(.*)}
       - put: wl-release-darwin-amd64
-        params: {from: create-wl-release-candidate-darwin/wl-darwin-(.*)}
+        params: {from: create-wl-release-candidate-darwin-amd64/wl-darwin-(.*)}
       - put: wl-release-windows-amd64
-        params: {from: create-wl-release-candidate-windows/wl-windows-(.*)}
+        params: {from: create-wl-release-candidate-windows-amd64/wl-windows-(.*)}
     on_failure:
       put: slack-alert
       params:
