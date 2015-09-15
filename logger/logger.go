@@ -38,7 +38,7 @@ func NewTestLogger(writer io.Writer) Logger {
 
 func (l logger) Info(message string, data ...interface{}) {
 	for _, sink := range l.sinks {
-		sink.Log(INFO, l.toByteArray(message, data))
+		sink.Log(INFO, l.toByteArray(message, data...))
 	}
 }
 
@@ -51,12 +51,15 @@ func (l logger) toByteArray(message string, data ...interface{}) []byte {
 
 func (l logger) Debug(message string, data ...interface{}) {
 	for _, sink := range l.sinks {
-		sink.Log(DEBUG, l.toByteArray(message, data))
+		sink.Log(DEBUG, l.toByteArray(message, data...))
 	}
 }
 
 func (l logger) Error(message string, err error, data ...interface{}) {
+	combined := []interface{}{err}
+	combined = append(combined, data...)
+
 	for _, sink := range l.sinks {
-		sink.Log(ERROR, l.toByteArray(message, err, data))
+		sink.Log(ERROR, l.toByteArray(message, combined...))
 	}
 }

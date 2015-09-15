@@ -20,5 +20,7 @@ func (sink writerSink) Log(level LogLevel, log []byte) {
 	}
 
 	sink.writer.Write(log)
-	sink.writer.Write([]byte("\n"))
+	if len(log) > 0 {
+		sink.writer.Write([]byte("\n"))
+	}
 }
