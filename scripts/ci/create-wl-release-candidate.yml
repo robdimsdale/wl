@@ -9,3 +9,7 @@ inputs:
 
 run:
   path: wundergo/scripts/ci/create-wl-release-candidate
+
+params:
+  GOOS:
+  GOARCH:

@@ -4,7 +4,8 @@ set -eux
 
 ROOT="$PWD"
 VERSION="$(cat version/number)"
-ARCH=linux
+GOOS=${GOOS:?}
+GOARCH=${GOARCH:?}
 
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -22,8 +23,10 @@ pushd ${BASE_DIR}
   IFS='-' read -ra arrVERSION <<< "${VERSION}"
   stripped_version="${arrVERSION[0]}"
 
+  GOOS="${GOOS}" \
+  GOARCH="${GOARCH}" \
   go build \
-    -o "${ROOT}"/wl-"${ARCH}-${VERSION}" \
+    -o "${ROOT}"/wl-"${GOOS}-${GOARCH}-${VERSION}" \
     -ldflags "-X main.version=${stripped_version}" \
     ./cmd/wl/main.go
 popd

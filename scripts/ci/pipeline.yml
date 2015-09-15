@@ -50,11 +50,27 @@ resources:
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
-- name: wl-release-linux
+- name: wl-release-linux-amd64
   type: s3
   source:
     bucket: wundergo-releases
-    regexp: wundergo-linux-(.*)
+    regexp: wundergo-linux-amd64-(.*)
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: wl-release-darwin-amd64
+  type: s3
+  source:
+    bucket: wundergo-releases
+    regexp: wundergo-darwin-amd64-(.*)
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: wl-release-windows-amd64
+  type: s3
+  source:
+    bucket: wundergo-releases
+    regexp: wundergo-windows-amd64-(.*)
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
@@ -218,16 +234,28 @@ jobs:
       - get: version
         params: {pre: rc}
         trigger: true
-    - task: create-wl-release-candidate-linux
-      file: wundergo/scripts/ci/create-wl-release-candidate.yml
+    - aggregate:
+      - task: create-wl-release-candidate-linux-amd64
+        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        config: {GOOS: linux,GOARCH: amd64}
+      - task: create-wl-release-candidate-darwin-amd64
+        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        config: {GOOS: darwin,GOARCH: amd64}
+      - task: create-wl-release-candidate-windows-amd64
+        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        config: {GOOS: windows,GOARCH: amd64}
     - aggregate:
       - put: version
         params: {file: version/number}
       - put: tracker
         params:
           repos: [wundergo]
-      - put: wl-release-linux
+      - put: wl-release-linux-amd64
         params: {from: create-wl-release-candidate-linux/wl-linux-(.*)}
+      - put: wl-release-darwin-amd64
+        params: {from: create-wl-release-candidate-darwin/wl-darwin-(.*)}
+      - put: wl-release-windows-amd64
+        params: {from: create-wl-release-candidate-windows/wl-windows-(.*)}
     on_failure:
       put: slack-alert
       params:
