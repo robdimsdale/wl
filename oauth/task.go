@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Tasks gets all tasks for all lists.
+func (c oauthClient) Tasks() ([]wundergo.Task, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	tasksChan := make(chan []wundergo.Task, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"tasks - getting tasks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			tasks, err := c.TasksForListID(list.ID)
+			idErrChan <- idErr{id: list.ID, err: err}
+			tasksChan <- tasks
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"tasks - error received getting tasks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalTasks := []wundergo.Task{}
+	for i := 0; i < listCount; i++ {
+		tasks := <-tasksChan
+		totalTasks = append(totalTasks, tasks...)
+	}
+
+	return totalTasks, nil
+}
+
 // TasksForListID returns Tasks for the provided listID.
 func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	if listID == 0 {
@@ -315,6 +367,51 @@ func (c oauthClient) DeleteTask(task wundergo.Task) error {
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusNoContent)
+	}
+
+	return nil
+}
+
+// DeleteAllTasks gets a list of all tasks via Tasks() and deletes them
+// via DeleteTask(task)
+func (c oauthClient) DeleteAllTasks() error {
+	tasks, err := c.Tasks()
+	if err != nil {
+		return err
+	}
+
+	taskCount := len(tasks)
+	c.logger.Debug(
+		"delete-all-tasks",
+		map[string]interface{}{"taskCount": taskCount},
+	)
+
+	idErrChan := make(chan idErr, taskCount)
+	for _, f := range tasks {
+		go func(task wundergo.Task) {
+			c.logger.Debug(
+				"delete-all-tasks - deleting task",
+				map[string]interface{}{"taskID": task.ID},
+			)
+			err := c.DeleteTask(task)
+			idErrChan <- idErr{id: task.ID, err: err}
+		}(f)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < taskCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"delete-all-tasks - error received",
+				map[string]interface{}{"id": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return e
 	}
 
 	return nil

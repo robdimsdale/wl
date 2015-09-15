@@ -92,4 +92,22 @@ func main() {
 		}
 		fmt.Printf("All lists deleted successfully")
 	}
+
+	if args[0] == "tasks" {
+		tasks, err := client.Tasks()
+		if err != nil {
+			logger.Error("exiting", err)
+			os.Exit(1)
+		}
+		json.NewEncoder(os.Stdout).Encode(tasks)
+	}
+
+	if args[0] == "delete-all-tasks" {
+		err := client.DeleteAllTasks()
+		if err != nil {
+			logger.Error("exiting", err)
+			os.Exit(1)
+		}
+		fmt.Printf("All tasks deleted successfully")
+	}
 }

@@ -106,5 +106,23 @@ var _ = Describe("wl binary", func() {
 				Eventually(session).Should(gexec.Exit(0))
 			})
 		})
+
+		Describe("task operations", func() {
+			It("gets all tasks", func() {
+				args = append(args, fmt.Sprintf("tasks"))
+
+				command := exec.Command(wlBinPath, args...)
+				session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+				Expect(err).NotTo(HaveOccurred())
+
+				// We have no idea how many tasks we should expect
+				// it could be many, or an empty list
+				// Either way we check for '[' and ']' which will always be rendered
+				// These characters are escaped to prevent them being interpreted as regex
+				Eventually(session).Should(gbytes.Say("\\["))
+				Eventually(session).Should(gbytes.Say("\\]"))
+				Eventually(session).Should(gexec.Exit(0))
+			})
+		})
 	})
 })

@@ -234,21 +234,31 @@ func (c oauthClient) DeleteAllFolders() error {
 	}
 
 	folderCount := len(folders)
-	c.logger.Debug("delete-all-folders", map[string]interface{}{"folderCount": folderCount})
+	c.logger.Debug(
+		"delete-all-folders",
+		map[string]interface{}{"folderCount": folderCount},
+	)
+
 	idErrChan := make(chan idErr, folderCount)
 	for _, f := range folders {
 		go func(folder wundergo.Folder) {
-			c.logger.Debug("delete-all-folders - deleting folder", map[string]interface{}{"folderID": folder.ID})
+			c.logger.Debug(
+				"delete-all-folders - deleting folder",
+				map[string]interface{}{"folderID": folder.ID},
+			)
 			err := c.DeleteFolder(folder)
 			idErrChan <- idErr{id: folder.ID, err: err}
 		}(f)
 	}
 
 	e := multiIDErr{}
-	for i := 0; i < len(folders); i++ {
+	for i := 0; i < folderCount; i++ {
 		idErr := <-idErrChan
 		if idErr.err != nil {
-			c.logger.Debug("delete-all-folders - error received", map[string]interface{}{"id": idErr.id, "err": err})
+			c.logger.Debug(
+				"delete-all-folders - error received",
+				map[string]interface{}{"id": idErr.id, "err": err},
+			)
 			e.addError(idErr)
 		}
 	}

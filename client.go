@@ -21,6 +21,7 @@ type Client interface {
 	UpdateNote(note Note) (Note, error)
 	DeleteNote(note Note) error
 
+	Tasks() ([]Task, error)
 	TasksForListID(listID uint) ([]Task, error)
 	CompletedTasksForListID(listID uint, completed bool) ([]Task, error)
 	Task(taskID uint) (Task, error)
@@ -36,6 +37,7 @@ type Client interface {
 	) (Task, error)
 	UpdateTask(task Task) (Task, error)
 	DeleteTask(task Task) error
+	DeleteAllTasks() error
 
 	SubtasksForListID(listID uint) ([]Subtask, error)
 	SubtasksForTaskID(taskID uint) ([]Subtask, error)
