@@ -31,7 +31,7 @@ func (c oauthClient) Tasks() ([]wundergo.Task, error) {
 				map[string]interface{}{"listID": list.ID},
 			)
 			tasks, err := c.TasksForListID(list.ID)
-			idErrChan <- idErr{id: list.ID, err: err}
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
 			tasksChan <- tasks
 		}(l)
 	}
@@ -394,7 +394,7 @@ func (c oauthClient) DeleteAllTasks() error {
 				map[string]interface{}{"taskID": task.ID},
 			)
 			err := c.DeleteTask(task)
-			idErrChan <- idErr{id: task.ID, err: err}
+			idErrChan <- idErr{idType: "task", id: task.ID, err: err}
 		}(f)
 	}
 

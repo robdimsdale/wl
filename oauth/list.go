@@ -184,7 +184,7 @@ func (c oauthClient) DeleteAllLists() error {
 			} else {
 				err = c.DeleteList(list)
 			}
-			idErrChan <- idErr{id: list.ID, err: err}
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
 		}(l)
 	}
 

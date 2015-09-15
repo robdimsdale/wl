@@ -247,7 +247,7 @@ func (c oauthClient) DeleteAllFolders() error {
 				map[string]interface{}{"folderID": folder.ID},
 			)
 			err := c.DeleteFolder(folder)
-			idErrChan <- idErr{id: folder.ID, err: err}
+			idErrChan <- idErr{idType: "folder", id: folder.ID, err: err}
 		}(f)
 	}
 
