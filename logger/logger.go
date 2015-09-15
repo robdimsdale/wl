@@ -2,9 +2,8 @@ package logger
 
 import (
 	"fmt"
+	"io"
 	"os"
-
-	"github.com/onsi/ginkgo"
 )
 
 type Logger interface {
@@ -27,9 +26,9 @@ func NewLogger(minLogLevel LogLevel) Logger {
 	}
 }
 
-func NewTestLogger() Logger {
+func NewTestLogger(writer io.Writer) Logger {
 	sink := writerSink{
-		writer:      ginkgo.GinkgoWriter,
+		writer:      writer,
 		minLogLevel: DEBUG,
 	}
 	return &logger{
