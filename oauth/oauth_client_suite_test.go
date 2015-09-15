@@ -34,7 +34,7 @@ var _ = BeforeEach(func() {
 	server = ghttp.NewServer()
 	apiURL = server.URL()
 
-	logger = logger.NewTestLogger(GinkgoWriter)
+	testLogger = logger.NewTestLogger(GinkgoWriter)
 	client = oauth.NewClient(
 		dummyAccessToken,
 		dummyClientID,

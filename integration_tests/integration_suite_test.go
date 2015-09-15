@@ -91,12 +91,12 @@ var _ = BeforeSuite(func() {
 		Fail("Error - WL_CLIENT_ID must be provided")
 	}
 
-	logger := logger.NewTestLogger(GinkgoWriter)
+	testLogger := logger.NewTestLogger(GinkgoWriter)
 	client = oauth.NewClient(
 		accessToken,
 		clientID,
 		apiURL,
-		logger,
+		testLogger,
 	)
 	_, err := client.Lists()
 	Expect(err).To(BeNil())
