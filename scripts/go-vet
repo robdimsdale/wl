@@ -10,6 +10,6 @@ BASE_DIR="$( cd ${MY_DIR}/.. && pwd )"
 pushd ${BASE_DIR}
   golint ./...
 
-  go tool vet -composites=false $(ls -d */ | grep -v Godeps )
+  go tool vet -composites=false $(ls -d */ )
   go tool vet -composites=false *.go
 popd
