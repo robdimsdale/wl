@@ -39,17 +39,40 @@ func main() {
 
 	logger := logger.NewLogger(logger.LogLevelFromString(*logLevel))
 
-	if *accessToken == "" {
-		logger.Error("exiting", errors.New("accessToken must be provided"))
+	var wlAccessToken string
+	if *accessToken != "" {
+		wlAccessToken = *accessToken
+	} else {
+		wlAccessToken = os.Getenv("WL_ACCESS_TOKEN")
+	}
+
+	if wlAccessToken == "" {
+		logger.Error(
+			"exiting",
+			errors.New("accessToken not found. Either provide the flag -accessToken or set the environment variable WL_ACCESS_TOKEN"))
 		os.Exit(2)
 	}
 
-	if *clientID == "" {
-		logger.Error("exiting", errors.New("clientID must be provided"))
+	var wlClientID string
+	if *clientID != "" {
+		wlClientID = *clientID
+	} else {
+		wlClientID = os.Getenv("WL_CLIENT_ID")
+	}
+
+	if wlClientID == "" {
+		logger.Error(
+			"exiting",
+			errors.New("clientID not found. Either provide the flag -clientID or set the environment variable WL_CLIENT_ID"))
 		os.Exit(2)
 	}
 
-	client := oauth.NewClient(*accessToken, *clientID, wundergo.APIURL, logger)
+	client := oauth.NewClient(
+		wlAccessToken,
+		wlClientID,
+		wundergo.APIURL,
+		logger,
+	)
 
 	args := flag.Args()
 	if len(args) == 0 {
