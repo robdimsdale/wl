@@ -5,6 +5,28 @@ Golang API client for Wunderlist.
 
 Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wundergo/blob/master/LICENSE).
 
+# CLI Binary
+
+A CLI is provided with support for some utility functions (e.g. list all tasks, delete all folders).
+
+## Installation
+
+Binaries are available on the [releases](https://github.com/robdimsdale/wundergo/releases) page for various operating systems and architectures.
+
+Download the binary and place in the PATH.
+
+### OSX
+
+A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; install the binary with:
+
+```
+brew tap robdimsdale/homebrew-tap
+brew install wundergo
+```
+
+# Library
+
+
 ## Supported Golang versions
 
 The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
