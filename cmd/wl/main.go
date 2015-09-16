@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/robdimsdale/wundergo"
 	"github.com/robdimsdale/wundergo/logger"
 	"github.com/robdimsdale/wundergo/oauth"
@@ -20,6 +22,10 @@ var (
 	clientID    = flag.String("clientID", "", "Wunderlist client ID")
 
 	logLevel = flag.String("logLevel", "info", "log level: debug, info, error or fatal")
+
+	useJson = flag.Bool("j", false, "Output as JSON instead of YAML.")
+
+	l logger.Logger
 )
 
 func main() {
@@ -37,7 +43,7 @@ func main() {
 
 	flag.Parse()
 
-	logger := logger.NewLogger(logger.LogLevelFromString(*logLevel))
+	l := logger.NewLogger(logger.LogLevelFromString(*logLevel))
 
 	var wlAccessToken string
 	if *accessToken != "" {
@@ -47,7 +53,7 @@ func main() {
 	}
 
 	if wlAccessToken == "" {
-		logger.Error(
+		l.Error(
 			"exiting",
 			errors.New("accessToken not found. Either provide the flag -accessToken or set the environment variable WL_ACCESS_TOKEN"))
 		os.Exit(2)
@@ -61,7 +67,7 @@ func main() {
 	}
 
 	if wlClientID == "" {
-		logger.Error(
+		l.Error(
 			"exiting",
 			errors.New("clientID not found. Either provide the flag -clientID or set the environment variable WL_CLIENT_ID"))
 		os.Exit(2)
@@ -71,28 +77,28 @@ func main() {
 		wlAccessToken,
 		wlClientID,
 		wundergo.APIURL,
-		logger,
+		l,
 	)
 
 	args := flag.Args()
 	if len(args) == 0 {
-		logger.Info("no command specified - exiting")
+		l.Info("no command specified - exiting")
 		os.Exit(2)
 	}
 
 	if args[0] == "folders" {
 		folders, err := client.Folders()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
-		json.NewEncoder(os.Stdout).Encode(folders)
+		renderOutput(folders)
 	}
 
 	if args[0] == "delete-all-folders" {
 		err := client.DeleteAllFolders()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
 		fmt.Printf("All folders deleted successfully")
@@ -101,16 +107,16 @@ func main() {
 	if args[0] == "lists" {
 		lists, err := client.Lists()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
-		json.NewEncoder(os.Stdout).Encode(lists)
+		renderOutput(lists)
 	}
 
 	if args[0] == "delete-all-lists" {
 		err := client.DeleteAllLists()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
 		fmt.Printf("All lists deleted successfully")
@@ -119,18 +125,32 @@ func main() {
 	if args[0] == "tasks" {
 		tasks, err := client.Tasks()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
-		json.NewEncoder(os.Stdout).Encode(tasks)
+		renderOutput(tasks)
 	}
 
 	if args[0] == "delete-all-tasks" {
 		err := client.DeleteAllTasks()
 		if err != nil {
-			logger.Error("exiting", err)
+			l.Error("exiting", err)
 			os.Exit(1)
 		}
 		fmt.Printf("All tasks deleted successfully")
 	}
+}
+
+func renderOutput(output interface{}) {
+	if *useJson {
+		json.NewEncoder(os.Stdout).Encode(output)
+	} else {
+		data, err := yaml.Marshal(output)
+		if err != nil {
+			l.Error("exiting - failed to render yaml", err)
+			os.Exit(1)
+		}
+		fmt.Printf(string(data))
+	}
+
 }

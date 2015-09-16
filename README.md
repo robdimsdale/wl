@@ -19,7 +19,15 @@ The [**master**](https://github.com/robdimsdale/wundergo/tree/master) branch poi
 
 ### Go dependencies
 
-There are no dependencies for the library or the CLI binary.
+There are no dependencies for the library.
+
+The CLI binary has one dependency; install it with:
+
+```
+go get gopkg.in/yaml.v2
+```
+
+This dependency follows semantic versioning, so all versions should be safe to `go get`.
 
 There are dependencies for the tests; they are safe to install from HEAD of
 their respective repositories and hence are not vendored in.
