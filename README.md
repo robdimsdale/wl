@@ -20,7 +20,7 @@ Download the binary and place in the PATH.
 A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; install the binary with:
 
 ```
-brew tap robdimsdale/homebrew-tap
+brew tap robdimsdale/tap
 brew install wundergo
 ```
 
