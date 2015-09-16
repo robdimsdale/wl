@@ -62,4 +62,4 @@ WL_CLIENT_ID=my_client_id WL_ACCESS_TOKEN=my_access_token ./scripts/integration_
 
 ### Tracker
 
-- Roadmap: [Pivotal Tracker(https://www.pivotaltracker.com/n/projects/1235310)
+- Roadmap: [Pivotal Tracker](https://www.pivotaltracker.com/n/projects/1235310)
