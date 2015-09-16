@@ -23,7 +23,7 @@ var (
 
 	logLevel = flag.String("logLevel", "info", "log level: debug, info, error or fatal")
 
-	useJson = flag.Bool("j", false, "Output as JSON instead of YAML.")
+	useJSON = flag.Bool("j", false, "Output as JSON instead of YAML.")
 
 	l logger.Logger
 )
@@ -142,7 +142,7 @@ func main() {
 }
 
 func renderOutput(output interface{}) {
-	if *useJson {
+	if *useJSON {
 		json.NewEncoder(os.Stdout).Encode(output)
 	} else {
 		data, err := yaml.Marshal(output)
