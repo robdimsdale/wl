@@ -63,8 +63,11 @@ func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
 
 func (c oauthClient) do(req *http.Request) (*http.Response, error) {
 	c.logRequest(req)
-	resp, err := (&http.Client{}).Do(req)
-	c.logResponse(resp)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if resp != nil {
+		c.logResponse(resp)
+	}
 	return resp, err
 }
 
@@ -74,14 +77,14 @@ func (c oauthClient) logRequest(req *http.Request) {
 		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
-			c.logger.Debug("sending request", map[string]interface{}{"request": string(reqDump)})
+			c.logger.Debug(" - sending request", map[string]interface{}{"request": string(reqDump)})
 		}
 	}
 }
 
 func (c oauthClient) logResponse(resp *http.Response) {
 	if resp == nil {
-		c.logger.Debug("nil response received")
+		c.logger.Debug(" - nil response received")
 		return
 	}
 
@@ -90,7 +93,7 @@ func (c oauthClient) logResponse(resp *http.Response) {
 		c.logger.Error("received error while dumping HTTP Response", err)
 	} else {
 		if respDump != nil {
-			c.logger.Debug("received response", map[string]interface{}{"response": string(respDump)})
+			c.logger.Debug(" - received response", map[string]interface{}{"response": string(respDump)})
 		}
 	}
 }

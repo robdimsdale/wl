@@ -82,11 +82,6 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
@@ -94,7 +89,6 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	tasks := []wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return tasks, nil
@@ -130,7 +124,6 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wun
 	tasks := []wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return tasks, nil
@@ -161,7 +154,6 @@ func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
 	task := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Task{}, err
 	}
 	return task, nil
@@ -239,10 +231,6 @@ func (c oauthClient) CreateTask(
 	if err != nil {
 		return wundergo.Task{}, err
 	}
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return wundergo.Task{}, err
-	}
 
 	if resp.StatusCode != http.StatusCreated {
 		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
@@ -251,7 +239,6 @@ func (c oauthClient) CreateTask(
 	task := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Task{}, err
 	}
 	return task, nil
@@ -340,7 +327,6 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 	returnedTask := wundergo.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedTask)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Task{}, err
 	}
 	return returnedTask, nil

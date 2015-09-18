@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/robdimsdale/wundergo"
@@ -39,7 +38,6 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 	webhooks := []wundergo.Webhook{}
 	err = json.NewDecoder(resp.Body).Decode(&webhooks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return webhooks, nil
@@ -82,18 +80,12 @@ func (c oauthClient) CreateWebhook(
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		if resp.Body != nil {
-			b, _ := ioutil.ReadAll(resp.Body)
-			c.logger.Debug("", map[string]interface{}{"response.Body": string(b)})
-		}
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Webhook{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	webhook := wundergo.Webhook{}
 	err = json.NewDecoder(resp.Body).Decode(&webhook)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Webhook{}, err
 	}
 	return webhook, nil

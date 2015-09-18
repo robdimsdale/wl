@@ -39,7 +39,6 @@ func (c oauthClient) User() (wundergo.User, error) {
 	user := wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&user)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.User{}, err
 	}
 
@@ -62,14 +61,9 @@ func (c oauthClient) UpdateUser(user wundergo.User) (wundergo.User, error) {
 		return wundergo.User{}, err
 	}
 
-	if resp.Body == nil {
-		return wundergo.User{}, errors.New("Nil body returned")
-	}
-
 	returnedUser := wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedUser)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.User{}, err
 	}
 
@@ -101,11 +95,6 @@ func (c oauthClient) UsersForListID(listID uint) ([]wundergo.User, error) {
 		return nil, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
@@ -117,7 +106,6 @@ func (c oauthClient) UsersForListID(listID uint) ([]wundergo.User, error) {
 	users := []wundergo.User{}
 	err = json.NewDecoder(resp.Body).Decode(&users)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 

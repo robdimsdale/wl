@@ -104,4 +104,17 @@ type Client interface {
 	DeleteFolder(folder Folder) error
 	FolderRevisions() ([]FolderRevision, error)
 	DeleteAllFolders() error
+
+	UploadFile(
+		localFilePath string,
+		remoteFileName string,
+		contentType string,
+		md5sum string,
+	) (Upload, error)
+
+	FilesForTaskID(taskID uint) ([]File, error)
+	FilesForListID(listID uint) ([]File, error)
+	File(fileID uint) (File, error)
+	CreateFile(uploadID uint, taskID uint) (File, error)
+	DestroyFile(file File) error
 }

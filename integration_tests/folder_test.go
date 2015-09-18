@@ -9,7 +9,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-var _ = Describe("basic webhook functionality", func() {
+var _ = Describe("basic folder functionality", func() {
 
 	It("creates folders", func() {
 		By("Creating a new list")

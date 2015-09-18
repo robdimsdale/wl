@@ -38,7 +38,6 @@ func (c oauthClient) SubtasksForListID(listID uint) ([]wundergo.Subtask, error) 
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return subtasks, nil
@@ -66,11 +65,6 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wundergo.Subtask, error) 
 		return nil, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
@@ -78,7 +72,6 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wundergo.Subtask, error) 
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return subtasks, nil
@@ -108,11 +101,6 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 		return nil, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
@@ -120,7 +108,6 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return subtasks, nil
@@ -150,11 +137,6 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 		return nil, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
@@ -162,7 +144,6 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 	subtasks := []wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtasks)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return subtasks, nil
@@ -197,7 +178,6 @@ func (c oauthClient) Subtask(subtaskID uint) (wundergo.Subtask, error) {
 	subtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtask)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Subtask{}, err
 	}
 	return subtask, nil
@@ -232,10 +212,6 @@ func (c oauthClient) CreateSubtask(
 	if err != nil {
 		return wundergo.Subtask{}, err
 	}
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return wundergo.Subtask{}, err
-	}
 
 	if resp.StatusCode != http.StatusCreated {
 		return wundergo.Subtask{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
@@ -244,7 +220,6 @@ func (c oauthClient) CreateSubtask(
 	subtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&subtask)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Subtask{}, err
 	}
 	return subtask, nil
@@ -280,7 +255,6 @@ func (c oauthClient) UpdateSubtask(subtask wundergo.Subtask) (wundergo.Subtask, 
 	returnedSubtask := wundergo.Subtask{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedSubtask)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Subtask{}, err
 	}
 	return returnedSubtask, nil

@@ -33,7 +33,6 @@ func (c oauthClient) Memberships() ([]wundergo.Membership, error) {
 	memberships := []wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&memberships)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 
@@ -69,7 +68,6 @@ func (c oauthClient) Membership(membershipID uint) (wundergo.Membership, error) 
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -106,7 +104,6 @@ func (c oauthClient) MembershipsForListID(listID uint) ([]wundergo.Membership, e
 	memberships := []wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&memberships)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 
@@ -144,11 +141,6 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 		return wundergo.Membership{}, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return wundergo.Membership{}, err
-	}
-
 	if resp.StatusCode != http.StatusCreated {
 		return wundergo.Membership{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
@@ -156,7 +148,6 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -194,11 +185,6 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 		return wundergo.Membership{}, err
 	}
 
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return wundergo.Membership{}, err
-	}
-
 	if resp.StatusCode != http.StatusCreated {
 		return wundergo.Membership{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
@@ -206,7 +192,6 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 	membership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&membership)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 
@@ -245,7 +230,6 @@ func (c oauthClient) AcceptMember(membership wundergo.Membership) (wundergo.Memb
 	returnedMembership := wundergo.Membership{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedMembership)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Membership{}, err
 	}
 

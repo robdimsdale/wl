@@ -38,7 +38,6 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment,
 	taskComments := []wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return taskComments, nil
@@ -73,7 +72,6 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment,
 	taskComments := []wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return taskComments, nil
@@ -99,10 +97,6 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 	if err != nil {
 		return wundergo.TaskComment{}, err
 	}
-	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
-		return wundergo.TaskComment{}, err
-	}
 
 	if resp.StatusCode != http.StatusCreated {
 		return wundergo.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
@@ -111,7 +105,6 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 	taskComment := wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil
@@ -146,7 +139,6 @@ func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, erro
 	taskComment := wundergo.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.TaskComment{}, err
 	}
 	return taskComment, nil

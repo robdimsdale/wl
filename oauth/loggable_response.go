@@ -21,7 +21,7 @@ type loggableResponse struct {
 }
 
 func newLoggableResponse(resp *http.Response) loggableResponse {
-	return loggableResponse{
+	loggableResp := loggableResponse{
 		Status:           resp.Status,
 		StatusCode:       resp.StatusCode,
 		Proto:            resp.Proto,
@@ -32,6 +32,11 @@ func newLoggableResponse(resp *http.Response) loggableResponse {
 		TransferEncoding: resp.TransferEncoding,
 		Close:            resp.Close,
 		Trailer:          resp.Trailer,
-		Request:          newLoggableRequest(*resp.Request),
 	}
+
+	if resp.Request != nil {
+		loggableResp.Request = newLoggableRequest(*resp.Request)
+	}
+
+	return loggableResp
 }

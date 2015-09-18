@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/robdimsdale/wundergo"
@@ -34,7 +33,6 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 	folders := []wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return folders, nil
@@ -81,18 +79,12 @@ func (c oauthClient) CreateFolder(
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		if resp.Body != nil {
-			b, _ := ioutil.ReadAll(resp.Body)
-			c.logger.Debug("", map[string]interface{}{"response.Body": string(b)})
-		}
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
 	folder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return folder, nil
@@ -127,7 +119,6 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 	folder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return folder, nil
@@ -163,7 +154,6 @@ func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, erro
 	returnedFolder := wundergo.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedFolder)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return wundergo.Folder{}, err
 	}
 	return returnedFolder, nil
@@ -219,7 +209,6 @@ func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
 	folders := []wundergo.FolderRevision{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
-		c.logger.Debug("", map[string]interface{}{"response": newLoggableResponse(resp)})
 		return nil, err
 	}
 	return folders, nil
