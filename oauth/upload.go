@@ -58,7 +58,7 @@ func (c oauthClient) createUpload(
 	)
 
 	if md5sum != "" {
-		bodyString = fmt.Sprintf(`%bodyString,"md5sum":"%s"`, md5sum)
+		bodyString = fmt.Sprintf(`%s,"md5sum":"%s"`, bodyString, md5sum)
 	}
 
 	bodyString = fmt.Sprintf("%s}", bodyString)
