@@ -139,6 +139,15 @@ func main() {
 		}
 		fmt.Printf("All tasks deleted successfully")
 	}
+
+	if args[0] == "root" {
+		root, err := client.Root()
+		if err != nil {
+			l.Error("exiting", err)
+			os.Exit(1)
+		}
+		renderOutput(root)
+	}
 }
 
 func renderOutput(output interface{}) {
