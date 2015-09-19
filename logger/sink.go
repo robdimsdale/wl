@@ -14,6 +14,8 @@ type writerSink struct {
 	minLogLevel LogLevel
 }
 
+// Log writes the provided log to any sinks whose level is greater
+// than the provided LogLevel
 func (sink writerSink) Log(level LogLevel, log []byte) {
 	if level < sink.minLogLevel {
 		return
