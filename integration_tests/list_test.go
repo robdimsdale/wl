@@ -54,4 +54,11 @@ var _ = Describe("basic list functionality", func() {
 			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
+
+	It("retrieves inbox", func() {
+		inboxList, err := client.Inbox()
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(inboxList.Title).To(Equal("inbox"))
+	})
 })

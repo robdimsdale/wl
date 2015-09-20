@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -198,4 +199,20 @@ func (c oauthClient) DeleteAllLists() error {
 	}
 
 	return nil
+}
+
+// Inbox returns the inbox list.
+func (c oauthClient) Inbox() (wundergo.List, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return wundergo.List{}, err
+	}
+
+	for _, l := range lists {
+		if l.Title == "inbox" {
+			return l, nil
+		}
+	}
+
+	return wundergo.List{}, errors.New("Inbox not found")
 }

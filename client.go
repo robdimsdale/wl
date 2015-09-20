@@ -13,6 +13,7 @@ type Client interface {
 	UpdateList(list List) (List, error)
 	DeleteList(list List) error
 	DeleteAllLists() error
+	Inbox() (List, error)
 
 	NotesForListID(listID uint) ([]Note, error)
 	NotesForTaskID(taskID uint) ([]Note, error)

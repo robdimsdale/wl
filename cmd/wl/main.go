@@ -148,6 +148,15 @@ func main() {
 		}
 		renderOutput(root)
 	}
+
+	if args[0] == "inbox" {
+		inboxList, err := client.Inbox()
+		if err != nil {
+			l.Error("exiting", err)
+			os.Exit(1)
+		}
+		renderOutput(inboxList)
+	}
 }
 
 func renderOutput(output interface{}) {

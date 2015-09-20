@@ -584,4 +584,137 @@ var _ = Describe("client - List operations", func() {
 			})
 		})
 	})
+
+	Describe("getting inbox", func() {
+		It("performs GET requests with correct headers to /lists", func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", "/lists"),
+					ghttp.VerifyHeader(http.Header{
+						"X-Access-Token": []string{dummyAccessToken},
+						"X-Client-ID":    []string{dummyClientID},
+					}),
+				),
+			)
+
+			client.Inbox()
+
+			Expect(server.ReceivedRequests()).Should(HaveLen(1))
+		})
+
+		Context("when the request is valid", func() {
+			It("returns error if inbox not found", func() {
+				allLists := []wundergo.List{{ID: 2345, Title: "some unexpected title"}}
+
+				// Marshal and unmarshal to ensure exact object is returned
+				// - this avoids odd behavior with the time fields
+				expectedBody, err := json.Marshal(allLists)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(expectedBody, &allLists)
+				Expect(err).NotTo(HaveOccurred())
+
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, expectedBody),
+					),
+				)
+
+				_, err = client.Inbox()
+				Expect(err).To(HaveOccurred())
+			})
+
+			It("returns successfully", func() {
+				inboxList := wundergo.List{ID: 2345, Title: "inbox"}
+				otherList := wundergo.List{ID: 2346, Title: "some other title"}
+				allLists := []wundergo.List{inboxList, otherList}
+
+				// Marshal and unmarshal to ensure exact object is returned
+				// - this avoids odd behavior with the time fields
+				marshalledInboxList, err := json.Marshal(inboxList)
+				Expect(err).NotTo(HaveOccurred())
+				err = json.Unmarshal(marshalledInboxList, &inboxList)
+				Expect(err).NotTo(HaveOccurred())
+
+				expectedBody, err := json.Marshal(allLists)
+				Expect(err).NotTo(HaveOccurred())
+
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, expectedBody),
+					),
+				)
+
+				returnedInbox, err := client.Inbox()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(returnedInbox).To(Equal(inboxList))
+			})
+		})
+
+		Context("when creating request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "", testLogger)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.Inbox()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when executing request fails with error", func() {
+			BeforeEach(func() {
+				client = oauth.NewClient("", "", "http://not-a-real-url.com", testLogger)
+			})
+
+			It("forwards the error", func() {
+				_, err := client.Inbox()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response status code is unexpected", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusNotFound, nil),
+					),
+				)
+
+				_, err := client.Inbox()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when response body is nil", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, nil),
+					),
+				)
+
+				_, err := client.Inbox()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when unmarshalling json response returns an error", func() {
+			It("returns an error", func() {
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.RespondWith(http.StatusOK, "invalid json response"),
+					),
+				)
+
+				_, err := client.Inbox()
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
 })
