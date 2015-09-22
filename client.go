@@ -118,6 +118,7 @@ type Client interface {
 	File(fileID uint) (File, error)
 	CreateFile(uploadID uint, taskID uint) (File, error)
 	DestroyFile(file File) error
+	FilePreview(fileID uint, platform string, size string) (FilePreview, error)
 
 	Root() (Root, error)
 }

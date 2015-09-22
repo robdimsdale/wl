@@ -3,7 +3,9 @@ package wundergo_integration_test
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
@@ -17,28 +19,18 @@ var _ = Describe("basic upload and file functionality", func() {
 		remoteFileName string
 		contentType    string
 		md5sum         string
-		tempDirPath    string
 
 		firstList wundergo.List
 		task      wundergo.Task
 	)
 
 	BeforeEach(func() {
-		By("Creating temporary fixtures")
+		var err error
+
+		By("Creating random remote file name")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		remoteFileName = uuid1.String()
-
-		tempDirPath, err = ioutil.TempDir(os.TempDir(), "wundergo-integration-test")
-		Expect(err).NotTo(HaveOccurred())
-
-		localFilePath = filepath.Join(tempDirPath, "test-file")
-
-		fileContent := []byte("some-text")
-		err = ioutil.WriteFile(localFilePath, fileContent, os.ModePerm)
-
-		contentType = "text"
-		md5sum = ""
 
 		By("Creating a task")
 		var lists []wundergo.List
@@ -69,6 +61,7 @@ var _ = Describe("basic upload and file functionality", func() {
 
 	AfterEach(func() {
 		var err error
+
 		By("Deleting task")
 		Eventually(func() error {
 			task, err = client.Task(task.ID)
@@ -80,54 +73,120 @@ var _ = Describe("basic upload and file functionality", func() {
 			tasks, err = client.TasksForListID(firstList.ID)
 			return taskContains(tasks, task), err
 		}).Should(BeFalse())
-
-		err = os.RemoveAll(tempDirPath)
-		Expect(err).ToNot(HaveOccurred())
 	})
 
-	It("can upload a local file", func() {
-		By("Uploading a local file")
-		upload, err := client.UploadFile(
-			localFilePath,
-			remoteFileName,
-			contentType,
-			md5sum,
+	Describe("uploading a text file", func() {
+		var (
+			tempDirPath string
 		)
 
-		Expect(err).NotTo(HaveOccurred())
+		BeforeEach(func() {
+			var err error
 
-		By("Creating a file to bind the upload to a task")
-		file, err := client.CreateFile(upload.ID, task.ID)
-		Expect(err).NotTo(HaveOccurred())
+			By("Creating temporary fixtures")
 
-		By("Validating the file returns correctly")
-		Eventually(func() (wundergo.File, error) {
-			return client.File(file.ID)
-		}).Should(Equal(file))
+			tempDirPath, err = ioutil.TempDir(os.TempDir(), "wundergo-integration-test")
+			Expect(err).NotTo(HaveOccurred())
 
-		By("Validating the file is correctly associated with the task")
-		Expect(file.TaskID).To(Equal(task.ID))
+			localFilePath = filepath.Join(tempDirPath, "test-file")
 
-		Eventually(func() (bool, error) {
-			filesForTask, err := client.FilesForTaskID(task.ID)
-			return fileContains(filesForTask, file), err
-		}).Should(BeTrue())
+			fileContent := []byte("some-text")
+			err = ioutil.WriteFile(localFilePath, fileContent, os.ModePerm)
 
-		By("Validating the file is correctly associated with the list")
-		Eventually(func() (bool, error) {
-			filesForFirstList, err := client.FilesForListID(firstList.ID)
-			return fileContains(filesForFirstList, file), err
-		}).Should(BeTrue())
+			contentType = "text"
+			md5sum = ""
+		})
 
-		By("Validating the file can be destroyed successfully")
-		err = client.DestroyFile(file)
-		Expect(err).NotTo(HaveOccurred())
+		AfterEach(func() {
+			By("removing temporary fixtures")
+			err := os.RemoveAll(tempDirPath)
+			Expect(err).ToNot(HaveOccurred())
+		})
 
-		By("Validating the new file is not present in list of files")
-		Eventually(func() (bool, error) {
-			filesForTask, err := client.FilesForTaskID(task.ID)
-			return fileContains(filesForTask, file), err
-		}).Should(BeFalse())
+		It("can upload a text file", func() {
+			By("Uploading a local file")
+			upload, err := client.UploadFile(
+				localFilePath,
+				remoteFileName,
+				contentType,
+				md5sum,
+			)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Creating a file to bind the upload to a task")
+			file, err := client.CreateFile(upload.ID, task.ID)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Validating the file returns correctly")
+			Eventually(func() (wundergo.File, error) {
+				return client.File(file.ID)
+			}).Should(Equal(file))
+
+			By("Validating the file is correctly associated with the task")
+			Expect(file.TaskID).To(Equal(task.ID))
+
+			Eventually(func() (bool, error) {
+				filesForTask, err := client.FilesForTaskID(task.ID)
+				return fileContains(filesForTask, file), err
+			}).Should(BeTrue())
+
+			By("Validating the file is correctly associated with the list")
+			Eventually(func() (bool, error) {
+				filesForFirstList, err := client.FilesForListID(firstList.ID)
+				return fileContains(filesForFirstList, file), err
+			}).Should(BeTrue())
+
+			By("Validating the file can be destroyed successfully")
+			err = client.DestroyFile(file)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Validating the new file is not present in list of files")
+			Eventually(func() (bool, error) {
+				filesForTask, err := client.FilesForTaskID(task.ID)
+				return fileContains(filesForTask, file), err
+			}).Should(BeFalse())
+		})
+	})
+
+	FDescribe("uploading an image file", func() {
+		BeforeEach(func() {
+			myDir := getDirOfCurrentFile()
+			localFilePath = filepath.Join(myDir, "fixtures", "wunderlist-logo-big.png")
+
+			contentType = "image/png"
+			md5sum = ""
+
+		})
+
+		It("can upload an image file", func() {
+			By("Uploading a local file")
+			upload, err := client.UploadFile(
+				localFilePath,
+				remoteFileName,
+				contentType,
+				md5sum,
+			)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Creating a file to bind the upload to a task")
+			file, err := client.CreateFile(upload.ID, task.ID)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("Validating the file returns correctly")
+			Eventually(func() (wundergo.File, error) {
+				return client.File(file.ID)
+			}).Should(Equal(file))
+
+			By("Getting the preview of the uploaded image")
+			platform := ""
+			size := ""
+			imagePreview, err := client.FilePreview(file.ID, platform, size)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(imagePreview.URL).NotTo(BeEmpty())
+		})
 	})
 })
 
@@ -138,4 +197,9 @@ func fileContains(files []wundergo.File, file wundergo.File) bool {
 		}
 	}
 	return false
+}
+
+func getDirOfCurrentFile() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
 }
