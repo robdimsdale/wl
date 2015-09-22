@@ -149,7 +149,7 @@ var _ = Describe("basic upload and file functionality", func() {
 		})
 	})
 
-	FDescribe("uploading an image file", func() {
+	Describe("uploading an image file", func() {
 		BeforeEach(func() {
 			myDir := getDirOfCurrentFile()
 			localFilePath = filepath.Join(myDir, "fixtures", "wunderlist-logo-big.png")
