@@ -367,9 +367,7 @@ jobs:
       passed: [github-release]
       trigger: true
       params:
-        globs:
-        - "*.tar.gz"
-
+        globs: ["*.tar.gz"]
     - get: version
       passed: [github-release]
       trigger: true
