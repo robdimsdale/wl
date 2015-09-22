@@ -7,11 +7,11 @@ VERSION="$(cat ${ROOT}/github-release/version)"
 SOURCE_TAR="${ROOT}/github-release/v${VERSION}.tar.gz"
 OUTPUT_FILE=${ROOT}/homebrew-tap/wundergo.rb
 
-sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
-
 wget \
   -O "${SOURCE_TAR}" \
   "https://github.com/robdimsdale/wundergo/archive/v${VERSION}.tar.gz"
+
+sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
 
 cat << EOF > ${OUTPUT_FILE}
 require "language/go"
