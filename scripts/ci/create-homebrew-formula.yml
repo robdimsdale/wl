@@ -5,7 +5,6 @@ image: docker:///robdimsdale/wundergo-1.5
 
 inputs:
 - name: wundergo
-- name: version
 - name: homebrew-tap
 - name: github-release
 
