@@ -17,7 +17,7 @@ resources:
 - name: homebrew-tap
   type: git
   source:
-    uri: git@github.com:robdimsdale/tap
+    uri: git@github.com:robdimsdale/homebrew-tap
     branch: master
     private_key: {{homebrew-tap-private-key}}
 
