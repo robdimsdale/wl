@@ -14,6 +14,13 @@ resources:
     branch: master
     private_key: {{private-key}}
 
+- name: homebrew-tap
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/tap
+    branch: master
+    private_key: {{homebrew-tap-private-key}}
+
 - name: wundergo-develop-docker
   type: git
   source:
@@ -336,6 +343,8 @@ jobs:
     - get: wl-release-windows-amd64
       passed: [shipit]
       trigger: true
+    - get: version
+      passed: [shipit]
   - task: most-recent-tag
     file: wundergo/scripts/ci/most-recent-tag.yml
   - put: github-release
@@ -346,6 +355,26 @@ jobs:
       - wl-release-linux-amd64/wl-*
       - wl-release-darwin-amd64/wl-*
       - wl-release-windows-amd64/wl-*
+
+- name: homebrew
+  plan:
+  - aggregate:
+    - get: wundergo
+      passed: [github-release]
+      trigger: true
+    - get: homebrew-tap
+    - get: github-release
+      passed: [github-release]
+      trigger: true
+      params:
+        globs:
+        - "*.tar.gz"
+
+    - get: version
+      passed: [github-release]
+      trigger: true
+  - task: create-homebrew-formula
+    file: wundergo/scripts/ci/create-homebrew-formula.yml
 
 - name: major
   public: true
@@ -458,6 +487,7 @@ groups:
   - rc
   - shipit
   - github-release
+  - homebrew
   - major
   - minor
   - patch

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -eux
+
+ROOT="$PWD"
+VERSION="$(cat ${ROOT}/version/number)"
+SOURCE_TAR=${ROOT}/github-release/*.tar.gz
+OUTPUT_FILE=${ROOT}/homebrew-tap/wundergo.rb
+
+sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
+
+cat << EOF > ${OUTPUT_FILE}
+require "language/go"
+
+class Wundergo < Formula
+  desc "golang wunderlist client"
+  homepage "https://github.com/robdimsdale/wundergo"
+  version "${VERSION}"
+  url "https://github.com/robdimsdale/wundergo/archive/v#{version}.tar.gz"
+  sha256 "${sha256}"
+
+  depends_on "go" => :build
+
+  go_resource "gopkg.in/yaml.v2" do
+      url "https://gopkg.in/yaml.v2.git", :revision => "7ad95dd0798a40da1ccdff6dff35fd177b5edf40"
+  end
+
+  def install
+    ENV["GOPATH"] = buildpath
+    mkdir_p buildpath/"src/github.com/robdimsdale/"
+    ln_sf buildpath, buildpath/"src/github.com/robdimsdale/wundergo"
+    Language::Go.stage_deps resources, buildpath/"src"
+
+    system "go", "build", "-o", "wl", "-ldflags", "-X main.version=#{version}", "./cmd/wl/"
+    bin.install "wl"
+  end
+
+  test do
+    system "#{bin}/wl", "--version"
+  end
+end
+EOF
+
+echo "wrote formula successfully"
+
+echo "creating commit in homebrew-tap"
+pushd "${ROOT}/homebrew-tap"
+  git config user.name "Concourse CI"
+  git config user.email "ci@wundergo.io"
+  git add .
+  git commit -m"Update wundergo to version ${VERSION}"
+popd
