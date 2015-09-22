@@ -343,8 +343,6 @@ jobs:
     - get: wl-release-windows-amd64
       passed: [shipit]
       trigger: true
-    - get: version
-      passed: [shipit]
   - task: most-recent-tag
     file: wundergo/scripts/ci/most-recent-tag.yml
   - put: github-release
@@ -366,13 +364,11 @@ jobs:
     - get: github-release
       passed: [github-release]
       trigger: true
-      params:
-        globs: ["*.tar.gz"]
-    - get: version
-      passed: [github-release]
-      trigger: true
   - task: create-homebrew-formula
     file: wundergo/scripts/ci/create-homebrew-formula.yml
+  - put: homebrew-tap
+    params:
+      repository: create-homebrew-formula/homebrew-tap
 
 - name: major
   public: true
