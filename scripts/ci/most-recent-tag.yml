@@ -11,4 +11,4 @@ run:
   args:
   - -c
   - |
-    git -C wundergo-master tag | tail -1 > tagname
+    git -C wundergo-master tag --sort=version:refname | tail -1 > tagname && cat tagname
