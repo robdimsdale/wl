@@ -1,21 +1,26 @@
-wundergo [![Build Status](https://travis-ci.org/robdimsdale/wundergo.svg?branch=master)](https://travis-ci.org/robdimsdale/wundergo) [![Coverage Status](https://img.shields.io/coveralls/robdimsdale/wundergo.svg)](https://coveralls.io/r/robdimsdale/wundergo?branch=master)
+wundergo
 ========
 
-Golang API client for Wunderlist.
+Wunderlist API client library and CLI, written in golang.
 
 Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wundergo/blob/master/LICENSE).
 
-# CLI Binary
+## Why?
+
+- The library provides access to all of the endpoints documented in the [official API docs](https://developer.wunderlist.com/documentation/), plus additional useful methods like `inbox` and `delete-all-tasks`.
+- The CLI is written in golang, which results in an statically-compiled CLI.
+
+## CLI Binary
 
 A CLI is provided with support for some utility functions (e.g. list all tasks, delete all folders).
 
-## Installation
+### Installation
 
 Binaries are available on the [releases](https://github.com/robdimsdale/wundergo/releases) page for various operating systems and architectures.
 
 Download the binary and place in the PATH.
 
-### OSX
+#### OSX
 
 A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; install the binary with:
 
@@ -24,14 +29,13 @@ brew tap robdimsdale/tap
 brew install wundergo
 ```
 
-# Library
+## Library
 
-
-## Supported Golang versions
+### Supported Golang versions
 
 The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
 
-## Getting the code
+### Getting the code
 
 The [**develop**](https://github.com/robdimsdale/wundergo/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
 
