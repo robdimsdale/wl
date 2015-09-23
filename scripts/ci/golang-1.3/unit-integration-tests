@@ -21,7 +21,7 @@ pushd ${BASE_DIR}
   set +e
   ${SCRIPTS_DIR}/unit-tests
   result_code=$?
-  ${SCRIPTS_DIR}/integration-tests
+  NORACE=true ${SCRIPTS_DIR}/integration-tests
   result_code=$(( result_code+=$? ))
   set -e
 popd

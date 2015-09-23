@@ -2,18 +2,30 @@
 
 set -eux
 
+NORACE=${NORACE:-false}
+
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # This script expects that it lives one directory below the base directory.
 BASE_DIR="$( cd ${MY_DIR}/.. && pwd )"
 
 pushd ${BASE_DIR}
-  ginkgo \
-    -p \
-    -r \
-    -race \
-    -randomizeAllSpecs \
-    -failOnPending \
-    "$@" \
-    integration_tests
+  if [ "${NORACE}" = "true" ]; then
+    ginkgo \
+      -p \
+      -r \
+      -randomizeAllSpecs \
+      -failOnPending \
+      "$@" \
+      integration_tests
+  else
+    ginkgo \
+      -p \
+      -r \
+      -race \
+      -randomizeAllSpecs \
+      -failOnPending \
+      "$@" \
+      integration_tests
+  fi
 popd

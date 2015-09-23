@@ -77,7 +77,9 @@ func (c oauthClient) logRequest(req *http.Request) {
 		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
-			c.logger.Debug(" - sending request", map[string]interface{}{"request": string(reqDump)})
+			c.logger.Debug(
+				" - sending request",
+				map[string]interface{}{"request": string(reqDump)})
 		}
 	}
 }
