@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 
@@ -158,6 +159,7 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 3 {
+				fmt.Printf("insufficient number of arguments provided\n\n")
 				cmd.Usage()
 				os.Exit(2)
 			}
@@ -167,6 +169,7 @@ var (
 			contentType := args[2]
 
 			if localFilePath == "" || remoteName == "" || contentType == "" {
+				fmt.Printf("invalid arguments provided\n\n")
 				cmd.Usage()
 				os.Exit(2)
 			}
@@ -176,6 +179,42 @@ var (
 				remoteName,
 				contentType,
 				"",
+			))
+		},
+	}
+
+	cmdCreateFile = &cobra.Command{
+		Use:   "create-file <upload-id> <task-id>",
+		Short: "creates a file from the specified upload in the specified task",
+		Long: `create-file creates a file from the upload specified by <upload-id>
+        in the task specified by <task-id>.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 2 {
+				fmt.Printf("insufficient number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			uploadIDInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing uploadID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			uploadID := uint(uploadIDInt)
+
+			taskIDInt, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Printf("error parsing taskID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			taskID := uint(taskIDInt)
+
+			renderOutput(newClient(cmd).CreateFile(
+				uploadID,
+				taskID,
 			))
 		},
 	}
@@ -237,6 +276,7 @@ func main() {
 	rootCmd.AddCommand(cmdDeleteAllFolders)
 	rootCmd.AddCommand(cmdDeleteAllTasks)
 	rootCmd.AddCommand(cmdUploadFile)
+	rootCmd.AddCommand(cmdCreateFile)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 
