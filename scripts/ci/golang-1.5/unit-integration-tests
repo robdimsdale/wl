@@ -18,7 +18,9 @@ pushd ${BASE_DIR}
   go get golang.org/x/tools/cmd/vet
   go get -u github.com/golang/lint/golint
 
-  go get -v -t -d ./...
+  go get -u github.com/tools/godep
+  
+  godep restore
 
   set +e
   ${SCRIPTS_DIR}/go-vet

@@ -16,7 +16,9 @@ pushd ${BASE_DIR}
 
   go get github.com/onsi/ginkgo/ginkgo
 
-  go get -v -t -d ./...
+  go get -u github.com/tools/godep
+  
+  godep restore
 
   set +e
   ${SCRIPTS_DIR}/unit-tests

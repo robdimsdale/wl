@@ -38,42 +38,21 @@ var _ = Describe("wl binary", func() {
 			Eventually(session).Should(gbytes.Say("dev"))
 			Eventually(session).Should(gexec.Exit(0))
 		})
-
-		It("displays version with '-v'", func() {
-			args = append(args, fmt.Sprintf("-v"))
-
-			command := exec.Command(wlBinPath, args...)
-			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).NotTo(HaveOccurred())
-
-			Eventually(session).Should(gbytes.Say("dev"))
-			Eventually(session).Should(gexec.Exit(0))
-		})
-
-		It("displays version with '--version'", func() {
-			args = append(args, fmt.Sprintf("--version"))
-
-			command := exec.Command(wlBinPath, args...)
-			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).NotTo(HaveOccurred())
-
-			Eventually(session).Should(gbytes.Say("dev"))
-			Eventually(session).Should(gexec.Exit(0))
-		})
 	})
 
 	Context("when provided with valid credentials", func() {
 		BeforeEach(func() {
-			args = append(args, fmt.Sprintf("-accessToken=%s", wlAccessToken))
-			args = append(args, fmt.Sprintf("-clientID=%s", wlClientID))
+			args = append(args, fmt.Sprintf("--accessToken=%s", wlAccessToken))
+			args = append(args, fmt.Sprintf("--clientID=%s", wlClientID))
 		})
 
-		It("exits with failure code if no arguments are provided", func() {
+		It("renders usage if no arguments are provided", func() {
 			command := exec.Command(wlBinPath, args...)
 			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).NotTo(HaveOccurred())
 
-			Eventually(session).Should(gexec.Exit(2))
+			Eventually(session).Should(gbytes.Say("Usage:"))
+			Eventually(session).Should(gexec.Exit(0))
 		})
 
 		Context("with output rendered as json", func() {
