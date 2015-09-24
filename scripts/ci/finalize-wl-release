@@ -4,7 +4,7 @@ set -eux
 
 ROOT="$PWD"
 VERSION="$(cat version/number)"
-GOOS=${GOOS:?}
-GOARCH=${GOARCH:?}
+TARGET_GOOS=${TARGET_GOOS:?}
+TARGET_GOARCH=${TARGET_GOARCH:?}
 
-mv wl-release-"${GOOS}-${GOARCH}"/wl-* "${ROOT}"/wl-"${GOOS}-${GOARCH}-${VERSION}"
+mv wl-release-"${TARGET_GOOS}-${TARGET_GOARCH}"/wl-* "${ROOT}"/wl-"${TARGET_GOOS}-${TARGET_GOARCH}-${VERSION}"

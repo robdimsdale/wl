@@ -14,5 +14,5 @@ run:
   path: wundergo/scripts/ci/finalize-wl-release
 
 params:
-  GOOS:
-  GOARCH:
+  TARGET_GOOS:
+  TARGET_GOARCH:
