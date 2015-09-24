@@ -10,6 +10,18 @@ Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https:
 - The library provides access to all of the endpoints documented in the [official API docs](https://developer.wunderlist.com/documentation/), plus additional useful methods like `inbox` and `delete-all-tasks`.
 - The CLI is written in golang, which results in an statically-compiled CLI.
 
+## Library
+
+### Supported Golang versions
+
+The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
+
+### Getting the code
+
+The [**develop**](https://github.com/robdimsdale/wundergo/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
+
+The [**master**](https://github.com/robdimsdale/wundergo/tree/master) branch points to a stable commit. All tests should pass.
+
 ## CLI Binary
 
 A CLI is provided with support for some utility functions (e.g. list all tasks, delete all folders).
@@ -29,44 +41,27 @@ brew tap robdimsdale/tap
 brew install wundergo
 ```
 
-## Library
-
-### Supported Golang versions
-
-The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
-
-### Getting the code
-
-The [**develop**](https://github.com/robdimsdale/wundergo/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
-
-The [**master**](https://github.com/robdimsdale/wundergo/tree/master) branch points to a stable commit. All tests should pass.
-
 ## Development
 
 ### Go dependencies
 
-There are no dependencies for the library.
+The library has no dependencies.
 
-The CLI binary has one dependency; install it with:
-
-```
-go get gopkg.in/yaml.v2
-```
-
-This dependency follows semantic versioning, so all versions should be safe to `go get`.
-
-There are dependencies for the tests; they are safe to install from HEAD of
-their respective repositories and hence are not vendored in.
-
-Test dependencies are installed as follows:
+The CLI binary uses [godep](https://github.com/tools/godep) to manage its dependencies; install it with:
 
 ```
-go get -u github.com/onsi/ginkgo
-go get -u github.com/onsi/gomega
-go get -u github.com/nu7hatch/gouuid
+go get -u github.com/tools/godep
 ```
 
-### Running tests
+And restore the dependencies with:
+
+```
+godep restore
+```
+
+This will also restore the test dependencies
+
+### Running the tests
 
 Running the tests will require [ginkgo](http://onsi.github.io/ginkgo/).
 
