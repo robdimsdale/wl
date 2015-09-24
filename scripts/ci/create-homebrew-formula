@@ -25,8 +25,8 @@ class Wundergo < Formula
 
   depends_on "go" => :build
 
-  go_resource "gopkg.in/yaml.v2" do
-      url "https://gopkg.in/yaml.v2.git", :revision => "7ad95dd0798a40da1ccdff6dff35fd177b5edf40"
+  go_resource "github.com/tools/godep" do
+    url "https://github.com/tools/godep.git", :revision => "2c6ee5e071cf01a41359e33502b7fe79a5801b9e"
   end
 
   def install
@@ -35,7 +35,11 @@ class Wundergo < Formula
     ln_sf buildpath, buildpath/"src/github.com/robdimsdale/wundergo"
     Language::Go.stage_deps resources, buildpath/"src"
 
-    system "go", "build", "-o", "wl", "-ldflags", "-X main.version=#{version}", "./cmd/wl/"
+    cd "src/github.com/tools/godep" do
+      system "go", "install"
+    end
+
+    system "./bin/godep", "go", "build", "-o", "wl", "-ldflags", "-X main.version=#{version}", "./cmd/wl/"
     bin.install "wl"
   end
 
