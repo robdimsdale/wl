@@ -245,15 +245,15 @@ jobs:
       - task: create-wl-release-candidate-linux-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
         config:
-          params: {GOOS: linux,GOARCH: amd64}
+          params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
       - task: create-wl-release-candidate-darwin-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
         config:
-          params: {GOOS: darwin,GOARCH: amd64}
+          params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
       - task: create-wl-release-candidate-windows-amd64
         file: wundergo/scripts/ci/create-wl-release-candidate.yml
         config:
-          params: {GOOS: windows,GOARCH: amd64}
+          params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
     - aggregate:
       - put: version
         params: {file: version/number}
@@ -301,15 +301,15 @@ jobs:
     - task: finalize-wl-release-linux-amd64
       file: wundergo/scripts/ci/finalize-wl-release.yml
       config:
-        params: {GOOS: linux,GOARCH: amd64}
+        params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
     - task: finalize-wl-release-darwin-amd64
       file: wundergo/scripts/ci/finalize-wl-release.yml
       config:
-        params: {GOOS: darwin,GOARCH: amd64}
+        params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
     - task: finalize-wl-release-windows-amd64
       file: wundergo/scripts/ci/finalize-wl-release.yml
       config:
-        params: {GOOS: windows,GOARCH: amd64}
+        params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
   - aggregate:
     - put: version
       params: {file: version/number}
