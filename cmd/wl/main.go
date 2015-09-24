@@ -157,9 +157,19 @@ var (
         and giving it the content-type <content-type>.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 3 {
+				cmd.Usage()
+				os.Exit(2)
+			}
+
 			localFilePath := args[0]
 			remoteName := args[1]
 			contentType := args[2]
+
+			if localFilePath == "" || remoteName == "" || contentType == "" {
+				cmd.Usage()
+				os.Exit(2)
+			}
 
 			renderOutput(newClient(cmd).UploadFile(
 				localFilePath,
