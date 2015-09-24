@@ -218,6 +218,32 @@ var (
 			))
 		},
 	}
+
+	cmdFile = &cobra.Command{
+		Use:   "file <file-id>",
+		Short: "gets the file for the provided file id",
+		Long: `file gets a file specified by <file-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("insufficient number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			fileIDInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing fileID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			fileID := uint(fileIDInt)
+
+			renderOutput(newClient(cmd).File(
+				fileID,
+			))
+		},
+	}
 )
 
 func newClient(cmd *cobra.Command) wundergo.Client {
@@ -277,6 +303,7 @@ func main() {
 	rootCmd.AddCommand(cmdDeleteAllTasks)
 	rootCmd.AddCommand(cmdUploadFile)
 	rootCmd.AddCommand(cmdCreateFile)
+	rootCmd.AddCommand(cmdFile)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 
