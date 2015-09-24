@@ -149,6 +149,26 @@ var (
 			handleError(newClient(cmd).DeleteAllLists())
 		},
 	}
+
+	cmdUploadFile = &cobra.Command{
+		Use:   "upload-file <local-path> <remote-file-name> <content-type>",
+		Short: "uploads a file",
+		Long: `upload-file uploads the file at <local-path> to the remote name <remote-file-name>
+        and giving it the content-type <content-type>.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			localFilePath := args[0]
+			remoteName := args[1]
+			contentType := args[2]
+
+			renderOutput(newClient(cmd).UploadFile(
+				localFilePath,
+				remoteName,
+				contentType,
+				"",
+			))
+		},
+	}
 )
 
 func newClient(cmd *cobra.Command) wundergo.Client {
@@ -206,6 +226,7 @@ func main() {
 	rootCmd.AddCommand(cmdDeleteAllLists)
 	rootCmd.AddCommand(cmdDeleteAllFolders)
 	rootCmd.AddCommand(cmdDeleteAllTasks)
+	rootCmd.AddCommand(cmdUploadFile)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 
