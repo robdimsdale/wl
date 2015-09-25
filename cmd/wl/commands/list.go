@@ -65,6 +65,42 @@ var (
 		},
 	}
 
+	cmdDeleteList = &cobra.Command{
+		Use:   "delete-list <list-id>",
+		Short: "deletes the list for the provided list id",
+		Long: `delete-list deletes the list specified by <list-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			idInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing listID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			id := uint(idInt)
+
+			client := newClient(cmd)
+			list, err := client.List(id)
+			if err != nil {
+				fmt.Printf("error getting list: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = client.DeleteList(list)
+			if err != nil {
+				handleError(err)
+			}
+			fmt.Printf("list %d deleted successfully\n", id)
+		},
+	}
+
 	cmdDeleteAllLists = &cobra.Command{
 		Use:   "delete-all-lists",
 		Short: "deletes all lists",

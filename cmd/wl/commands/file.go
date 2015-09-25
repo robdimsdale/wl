@@ -162,6 +162,7 @@ var (
 			if err != nil {
 				handleError(err)
 			}
+
 			fmt.Printf("file %d destroyed successfully\n", fileID)
 		},
 	}
