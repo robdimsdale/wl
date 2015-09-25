@@ -45,6 +45,26 @@ var (
 		},
 	}
 
+	cmdCreateList = &cobra.Command{
+		Use:   "create-list <title>",
+		Short: "creates a list with the specified <title>",
+		Long: `create-list creates a list with the specified <title>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			title := args[0]
+
+			renderOutput(newClient(cmd).CreateList(
+				title,
+			))
+		},
+	}
+
 	cmdDeleteAllLists = &cobra.Command{
 		Use:   "delete-all-lists",
 		Short: "deletes all lists",
