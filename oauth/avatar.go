@@ -51,7 +51,11 @@ func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, er
 			return "", fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusFound)
 		}
 	} else {
-		if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusFound {
+		if resp.StatusCode == http.StatusNoContent {
+			return "", nil
+		}
+
+		if resp.StatusCode != http.StatusFound {
 			return "", fmt.Errorf("Unexpected response code %d - expected either %d or %d", resp.StatusCode, http.StatusNoContent, http.StatusFound)
 		}
 	}
