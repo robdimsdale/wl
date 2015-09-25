@@ -34,6 +34,10 @@ const (
 
 	taskIDLongFlag  = "taskID"
 	taskIDShortFlag = "t"
+
+	filePreviewSizeLongFlag = "size"
+
+	filePreviewPlatformLongFlag = "platform"
 )
 
 var (
@@ -49,8 +53,10 @@ var (
 	useJSON     bool
 
 	// non-global flags
-	listID uint
-	taskID uint
+	listID              uint
+	taskID              uint
+	filePreviewPlatform string
+	filePreviewSize     string
 
 	cmdVersion = &cobra.Command{
 		Use:   "version",
@@ -312,6 +318,34 @@ var (
 			fmt.Printf("file %d destroyed successfully\n", fileID)
 		},
 	}
+
+	cmdFilePreview = &cobra.Command{
+		Use:   "file-preview <file-id>",
+		Short: "gets a preview of the file for the provided file id",
+		Long: `file preview gets a preview of the file specified by <file-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			fileIDInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing fileID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			fileID := uint(fileIDInt)
+
+			renderOutput(newClient(cmd).FilePreview(
+				fileID,
+				filePreviewPlatform,
+				filePreviewSize,
+			))
+		},
+	}
 )
 
 func newClient(cmd *cobra.Command) wundergo.Client {
@@ -374,10 +408,13 @@ func main() {
 	rootCmd.AddCommand(cmdFile)
 	rootCmd.AddCommand(cmdFiles)
 	rootCmd.AddCommand(cmdDestroyFile)
+	rootCmd.AddCommand(cmdFilePreview)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 	cmdFiles.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 	cmdFiles.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "filter by taskID")
+	cmdFilePreview.Flags().StringVar(&filePreviewSize, filePreviewSizeLongFlag, "", "obtain preview for specific size")
+	cmdFilePreview.Flags().StringVar(&filePreviewPlatform, filePreviewPlatformLongFlag, "", "obtain preview for specific platform")
 
 	rootCmd.Execute()
 }
