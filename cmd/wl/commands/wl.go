@@ -73,6 +73,7 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdInbox)
 	WundergoCmd.AddCommand(cmdRoot)
 	WundergoCmd.AddCommand(cmdLists)
+	WundergoCmd.AddCommand(cmdList)
 	WundergoCmd.AddCommand(cmdFolders)
 	WundergoCmd.AddCommand(cmdTasks)
 	WundergoCmd.AddCommand(cmdDeleteAllLists)

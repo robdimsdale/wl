@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -14,6 +16,32 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			renderOutput(newClient(cmd).Lists())
+		},
+	}
+
+	cmdList = &cobra.Command{
+		Use:   "list <list-id>",
+		Short: "gets the list for the provided list id",
+		Long: `list gets a list specified by <list-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			idInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing listID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			id := uint(idInt)
+
+			renderOutput(newClient(cmd).List(
+				id,
+			))
 		},
 	}
 
