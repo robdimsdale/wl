@@ -85,6 +85,7 @@ func AddCommands() {
 	WundergoCmd.AddCommand(cmdDestroyFile)
 	WundergoCmd.AddCommand(cmdFilePreview)
 	WundergoCmd.AddCommand(cmdUser)
+	WundergoCmd.AddCommand(cmdUsers)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {
