@@ -132,6 +132,7 @@ func renderOutput(output interface{}, err error) {
 	var data []byte
 	if useJSON {
 		data, err = json.Marshal(output)
+		data = append(data, '\n')
 	} else {
 		data, err = yaml.Marshal(output)
 	}
@@ -145,5 +146,5 @@ func renderOutput(output interface{}, err error) {
 	// It also escapes < and > but those are not present in URLs
 	data = bytes.Replace(data, []byte("\\u0026"), []byte("&"), -1)
 
-	fmt.Println(string(data))
+	fmt.Printf("%s", string(data))
 }
