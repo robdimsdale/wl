@@ -128,7 +128,11 @@ var (
         Lists that are present in folders are not deleted.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			handleError(newClient(cmd).DeleteAllFolders())
+			err := newClient(cmd).DeleteAllFolders()
+			if err != nil {
+				handleError(err)
+			}
+			fmt.Printf("all folders deleted successfully\n")
 		},
 	}
 
@@ -141,7 +145,11 @@ var (
         and all folders that the inbox is not a member of.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			handleError(newClient(cmd).DeleteAllLists())
+			err := newClient(cmd).DeleteAllLists()
+			if err != nil {
+				handleError(err)
+			}
+			fmt.Printf("all lists deleted successfully\n")
 		},
 	}
 
@@ -151,7 +159,11 @@ var (
 		Long: `delete-all-tasks deletes all tasks.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			handleError(newClient(cmd).DeleteAllLists())
+			err := newClient(cmd).DeleteAllTasks()
+			if err != nil {
+				handleError(err)
+			}
+			fmt.Printf("all tasks deleted successfully\n")
 		},
 	}
 
@@ -163,7 +175,7 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 3 {
-				fmt.Printf("insufficient number of arguments provided\n\n")
+				fmt.Printf("incorrect number of arguments provided\n\n")
 				cmd.Usage()
 				os.Exit(2)
 			}
@@ -195,7 +207,7 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 2 {
-				fmt.Printf("insufficient number of arguments provided\n\n")
+				fmt.Printf("incorrect number of arguments provided\n\n")
 				cmd.Usage()
 				os.Exit(2)
 			}
@@ -230,7 +242,7 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
-				fmt.Printf("insufficient number of arguments provided\n\n")
+				fmt.Printf("incorrect number of arguments provided\n\n")
 				cmd.Usage()
 				os.Exit(2)
 			}
@@ -262,6 +274,42 @@ var (
 			} else {
 				renderOutput(newClient(cmd).Files())
 			}
+		},
+	}
+
+	cmdDestroyFile = &cobra.Command{
+		Use:   "destroy-file <file-id>",
+		Short: "destroys (deletes) the file for the provided file id",
+		Long: `destroy-file destroys (deletes) the file specified by <file-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			fileIDInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing fileID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			fileID := uint(fileIDInt)
+
+			client := newClient(cmd)
+			file, err := client.File(fileID)
+			if err != nil {
+				fmt.Printf("error getting file: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = client.DestroyFile(file)
+			if err != nil {
+				handleError(err)
+			}
+			fmt.Printf("file %d destroyed successfully\n", fileID)
 		},
 	}
 )
@@ -325,6 +373,7 @@ func main() {
 	rootCmd.AddCommand(cmdCreateFile)
 	rootCmd.AddCommand(cmdFile)
 	rootCmd.AddCommand(cmdFiles)
+	rootCmd.AddCommand(cmdDestroyFile)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 	cmdFiles.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
@@ -334,14 +383,15 @@ func main() {
 }
 
 func handleError(err error) {
-	if err != nil {
-		l.Error("exiting", err)
-		os.Exit(1)
-	}
+	l.Error("exiting", err)
+	os.Exit(1)
 }
 
 func renderOutput(output interface{}, err error) {
-	handleError(err)
+	if err != nil {
+		handleError(err)
+	}
+
 	if useJSON {
 		json.NewEncoder(os.Stdout).Encode(output)
 	} else {
