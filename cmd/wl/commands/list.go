@@ -8,7 +8,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	listTitleLongFlag = "title"
+)
+
 var (
+	// Flags
+	listTitle string
+
+	// Commands
 	cmdLists = &cobra.Command{
 		Use:   "lists",
 		Short: "gets all lists",
@@ -65,6 +73,42 @@ var (
 		},
 	}
 
+	cmdUpdateList = &cobra.Command{
+		Use:   "update-list <list-id> [flags]",
+		Short: "updates the list",
+		Long: `update-list obtains the current state of the list specified by <list-id>,
+and updates fields with the provided flags.
+`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			idInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing listID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			id := uint(idInt)
+
+			client := newClient(cmd)
+			list, err := client.List(id)
+			if err != nil {
+				fmt.Printf("error getting list: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			if listTitle != "" {
+				list.Title = listTitle
+			}
+			renderOutput(client.UpdateList(list))
+		},
+	}
+
 	cmdDeleteList = &cobra.Command{
 		Use:   "delete-list <list-id>",
 		Short: "deletes the list for the provided list id",
@@ -97,6 +141,7 @@ var (
 			if err != nil {
 				handleError(err)
 			}
+
 			fmt.Printf("list %d deleted successfully\n", id)
 		},
 	}
@@ -118,3 +163,7 @@ var (
 		},
 	}
 )
+
+func init() {
+	cmdUpdateList.Flags().StringVar(&listTitle, listTitleLongFlag, "", "title")
+}
