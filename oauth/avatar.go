@@ -35,18 +35,25 @@ func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, er
 	if err != nil {
 		return "", err
 	}
+	c.logRequest(req)
 
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	if err != nil {
 		return "", err
 	}
 
-	if !fallback && resp.StatusCode == http.StatusNoContent {
-		return "", nil
+	if resp != nil {
+		c.logResponse(resp)
 	}
 
-	if resp.StatusCode != http.StatusFound {
-		return "", fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusFound)
+	if fallback {
+		if resp.StatusCode != http.StatusFound {
+			return "", fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusFound)
+		}
+	} else {
+		if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusFound {
+			return "", fmt.Errorf("Unexpected response code %d - expected either %d or %d", resp.StatusCode, http.StatusNoContent, http.StatusFound)
+		}
 	}
 
 	location, err := resp.Location()
