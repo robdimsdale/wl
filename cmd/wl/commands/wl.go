@@ -48,14 +48,14 @@ var (
 	taskID uint
 	listID uint
 
-	// Commands
+	// WundergoCMD is the root command. All other commands are subcommands of it.
 	WundergoCmd = &cobra.Command{Use: "wl"}
 )
 
 // Execute adds all child commands to the root command WundergoCmd,
 // and executes the root command.
 func Execute() {
-	AddCommands()
+	addCommands()
 	WundergoCmd.Execute()
 }
 
@@ -69,7 +69,7 @@ func init() {
 	WundergoCmd.PersistentFlags().BoolVarP(&useJSON, useJSONLongFlag, useJSONShortFlag, false, "render output as JSON instead of YAML.")
 }
 
-func AddCommands() {
+func addCommands() {
 	WundergoCmd.AddCommand(cmdInbox)
 	WundergoCmd.AddCommand(cmdRoot)
 	WundergoCmd.AddCommand(cmdLists)

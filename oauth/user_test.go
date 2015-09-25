@@ -131,7 +131,7 @@ var _ = Describe("client - User operations", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
 					ghttp.VerifyRequest("PUT", "/user"),
-					ghttp.VerifyContentType("application/x-www-form-urlencoded"),
+					ghttp.VerifyContentType("application/json"),
 					ghttp.VerifyHeader(http.Header{
 						"X-Access-Token": []string{dummyAccessToken},
 						"X-Client-ID":    []string{dummyClientID},
