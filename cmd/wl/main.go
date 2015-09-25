@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -429,15 +430,21 @@ func renderOutput(output interface{}, err error) {
 		handleError(err)
 	}
 
+	var data []byte
 	if useJSON {
-		json.NewEncoder(os.Stdout).Encode(output)
+		data, err = json.Marshal(output)
 	} else {
-		data, err := yaml.Marshal(output)
-		if err != nil {
-			l.Error("exiting - failed to render yaml", err)
-			os.Exit(1)
-		}
-		fmt.Printf(string(data))
+		data, err = yaml.Marshal(output)
 	}
 
+	if err != nil {
+		l.Error("exiting - failed to render output", err)
+		os.Exit(1)
+	}
+
+	// The JSON package escapes & which we do not want.
+	// It also escapes < and > but those are not present in URLs
+	data = bytes.Replace(data, []byte("\\u0026"), []byte("&"), -1)
+
+	fmt.Println(string(data))
 }
