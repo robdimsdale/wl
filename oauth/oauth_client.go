@@ -128,7 +128,7 @@ func (c oauthClient) newPutRequest(url string, body []byte) (*http.Request, erro
 	c.addAuthHeaders(req)
 	c.addBody(req, body)
 
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Type", "application/json")
 	return req, nil
 }
 

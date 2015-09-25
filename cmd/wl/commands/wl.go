@@ -86,6 +86,7 @@ func AddCommands() {
 	WundergoCmd.AddCommand(cmdFilePreview)
 	WundergoCmd.AddCommand(cmdUser)
 	WundergoCmd.AddCommand(cmdUsers)
+	WundergoCmd.AddCommand(cmdUpdateUser)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {

@@ -48,7 +48,7 @@ func (c oauthClient) User() (wundergo.User, error) {
 // UpdateUser is a currently undocumented method which updates the provided user.
 // Currently the only field that is updated is user.Name
 func (c oauthClient) UpdateUser(user wundergo.User) (wundergo.User, error) {
-	body := []byte(fmt.Sprintf("revision=%d&name=%s", user.Revision, user.Name))
+	body := []byte(fmt.Sprintf(`{"revision":%d,"name":"%s"}`, user.Revision, user.Name))
 	url := fmt.Sprintf("%s/user", c.apiURL)
 
 	req, err := c.newPutRequest(url, body)
@@ -59,6 +59,10 @@ func (c oauthClient) UpdateUser(user wundergo.User) (wundergo.User, error) {
 	resp, err := c.do(req)
 	if err != nil {
 		return wundergo.User{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return wundergo.User{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
 	returnedUser := wundergo.User{}
