@@ -113,6 +113,7 @@ type Client interface {
 		md5sum string,
 	) (Upload, error)
 
+	Files() ([]File, error)
 	FilesForTaskID(taskID uint) ([]File, error)
 	FilesForListID(listID uint) ([]File, error)
 	File(fileID uint) (File, error)

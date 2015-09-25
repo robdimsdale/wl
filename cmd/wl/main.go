@@ -31,6 +31,9 @@ const (
 
 	listIDLongFlag  = "listID"
 	listIDShortFlag = "l"
+
+	taskIDLongFlag  = "taskID"
+	taskIDShortFlag = "t"
 )
 
 var (
@@ -47,6 +50,7 @@ var (
 
 	// non-global flags
 	listID uint
+	taskID uint
 
 	cmdVersion = &cobra.Command{
 		Use:   "version",
@@ -244,6 +248,22 @@ var (
 			))
 		},
 	}
+
+	cmdFiles = &cobra.Command{
+		Use:   "files",
+		Short: "gets all files",
+		Long: `files gets the user's files.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if taskID != 0 {
+				renderOutput(newClient(cmd).FilesForTaskID(taskID))
+			} else if listID != 0 {
+				renderOutput(newClient(cmd).FilesForListID(listID))
+			} else {
+				renderOutput(newClient(cmd).Files())
+			}
+		},
+	}
 )
 
 func newClient(cmd *cobra.Command) wundergo.Client {
@@ -304,8 +324,11 @@ func main() {
 	rootCmd.AddCommand(cmdUploadFile)
 	rootCmd.AddCommand(cmdCreateFile)
 	rootCmd.AddCommand(cmdFile)
+	rootCmd.AddCommand(cmdFiles)
 
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
+	cmdFiles.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
+	cmdFiles.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "filter by taskID")
 
 	rootCmd.Execute()
 }

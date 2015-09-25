@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Files gets all files for all lists.
+func (c oauthClient) Files() ([]wundergo.File, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"files",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	filesChan := make(chan []wundergo.File, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"files - getting files for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			files, err := c.FilesForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			filesChan <- files
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"files - error received getting files for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	allFiles := []wundergo.File{}
+	for i := 0; i < listCount; i++ {
+		files := <-filesChan
+		allFiles = append(allFiles, files...)
+	}
+
+	return allFiles, nil
+}
+
 // FilesForListID returns the Files associated with the provided List.
 func (c oauthClient) FilesForListID(listID uint) ([]wundergo.File, error) {
 	if listID == 0 {
