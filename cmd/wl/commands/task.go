@@ -50,6 +50,43 @@ var (
 		},
 	}
 
+	cmdDeleteTask = &cobra.Command{
+		Use:   "delete-task <task-id>",
+		Short: "deletes the task for the provided task id",
+		Long: `delete-task deletes the task specified by <task-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			idInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing taskID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			id := uint(idInt)
+
+			client := newClient(cmd)
+			task, err := client.Task(id)
+			if err != nil {
+				fmt.Printf("error getting task: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = client.DeleteTask(task)
+			if err != nil {
+				handleError(err)
+			}
+
+			fmt.Printf("task %d deleted successfully\n", id)
+		},
+	}
+
 	cmdDeleteAllTasks = &cobra.Command{
 		Use:   "delete-all-tasks",
 		Short: "deletes all tasks",
