@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -19,6 +21,32 @@ var (
 			} else {
 				renderOutput(newClient(cmd).TasksForListID(listID))
 			}
+		},
+	}
+
+	cmdTask = &cobra.Command{
+		Use:   "task <task-id>",
+		Short: "gets the task for the provided task id",
+		Long: `task gets a task specified by <task-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Printf("incorrect number of arguments provided\n\n")
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			idInt, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("error parsing taskID: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+			id := uint(idInt)
+
+			renderOutput(newClient(cmd).Task(
+				id,
+			))
 		},
 	}
 
