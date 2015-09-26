@@ -9,12 +9,24 @@ import (
 )
 
 const (
-	completedTasksLongFlag = "completed"
+	completedTasksLongFlag  = "completed"
+	assigneeIDLongFlag      = "assingeeID"
+	completedLongFlag       = "completed"
+	recurrenceTypeLongFlag  = "recurrenceType"
+	recurrenceCountLongFlag = "recurrenceCount"
+	dueDateLongFlag         = "dueDate"
+	starredLongFlag         = "starred"
 )
 
 var (
 	// Flags
-	completedTasks bool
+	completedTasks  bool
+	assigneeID      uint
+	completed       bool
+	recurrenceType  string
+	recurrenceCount uint
+	dueDate         string
+	starred         bool
 
 	// Commands
 	cmdTasks = &cobra.Command{
@@ -66,6 +78,25 @@ var (
 
 			renderOutput(newClient(cmd).Task(
 				id,
+			))
+		},
+	}
+
+	cmdCreateTask = &cobra.Command{
+		Use:   "create-task",
+		Short: "creates a task with the specified args",
+		Long: `create-task creates a task with the specified args
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			renderOutput(newClient(cmd).CreateTask(
+				title,
+				listID,
+				assigneeID,
+				completed,
+				recurrenceType,
+				recurrenceCount,
+				dueDate,
+				starred,
 			))
 		},
 	}
@@ -125,4 +156,13 @@ var (
 func init() {
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 	cmdTasks.Flags().BoolVar(&completedTasks, completedTasksLongFlag, false, "filter for completed tasks")
+
+	cmdCreateTask.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "id of list to which task will belong")
+	cmdCreateTask.Flags().StringVar(&title, titleLongFlag, "", "title of task")
+	cmdCreateTask.Flags().UintVar(&assigneeID, assigneeIDLongFlag, 0, "id of task assignee")
+	cmdCreateTask.Flags().BoolVar(&completed, completedLongFlag, false, "whether task is completed")
+	cmdCreateTask.Flags().StringVar(&recurrenceType, recurrenceTypeLongFlag, "", "recurrence type")
+	cmdCreateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "id of task assignee")
+	cmdCreateTask.Flags().StringVar(&dueDate, dueDateLongFlag, "", "due date of task")
+	cmdCreateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
 }

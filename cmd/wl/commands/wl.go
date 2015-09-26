@@ -35,6 +35,8 @@ const (
 
 	taskIDLongFlag  = "taskID"
 	taskIDShortFlag = "t"
+
+	titleLongFlag = "title"
 )
 
 var (
@@ -47,6 +49,7 @@ var (
 	// Non-global, shared flags
 	taskID uint
 	listID uint
+	title  string
 
 	// WundergoCmd is the root command. All other commands are subcommands of it.
 	WundergoCmd = &cobra.Command{Use: "wl"}
@@ -78,18 +81,23 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdDeleteList)
 	WundergoCmd.AddCommand(cmdDeleteAllLists)
 	WundergoCmd.AddCommand(cmdList)
+
 	WundergoCmd.AddCommand(cmdFolders)
 	WundergoCmd.AddCommand(cmdDeleteAllFolders)
+
 	WundergoCmd.AddCommand(cmdTasks)
 	WundergoCmd.AddCommand(cmdTask)
+	WundergoCmd.AddCommand(cmdCreateTask)
 	WundergoCmd.AddCommand(cmdDeleteTask)
 	WundergoCmd.AddCommand(cmdDeleteAllTasks)
+
 	WundergoCmd.AddCommand(cmdUploadFile)
 	WundergoCmd.AddCommand(cmdCreateFile)
 	WundergoCmd.AddCommand(cmdFile)
 	WundergoCmd.AddCommand(cmdFiles)
 	WundergoCmd.AddCommand(cmdDestroyFile)
 	WundergoCmd.AddCommand(cmdFilePreview)
+
 	WundergoCmd.AddCommand(cmdUser)
 	WundergoCmd.AddCommand(cmdUsers)
 	WundergoCmd.AddCommand(cmdUpdateUser)

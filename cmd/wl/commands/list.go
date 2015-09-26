@@ -8,14 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	listTitleLongFlag = "title"
-)
-
 var (
-	// Flags
-	listTitle string
-
 	// Commands
 	cmdLists = &cobra.Command{
 		Use:   "lists",
@@ -102,8 +95,8 @@ and updates fields with the provided flags.
 				os.Exit(2)
 			}
 
-			if listTitle != "" {
-				list.Title = listTitle
+			if title != "" {
+				list.Title = title
 			}
 			renderOutput(client.UpdateList(list))
 		},
@@ -165,5 +158,5 @@ and updates fields with the provided flags.
 )
 
 func init() {
-	cmdUpdateList.Flags().StringVar(&listTitle, listTitleLongFlag, "", "title")
+	cmdUpdateList.Flags().StringVar(&title, titleLongFlag, "", "title of list")
 }
