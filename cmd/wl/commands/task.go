@@ -8,7 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	completedTasksLongFlag = "completed"
+)
+
 var (
+	// Flags
+	completedTasks bool
+
 	// Commands
 	cmdTasks = &cobra.Command{
 		Use:   "tasks",
@@ -16,10 +23,23 @@ var (
 		Long: `tasks gets the user's tasks.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
+			// Currently sending completed=false is the same as not sending completed
+			// Checking for whether the flag has changed protects us from potentially
+			// breaking changes, i.e. if the tasks endpoint decides to run all tasks,
+			// not just non-completed ones.
+
 			if listID == 0 {
-				renderOutput(newClient(cmd).Tasks())
+				if cmd.Flags().Changed(completedTasksLongFlag) {
+					renderOutput(newClient(cmd).CompletedTasks(completedTasks))
+				} else {
+					renderOutput(newClient(cmd).Tasks())
+				}
 			} else {
-				renderOutput(newClient(cmd).TasksForListID(listID))
+				if cmd.Flags().Changed(completedTasksLongFlag) {
+					renderOutput(newClient(cmd).CompletedTasksForListID(listID, completedTasks))
+				} else {
+					renderOutput(newClient(cmd).TasksForListID(listID))
+				}
 			}
 		},
 	}
@@ -104,4 +124,5 @@ var (
 
 func init() {
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
+	cmdTasks.Flags().BoolVar(&completedTasks, completedTasksLongFlag, false, "filter for completed tasks")
 }
