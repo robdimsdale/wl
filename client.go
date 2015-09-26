@@ -23,6 +23,7 @@ type Client interface {
 	DeleteNote(note Note) error
 
 	Tasks() ([]Task, error)
+	CompletedTasks(completed bool) ([]Task, error)
 	TasksForListID(listID uint) ([]Task, error)
 	CompletedTasksForListID(listID uint, completed bool) ([]Task, error)
 	Task(taskID uint) (Task, error)

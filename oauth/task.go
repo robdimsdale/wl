@@ -61,6 +61,58 @@ func (c oauthClient) Tasks() ([]wundergo.Task, error) {
 	return totalTasks, nil
 }
 
+// CompletedTasks returns all tasks filtered by whether they are completed.
+func (c oauthClient) CompletedTasks(completed bool) ([]wundergo.Task, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	tasksChan := make(chan []wundergo.Task, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"tasks - getting tasks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			tasks, err := c.CompletedTasksForListID(list.ID, completed)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			tasksChan <- tasks
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"tasks - error received getting tasks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalTasks := []wundergo.Task{}
+	for i := 0; i < listCount; i++ {
+		tasks := <-tasksChan
+		totalTasks = append(totalTasks, tasks...)
+	}
+
+	return totalTasks, nil
+}
+
 // TasksForListID returns Tasks for the provided listID.
 func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 	if listID == 0 {

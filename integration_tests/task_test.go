@@ -70,11 +70,11 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can update tasks", func() {
-		var completedTasks []wundergo.Task
+		var completedTasksForList []wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
-			return taskContains(completedTasks, newTask), err
+			completedTasksForList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+			return taskContains(completedTasksForList, newTask), err
 		}).Should(BeFalse())
 
 		By("Updating task")
@@ -85,8 +85,16 @@ var _ = Describe("basic task functionality", func() {
 			return err
 		}).Should(Succeed())
 
+		By("Verifying task appears in completed tasks for list")
 		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+			completedTasksForList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+			return taskContains(completedTasksForList, newTask), err
+		}).Should(BeTrue())
+
+		By("Verifying task appears in completed tasks")
+		var completedTasks []wundergo.Task
+		Eventually(func() (bool, error) {
+			completedTasks, err = client.CompletedTasks(showCompletedTasks)
 			return taskContains(completedTasks, newTask), err
 		}).Should(BeTrue())
 	})
