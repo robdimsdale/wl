@@ -48,7 +48,7 @@ var (
 	taskID uint
 	listID uint
 
-	// WundergoCMD is the root command. All other commands are subcommands of it.
+	// WundergoCmd is the root command. All other commands are subcommands of it.
 	WundergoCmd = &cobra.Command{Use: "wl"}
 )
 
