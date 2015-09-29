@@ -4,19 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
-const (
-	listIDsLongFlag = "listIDs"
-)
-
 var (
 	// Flags
-	listIDs string
+	listIDs []int
 
 	// Commands
 	cmdFolders = &cobra.Command{
@@ -45,11 +40,11 @@ var (
 		Long: `create-folder creates a folder with the specified args
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if listIDs == "" {
+			if listIDs == nil || len(listIDs) == 0 {
 				cmd.Usage()
 				os.Exit(2)
 			}
-			listIDsUints, err := splitStringToUints(listIDs)
+			listIDsUints, err := intsToUints(listIDs)
 			if err != nil {
 				fmt.Printf("error parsing listIDs: %v\n\n", err)
 				cmd.Usage()
@@ -79,8 +74,8 @@ and updates fields with the provided flags.
 				folder.Title = title
 			}
 
-			if cmd.Flags().Changed(listIDsLongFlag) {
-				listIDsUints, err := splitStringToUints(listIDs)
+			if cmd.Flags().Changed(listIDLongFlag) {
+				listIDsUints, err := intsToUints(listIDs)
 				if err != nil {
 					fmt.Printf("error parsing listIDs: %v\n\n", err)
 					cmd.Usage()
@@ -133,10 +128,10 @@ and updates fields with the provided flags.
 
 func init() {
 	cmdCreateFolder.Flags().StringVar(&title, titleLongFlag, "", "title of folder (required)")
-	cmdCreateFolder.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
+	cmdCreateFolder.Flags().IntSliceVarP(&listIDs, listIDLongFlag, listIDShortFlag, []int{}, "list ID to add to folder (required, accepts multiple)")
 
 	cmdUpdateFolder.Flags().StringVar(&title, titleLongFlag, "", "title of folder (required)")
-	cmdUpdateFolder.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
+	cmdUpdateFolder.Flags().IntSliceVarP(&listIDs, listIDLongFlag, listIDShortFlag, []int{}, "list ID to add to folder (required, accepts multiple)")
 }
 
 func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
@@ -157,16 +152,11 @@ func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
 	return newClient(cmd).Folder(id)
 }
 
-func splitStringToUints(input string) ([]uint, error) {
-	split := strings.Split(input, ",")
-	splitUints := make([]uint, len(split))
+func intsToUints(input []int) ([]uint, error) {
+	splitUints := make([]uint, len(input))
 
-	for i, s := range split {
-		idInt, err := strconv.Atoi(s)
-		if err != nil {
-			return nil, fmt.Errorf("%v at index %d", err, i)
-		}
-		splitUints[i] = uint(idInt)
+	for i, s := range input {
+		splitUints[i] = uint(s)
 	}
 
 	return splitUints, nil
