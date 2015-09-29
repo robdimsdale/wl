@@ -222,6 +222,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can perform subtask CRUD", func() {
+		By("Creating subtask")
 		var subtask wundergo.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
@@ -229,12 +230,60 @@ var _ = Describe("basic task functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		subtask.Title = "newSubtaskTitle"
+		By("Getting subtask")
+		var aSubtask wundergo.Subtask
+		Eventually(func() error {
+			aSubtask, err = client.Subtask(subtask.ID)
+			return err
+		}).Should(Succeed())
+		Expect(aSubtask.ID).To(Equal(subtask.ID))
+
+		By("Validating subtask exists in all subtasks")
+		showCompletedSubtasks := false
+		Eventually(func() (bool, error) {
+			subtasks, err := client.Subtasks()
+			return subtaskContains(subtasks, subtask), err
+		}).Should(BeTrue())
+
+		By("Validating subtask exists in subtasks for list")
+		Eventually(func() (bool, error) {
+			subtasksForList, err := client.SubtasksForListID(newList.ID)
+			return subtaskContains(subtasksForList, subtask), err
+		}).Should(BeTrue())
+
+		By("Validating subtask exists in subtasks for task")
+		Eventually(func() (bool, error) {
+			subtasksForTask, err := client.SubtasksForTaskID(newTask.ID)
+			return subtaskContains(subtasksForTask, subtask), err
+		}).Should(BeTrue())
+
+		By("Completing subtask")
+		subtask.Completed = true
 		Eventually(func() error {
 			subtask, err = client.UpdateSubtask(subtask)
 			return err
 		}).Should(Succeed())
 
+		By("Validating subtask exists in all completed subtasks")
+		showCompletedSubtasks = true
+		Eventually(func() (bool, error) {
+			subtasks, err := client.CompletedSubtasks(showCompletedSubtasks)
+			return subtaskContains(subtasks, subtask), err
+		}).Should(BeTrue())
+
+		By("Validating subtask exists in completed subtasks for list")
+		Eventually(func() (bool, error) {
+			subtasksForList, err := client.CompletedSubtasksForListID(newList.ID, showCompletedSubtasks)
+			return subtaskContains(subtasksForList, subtask), err
+		}).Should(BeTrue())
+
+		By("Validating subtask exists in completed subtasks for task")
+		Eventually(func() (bool, error) {
+			subtasksForTask, err := client.CompletedSubtasksForTaskID(newTask.ID, showCompletedSubtasks)
+			return subtaskContains(subtasksForTask, subtask), err
+		}).Should(BeTrue())
+
+		By("Deleting subtask")
 		Eventually(func() error {
 			return client.DeleteSubtask(subtask)
 		}).Should(Succeed())
@@ -260,3 +309,12 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 	})
 })
+
+func subtaskContains(subtasks []wundergo.Subtask, subtask wundergo.Subtask) bool {
+	for _, t := range subtasks {
+		if t.ID == subtask.ID {
+			return true
+		}
+	}
+	return false
+}

@@ -11,6 +11,7 @@ type Subtask struct {
 	CreatedByID   uint      `json:"created_by_id" yaml:"created_by_id"`
 	Revision      uint      `json:"revision" yaml:"revision"`
 	Title         string    `json:"title" yaml:"title"`
+	Completed     bool      `json:"completed" yaml:"completed"`
 	CompletedAt   time.Time `json:"completed_at" yaml:"completed_at"`
 	CompletedByID uint      `json:"completed_by" yaml:"completed_by"`
 }

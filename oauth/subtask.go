@@ -9,6 +9,110 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Subtasks gets all tasks for all lists.
+func (c oauthClient) Subtasks() ([]wundergo.Subtask, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	subtasksChan := make(chan []wundergo.Subtask, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"tasks - getting tasks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			subtasks, err := c.SubtasksForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			subtasksChan <- subtasks
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"tasks - error received getting tasks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalSubtasks := []wundergo.Subtask{}
+	for i := 0; i < listCount; i++ {
+		subtasks := <-subtasksChan
+		totalSubtasks = append(totalSubtasks, subtasks...)
+	}
+
+	return totalSubtasks, nil
+}
+
+// CompletedSubtasks returns all tasks filtered by whether they are completed.
+func (c oauthClient) CompletedSubtasks(completed bool) ([]wundergo.Subtask, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	subtasksChan := make(chan []wundergo.Subtask, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"subtasks - getting subtasks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			subtasks, err := c.CompletedSubtasksForListID(list.ID, completed)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			subtasksChan <- subtasks
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"subtasks - error received getting subtasks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalSubtasks := []wundergo.Subtask{}
+	for i := 0; i < listCount; i++ {
+		subtasks := <-subtasksChan
+		totalSubtasks = append(totalSubtasks, subtasks...)
+	}
+
+	return totalSubtasks, nil
+}
+
 // SubtasksForListID returns the Subtasks associated with the provided listID.
 func (c oauthClient) SubtasksForListID(listID uint) ([]wundergo.Subtask, error) {
 	if listID == 0 {

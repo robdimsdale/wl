@@ -10,9 +10,7 @@ import (
 )
 
 const (
-	completedTasksLongFlag  = "completed"
 	assigneeIDLongFlag      = "assingeeID"
-	completedLongFlag       = "completed"
 	recurrenceTypeLongFlag  = "recurrenceType"
 	recurrenceCountLongFlag = "recurrenceCount"
 	dueDateLongFlag         = "dueDate"
@@ -21,9 +19,7 @@ const (
 
 var (
 	// Flags
-	completedTasks  bool
 	assigneeID      uint
-	completed       bool
 	recurrenceType  string
 	recurrenceCount uint
 	dueDate         string
@@ -38,18 +34,18 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			// Currently sending completed=false is the same as not sending completed
 			// Checking for whether the flag has changed protects us from potentially
-			// breaking changes, i.e. if the tasks endpoint decides to run all tasks,
+			// breaking changes, i.e. if the tasks endpoint decides to return all tasks,
 			// not just non-completed ones.
 
 			if listID == 0 {
-				if cmd.Flags().Changed(completedTasksLongFlag) {
-					renderOutput(newClient(cmd).CompletedTasks(completedTasks))
+				if cmd.Flags().Changed(completedLongFlag) {
+					renderOutput(newClient(cmd).CompletedTasks(completed))
 				} else {
 					renderOutput(newClient(cmd).Tasks())
 				}
 			} else {
-				if cmd.Flags().Changed(completedTasksLongFlag) {
-					renderOutput(newClient(cmd).CompletedTasksForListID(listID, completedTasks))
+				if cmd.Flags().Changed(completedLongFlag) {
+					renderOutput(newClient(cmd).CompletedTasksForListID(listID, completed))
 				} else {
 					renderOutput(newClient(cmd).TasksForListID(listID))
 				}
@@ -173,7 +169,7 @@ and updates fields with the provided flags.
 
 func init() {
 	cmdTasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
-	cmdTasks.Flags().BoolVar(&completedTasks, completedTasksLongFlag, false, "filter for completed tasks")
+	cmdTasks.Flags().BoolVar(&completed, completedLongFlag, false, "filter for completed tasks")
 
 	cmdCreateTask.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "id of list to which task will belong")
 	cmdCreateTask.Flags().StringVar(&title, titleLongFlag, "", "title of task")

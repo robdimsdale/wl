@@ -42,8 +42,10 @@ type Client interface {
 	DeleteTask(task Task) error
 	DeleteAllTasks() error
 
+	Subtasks() ([]Subtask, error)
 	SubtasksForListID(listID uint) ([]Subtask, error)
 	SubtasksForTaskID(taskID uint) ([]Subtask, error)
+	CompletedSubtasks(completed bool) ([]Subtask, error)
 	CompletedSubtasksForListID(listID uint, completed bool) ([]Subtask, error)
 	CompletedSubtasksForTaskID(taskID uint, completed bool) ([]Subtask, error)
 	Subtask(subtaskID uint) (Subtask, error)

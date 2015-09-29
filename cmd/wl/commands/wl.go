@@ -37,6 +37,8 @@ const (
 	taskIDShortFlag = "t"
 
 	titleLongFlag = "title"
+
+	completedLongFlag = "completed"
 )
 
 var (
@@ -47,9 +49,10 @@ var (
 	useJSON     bool
 
 	// Non-global, shared flags
-	taskID uint
-	listID uint
-	title  string
+	taskID    uint
+	listID    uint
+	title     string
+	completed bool
 
 	// WundergoCmd is the root command. All other commands are subcommands of it.
 	WundergoCmd = &cobra.Command{Use: "wl"}
@@ -113,6 +116,8 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdCreateNote)
 	WundergoCmd.AddCommand(cmdUpdateNote)
 	WundergoCmd.AddCommand(cmdDeleteNote)
+
+	WundergoCmd.AddCommand(cmdSubtasks)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {
