@@ -49,24 +49,47 @@ var (
 				cmd.Usage()
 				os.Exit(2)
 			}
-
-			splitListIDs := strings.Split(listIDs, ",")
-			listIDsUints := make([]uint, len(splitListIDs))
-
-			for i, s := range splitListIDs {
-				idInt, err := strconv.Atoi(s)
-				if err != nil {
-					fmt.Printf("error parsing listIDs: %v at index %d\n\n", err, i)
-					cmd.Usage()
-					os.Exit(2)
-				}
-				listIDsUints[i] = uint(idInt)
+			listIDsUints, err := splitStringToUints(listIDs)
+			if err != nil {
+				fmt.Printf("error parsing listIDs: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
 			}
 
 			renderOutput(newClient(cmd).CreateFolder(
 				title,
 				listIDsUints,
 			))
+		},
+	}
+
+	cmdUpdateFolder = &cobra.Command{
+		Use:   "update-folder",
+		Short: "updates a folder with the specified args",
+		Long: `update-folder obtains the current state of the folder,
+and updates fields with the provided flags.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			folder, err := folder(cmd, args)
+			if err != nil {
+				handleError(err)
+			}
+
+			if cmd.Flags().Changed(titleLongFlag) {
+				folder.Title = title
+			}
+
+			if cmd.Flags().Changed(listIDsLongFlag) {
+				listIDsUints, err := splitStringToUints(listIDs)
+				if err != nil {
+					fmt.Printf("error parsing listIDs: %v\n\n", err)
+					cmd.Usage()
+					os.Exit(2)
+				}
+				folder.ListIDs = listIDsUints
+			}
+
+			renderOutput(newClient(cmd).UpdateFolder(folder))
 		},
 	}
 
@@ -111,6 +134,9 @@ var (
 func init() {
 	cmdCreateFolder.Flags().StringVar(&title, titleLongFlag, "", "title of folder (required)")
 	cmdCreateFolder.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
+
+	cmdUpdateFolder.Flags().StringVar(&title, titleLongFlag, "", "title of folder (required)")
+	cmdUpdateFolder.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
 }
 
 func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
@@ -129,4 +155,19 @@ func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
 	id := uint(idInt)
 
 	return newClient(cmd).Folder(id)
+}
+
+func splitStringToUints(input string) ([]uint, error) {
+	split := strings.Split(input, ",")
+	splitUints := make([]uint, len(split))
+
+	for i, s := range split {
+		idInt, err := strconv.Atoi(s)
+		if err != nil {
+			return nil, fmt.Errorf("%v at index %d", err, i)
+		}
+		splitUints[i] = uint(idInt)
+	}
+
+	return splitUints, nil
 }
