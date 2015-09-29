@@ -197,6 +197,7 @@ func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, err
 }
 
 // UpdateNote updates the provided Note.
+// Notes cannot be moved between tasks; note.TaskID is ignored
 func (c oauthClient) UpdateNote(note wundergo.Note) (wundergo.Note, error) {
 	body, err := json.Marshal(note)
 	if err != nil {

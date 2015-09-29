@@ -57,6 +57,26 @@ var (
 		},
 	}
 
+	cmdUpdateNote = &cobra.Command{
+		Use:   "update-note",
+		Short: "updates a note with the specified args",
+		Long: `update-note obtains the current state of the note,
+and updates fields with the provided flags.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			note, err := note(cmd, args)
+			if err != nil {
+				handleError(err)
+			}
+
+			if cmd.Flags().Changed(contentLongFlag) {
+				note.Content = content
+			}
+
+			renderOutput(newClient(cmd).UpdateNote(note))
+		},
+	}
+
 	cmdDeleteNote = &cobra.Command{
 		Use:   "delete-note <note-id>",
 		Short: "deletes the note for the provided note id",
@@ -86,6 +106,8 @@ func init() {
 
 	cmdCreateNote.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "id of task to which note belongs")
 	cmdCreateNote.Flags().StringVar(&content, contentLongFlag, "", "note content")
+
+	cmdUpdateNote.Flags().StringVar(&content, contentLongFlag, "", "note content")
 }
 
 func note(cmd *cobra.Command, args []string) (wundergo.Note, error) {
