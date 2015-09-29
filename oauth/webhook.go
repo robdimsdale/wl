@@ -48,14 +48,14 @@ func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
 		}
 	}
 
-	if len(e.errors()) > 0 {
-		return nil, e
-	}
-
 	totalWebhooks := []wundergo.Webhook{}
 	for i := 0; i < listCount; i++ {
 		webhooks := <-webhooksChan
 		totalWebhooks = append(totalWebhooks, webhooks...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalWebhooks, e
 	}
 
 	return totalWebhooks, nil

@@ -48,14 +48,14 @@ func (c oauthClient) Subtasks() ([]wundergo.Subtask, error) {
 		}
 	}
 
-	if len(e.errors()) > 0 {
-		return nil, e
-	}
-
 	totalSubtasks := []wundergo.Subtask{}
 	for i := 0; i < listCount; i++ {
 		subtasks := <-subtasksChan
 		totalSubtasks = append(totalSubtasks, subtasks...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalSubtasks, e
 	}
 
 	return totalSubtasks, nil

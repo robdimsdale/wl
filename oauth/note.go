@@ -48,14 +48,14 @@ func (c oauthClient) Notes() ([]wundergo.Note, error) {
 		}
 	}
 
-	if len(e.errors()) > 0 {
-		return nil, e
-	}
-
 	totalNotes := []wundergo.Note{}
 	for i := 0; i < listCount; i++ {
 		notes := <-notesChan
 		totalNotes = append(totalNotes, notes...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalNotes, e
 	}
 
 	return totalNotes, nil

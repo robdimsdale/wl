@@ -239,10 +239,11 @@ var _ = Describe("basic task functionality", func() {
 		Expect(aSubtask.ID).To(Equal(subtask.ID))
 
 		By("Validating subtask exists in all subtasks")
-		showCompletedSubtasks := false
-		Eventually(func() (bool, error) {
-			subtasks, err := client.Subtasks()
-			return subtaskContains(subtasks, subtask), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			subtasks, _ := client.Subtasks()
+			return subtaskContains(subtasks, subtask)
 		}).Should(BeTrue())
 
 		By("Validating subtask exists in subtasks for list")
@@ -265,7 +266,7 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		By("Validating subtask exists in all completed subtasks")
-		showCompletedSubtasks = true
+		showCompletedSubtasks := true
 		Eventually(func() (bool, error) {
 			subtasks, err := client.CompletedSubtasks(showCompletedSubtasks)
 			return subtaskContains(subtasks, subtask), err

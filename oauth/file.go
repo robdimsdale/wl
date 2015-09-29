@@ -48,14 +48,14 @@ func (c oauthClient) Files() ([]wundergo.File, error) {
 		}
 	}
 
-	if len(e.errors()) > 0 {
-		return nil, e
-	}
-
 	allFiles := []wundergo.File{}
 	for i := 0; i < listCount; i++ {
 		files := <-filesChan
 		allFiles = append(allFiles, files...)
+	}
+
+	if len(e.errors()) > 0 {
+		return allFiles, e
 	}
 
 	return allFiles, nil

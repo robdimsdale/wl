@@ -78,9 +78,11 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying task comment is present in all task comments")
-		Eventually(func() (bool, error) {
-			taskComments, err := client.TaskComments()
-			return taskCommentContains(taskComments, taskComment), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			taskComments, _ := client.TaskComments()
+			return taskCommentContains(taskComments, taskComment)
 		}).Should(BeTrue())
 
 		By("Verifying task comment is present in task comments for list")
