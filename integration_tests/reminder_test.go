@@ -80,9 +80,11 @@ var _ = Describe("basic reminder functionality", func() {
 		}).Should(Succeed())
 
 		By("Verifying reminder exists in all reminders")
-		Eventually(func() (bool, error) {
-			allReminders, err := client.Reminders()
-			return reminderContains(allReminders, reminder), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			allReminders, _ := client.Reminders()
+			return reminderContains(allReminders, reminder)
 		}).Should(BeTrue())
 
 		By("Verifying reminder exists in reminders for list")

@@ -77,9 +77,11 @@ var _ = Describe("basic note functionality", func() {
 		}).Should(Succeed())
 
 		By("Verifying note appears in all notes")
-		Eventually(func() (bool, error) {
-			allNotes, err := client.Notes()
-			return noteContains(allNotes, note), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			allNotes, _ := client.Notes()
+			return noteContains(allNotes, note)
 		}).Should(BeTrue())
 
 		By("Verifying note appears in notes for task")

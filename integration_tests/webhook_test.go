@@ -65,9 +65,11 @@ var _ = Describe("basic webhook functionality", func() {
 		Expect(newWebhook.URL).To(Equal(url))
 
 		By("Validating the new webhook is present in all webhooks")
-		Eventually(func() (bool, error) {
-			allWebhooks, err := client.Webhooks()
-			return webhooksContain(allWebhooks, newWebhook), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			allWebhooks, _ := client.Webhooks()
+			return webhooksContain(allWebhooks, newWebhook)
 		}).Should(BeTrue())
 
 		By("Validating the new webhook is present in webhooks for list")
