@@ -2,7 +2,10 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
+	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +17,16 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			renderOutput(newClient(cmd).Folders())
+		},
+	}
+
+	cmdFolder = &cobra.Command{
+		Use:   "folder <folder-id>",
+		Short: "gets the folder for the provided folder id",
+		Long: `folder gets a folder specified by <folder-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			renderOutput(folder(cmd, args))
 		},
 	}
 
@@ -32,3 +45,21 @@ var (
 		},
 	}
 )
+
+func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
+	if len(args) != 1 {
+		fmt.Printf("incorrect number of arguments provided\n\n")
+		cmd.Usage()
+		os.Exit(2)
+	}
+
+	idInt, err := strconv.Atoi(args[0])
+	if err != nil {
+		fmt.Printf("error parsing folderID: %v\n\n", err)
+		cmd.Usage()
+		os.Exit(2)
+	}
+	id := uint(idInt)
+
+	return newClient(cmd).Folder(id)
+}
