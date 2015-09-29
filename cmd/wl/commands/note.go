@@ -9,7 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	contentLongFlag = "content"
+)
+
 var (
+	// Flags
+	content string
+
 	// Commands
 	cmdNotes = &cobra.Command{
 		Use:   "notes",
@@ -34,6 +41,19 @@ var (
         `,
 		Run: func(cmd *cobra.Command, args []string) {
 			renderOutput(note(cmd, args))
+		},
+	}
+
+	cmdCreateNote = &cobra.Command{
+		Use:   "create-note",
+		Short: "creates a note with the specified args",
+		Long: `create-note creates a note with the specified args
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			renderOutput(newClient(cmd).CreateNote(
+				content,
+				taskID,
+			))
 		},
 	}
 
@@ -63,6 +83,9 @@ var (
 func init() {
 	cmdNotes.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "filter by taskID")
 	cmdNotes.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
+
+	cmdCreateNote.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "id of task to which note belongs")
+	cmdCreateNote.Flags().StringVar(&content, contentLongFlag, "", "note content")
 }
 
 func note(cmd *cobra.Command, args []string) (wundergo.Note, error) {

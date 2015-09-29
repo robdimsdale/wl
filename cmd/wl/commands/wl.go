@@ -110,6 +110,7 @@ func addCommands() {
 
 	WundergoCmd.AddCommand(cmdNotes)
 	WundergoCmd.AddCommand(cmdNote)
+	WundergoCmd.AddCommand(cmdCreateNote)
 	WundergoCmd.AddCommand(cmdDeleteNote)
 }
 
