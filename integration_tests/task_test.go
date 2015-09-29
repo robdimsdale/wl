@@ -166,9 +166,11 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Verifying task appears in completed tasks")
 		var completedTasks []wundergo.Task
-		Eventually(func() (bool, error) {
-			completedTasks, err = client.CompletedTasks(showCompletedTasks)
-			return taskContains(completedTasks, newTask), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			completedTasks, _ = client.CompletedTasks(showCompletedTasks)
+			return taskContains(completedTasks, newTask)
 		}).Should(BeTrue())
 	})
 
