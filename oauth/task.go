@@ -224,14 +224,15 @@ type taskCreateConfig struct {
 
 // TaskUpdateConfig contains information required to update an existing task.
 type TaskUpdateConfig struct {
-	Title           string   `json:"title"`
+	Title           string   `json:"title,omitempty"`
 	Revision        uint     `json:"revision"`
 	AssigneeID      uint     `json:"assignee_id,omitempty"`
-	Completed       bool     `json:"completed,omitempty"`
+	ListID          uint     `json:"list_id,omitempty"`
+	Completed       bool     `json:"completed"`
 	RecurrenceType  string   `json:"recurrence_type,omitempty"`
 	RecurrenceCount uint     `json:"recurrence_count,omitempty"`
 	DueDate         string   `json:"due_date,omitempty"`
-	Starred         bool     `json:"starred,omitempty"`
+	Starred         bool     `json:"starred"`
 	Remove          []string `json:"remove,omitempty"`
 }
 
@@ -309,9 +310,13 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 	}
 
 	tuc := TaskUpdateConfig{
-		Title:    task.Title,
-		Revision: task.Revision,
-		Remove:   []string{},
+		Title:     task.Title,
+		Revision:  task.Revision,
+		Completed: task.Completed,
+		Starred:   task.Starred,
+		ListID:    task.ListID,
+
+		Remove: []string{},
 	}
 
 	if origTask.AssigneeID == task.AssigneeID {
@@ -347,9 +352,6 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 			tuc.RecurrenceType = task.RecurrenceType
 		}
 	}
-
-	tuc.Completed = task.Completed
-	tuc.Starred = task.Starred
 
 	body, err := json.Marshal(tuc)
 	if err != nil {

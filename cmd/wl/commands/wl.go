@@ -76,11 +76,11 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdInbox)
 	WundergoCmd.AddCommand(cmdRoot)
 	WundergoCmd.AddCommand(cmdLists)
+	WundergoCmd.AddCommand(cmdList)
 	WundergoCmd.AddCommand(cmdCreateList)
 	WundergoCmd.AddCommand(cmdUpdateList)
 	WundergoCmd.AddCommand(cmdDeleteList)
 	WundergoCmd.AddCommand(cmdDeleteAllLists)
-	WundergoCmd.AddCommand(cmdList)
 
 	WundergoCmd.AddCommand(cmdFolders)
 	WundergoCmd.AddCommand(cmdDeleteAllFolders)
@@ -88,6 +88,7 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdTasks)
 	WundergoCmd.AddCommand(cmdTask)
 	WundergoCmd.AddCommand(cmdCreateTask)
+	WundergoCmd.AddCommand(cmdUpdateTask)
 	WundergoCmd.AddCommand(cmdDeleteTask)
 	WundergoCmd.AddCommand(cmdDeleteAllTasks)
 
@@ -98,8 +99,8 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdDestroyFile)
 	WundergoCmd.AddCommand(cmdFilePreview)
 
-	WundergoCmd.AddCommand(cmdUser)
 	WundergoCmd.AddCommand(cmdUsers)
+	WundergoCmd.AddCommand(cmdUser)
 	WundergoCmd.AddCommand(cmdUpdateUser)
 	WundergoCmd.AddCommand(cmdAvatarURL)
 }

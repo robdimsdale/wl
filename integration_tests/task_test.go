@@ -69,7 +69,81 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(BeFalse())
 	})
 
-	It("can update tasks", func() {
+	Describe("moving a tasks between lists", func() {
+		var secondList wundergo.List
+
+		BeforeEach(func() {
+			By("Creating a second list")
+			uuid1, err := uuid.NewV4()
+			Expect(err).NotTo(HaveOccurred())
+			secondListTitle := uuid1.String()
+
+			secondList, err = client.CreateList(secondListTitle)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		AfterEach(func() {
+			By("Deleting second list")
+			Eventually(func() error {
+				secondList, err = client.List(secondList.ID)
+				return client.DeleteList(secondList)
+			}).Should(Succeed())
+
+			var lists []wundergo.List
+			Eventually(func() (bool, error) {
+				lists, err = client.Lists()
+				return listContains(lists, secondList), err
+			}).Should(BeFalse())
+		})
+
+		It("can move a task between lists", func() {
+			By("Moving task to second list")
+			newTask.ListID = secondList.ID
+			Eventually(func() error {
+				newTask, err = client.UpdateTask(newTask)
+				return err
+			}).Should(Succeed())
+
+			By("Verifying task appears in tasks for second list")
+			var completedTasksForSecondList []wundergo.Task
+			Eventually(func() (bool, error) {
+				showCompletedTasks := false
+				completedTasksForSecondList, err = client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
+				return taskContains(completedTasksForSecondList, newTask), err
+			}).Should(BeTrue())
+
+			By("Verifying task does not appear in tasks for first list")
+			var completedTasksForFirstList []wundergo.Task
+			Eventually(func() (bool, error) {
+				showCompletedTasks := false
+				completedTasksForFirstList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+				return taskContains(completedTasksForFirstList, newTask), err
+			}).Should(BeFalse())
+
+			By("Moving task back to first list")
+			newTask.ListID = newList.ID
+			Eventually(func() error {
+				newTask, err = client.UpdateTask(newTask)
+				return err
+			}).Should(Succeed())
+
+			By("Verifying task does not appear in tasks for second list")
+			Eventually(func() (bool, error) {
+				showCompletedTasks := false
+				completedTasksForSecondList, err = client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
+				return taskContains(completedTasksForSecondList, newTask), err
+			}).Should(BeFalse())
+
+			By("Verifying task does appear in tasks for first list")
+			Eventually(func() (bool, error) {
+				showCompletedTasks := false
+				completedTasksForFirstList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+				return taskContains(completedTasksForFirstList, newTask), err
+			}).Should(BeTrue())
+		})
+	})
+
+	It("can complete tasks", func() {
 		var completedTasksForList []wundergo.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
@@ -77,8 +151,7 @@ var _ = Describe("basic task functionality", func() {
 			return taskContains(completedTasksForList, newTask), err
 		}).Should(BeFalse())
 
-		By("Updating task")
-		newTask.DueDate = "1971-01-01"
+		By("Completing task")
 		newTask.Completed = true
 		Eventually(func() error {
 			newTask, err = client.UpdateTask(newTask)
@@ -97,6 +170,55 @@ var _ = Describe("basic task functionality", func() {
 			completedTasks, err = client.CompletedTasks(showCompletedTasks)
 			return taskContains(completedTasks, newTask), err
 		}).Should(BeTrue())
+	})
+
+	It("can update tasks", func() {
+		By("Setting properties")
+		newTask.DueDate = "1971-01-01"
+		newTask.Starred = true
+		newTask.Completed = true
+		newTask.RecurrenceType = "week"
+		newTask.RecurrenceCount = 2
+
+		By("Updating task")
+		Eventually(func() error {
+			newTask, err = client.UpdateTask(newTask)
+			return err
+		}).Should(Succeed())
+
+		By("Getting task again")
+		var taskAgain wundergo.Task
+		Eventually(func() error {
+			taskAgain, err = client.Task(newTask.ID)
+			return err
+		}).Should(Succeed())
+
+		By("Ensuring properties are set")
+		Expect(taskAgain.DueDate).Should(Equal("1971-01-01"))
+		Expect(taskAgain.Starred).Should(BeTrue())
+		Expect(taskAgain.Completed).Should(BeTrue())
+		Expect(taskAgain.RecurrenceType).Should(Equal("week"))
+		Expect(taskAgain.RecurrenceCount).Should(Equal(uint(2)))
+
+		By("Resetting properties")
+		taskAgain.DueDate = ""
+		taskAgain.Starred = false
+		taskAgain.Completed = false
+		taskAgain.RecurrenceType = ""
+		taskAgain.RecurrenceCount = 0
+
+		By("Updating task")
+		Eventually(func() error {
+			taskAgain, err = client.UpdateTask(taskAgain)
+			return err
+		}).Should(Succeed())
+
+		By("Verifying properties are reset")
+		Expect(taskAgain.DueDate).Should(Equal(""))
+		Expect(taskAgain.Starred).Should(BeFalse())
+		Expect(taskAgain.Completed).Should(BeFalse())
+		Expect(taskAgain.RecurrenceType).Should(Equal(""))
+		Expect(taskAgain.RecurrenceCount).Should(Equal(uint(0)))
 	})
 
 	It("can perform subtask CRUD", func() {

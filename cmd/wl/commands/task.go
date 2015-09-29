@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
@@ -62,23 +63,7 @@ var (
 		Long: `task gets a task specified by <task-id>
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing taskID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			renderOutput(newClient(cmd).Task(
-				id,
-			))
+			renderOutput(task(cmd, args))
 		},
 	}
 
@@ -101,40 +86,74 @@ var (
 		},
 	}
 
+	cmdUpdateTask = &cobra.Command{
+		Use:   "update-task",
+		Short: "updates a task with the specified args",
+		Long: `update-task obtains the current state of the task,
+and updates fields with the provided flags.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			task, err := task(cmd, args)
+			if err != nil {
+				handleError(err)
+			}
+
+			if cmd.Flags().Changed(listIDLongFlag) {
+				task.ListID = listID
+			}
+
+			if cmd.Flags().Changed(titleLongFlag) {
+				task.Title = title
+			}
+
+			if cmd.Flags().Changed(assigneeIDLongFlag) {
+				task.AssigneeID = assigneeID
+			}
+
+			if cmd.Flags().Changed(completedLongFlag) {
+				task.Completed = completed
+			}
+
+			if cmd.Flags().Changed(recurrenceTypeLongFlag) {
+				task.RecurrenceType = recurrenceType
+			}
+
+			if cmd.Flags().Changed(recurrenceCountLongFlag) {
+				task.RecurrenceCount = recurrenceCount
+			}
+
+			if cmd.Flags().Changed(dueDateLongFlag) {
+				task.DueDate = dueDate
+			}
+
+			if cmd.Flags().Changed(starredLongFlag) {
+				fmt.Printf("starred changing from %t to %t\n", task.Starred, starred)
+				task.Starred = starred
+			}
+
+			renderOutput(newClient(cmd).UpdateTask(task))
+		},
+	}
+
 	cmdDeleteTask = &cobra.Command{
 		Use:   "delete-task <task-id>",
 		Short: "deletes the task for the provided task id",
 		Long: `delete-task deletes the task specified by <task-id>
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing taskID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			client := newClient(cmd)
-			task, err := client.Task(id)
+			task, err := task(cmd, args)
 			if err != nil {
 				fmt.Printf("error getting task: %v\n\n", err)
 				cmd.Usage()
 				os.Exit(2)
 			}
 
-			err = client.DeleteTask(task)
+			err = newClient(cmd).DeleteTask(task)
 			if err != nil {
 				handleError(err)
 			}
 
-			fmt.Printf("task %d deleted successfully\n", id)
+			fmt.Printf("task %d deleted successfully\n", task.ID)
 		},
 	}
 
@@ -165,4 +184,31 @@ func init() {
 	cmdCreateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "id of task assignee")
 	cmdCreateTask.Flags().StringVar(&dueDate, dueDateLongFlag, "", "due date of task")
 	cmdCreateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
+
+	cmdUpdateTask.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "id of list to which task will belong")
+	cmdUpdateTask.Flags().StringVar(&title, titleLongFlag, "", "title of task")
+	cmdUpdateTask.Flags().UintVar(&assigneeID, assigneeIDLongFlag, 0, "id of task assignee")
+	cmdUpdateTask.Flags().BoolVar(&completed, completedLongFlag, false, "whether task is completed")
+	cmdUpdateTask.Flags().StringVar(&recurrenceType, recurrenceTypeLongFlag, "", "recurrence type")
+	cmdUpdateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "id of task assignee")
+	cmdUpdateTask.Flags().StringVar(&dueDate, dueDateLongFlag, "", "due date of task")
+	cmdUpdateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
+}
+
+func task(cmd *cobra.Command, args []string) (wundergo.Task, error) {
+	if len(args) != 1 {
+		fmt.Printf("incorrect number of arguments provided\n\n")
+		cmd.Usage()
+		os.Exit(2)
+	}
+
+	idInt, err := strconv.Atoi(args[0])
+	if err != nil {
+		fmt.Printf("error parsing taskID: %v\n\n", err)
+		cmd.Usage()
+		os.Exit(2)
+	}
+	id := uint(idInt)
+
+	return newClient(cmd).Task(id)
 }
