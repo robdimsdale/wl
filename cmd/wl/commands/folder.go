@@ -70,6 +70,28 @@ var (
 		},
 	}
 
+	cmdDeleteFolder = &cobra.Command{
+		Use:   "delete-folder <folder-id>",
+		Short: "deletes the folder for the provided folder id",
+		Long: `delete-folder deletes the folder specified by <folder-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			folder, err := folder(cmd, args)
+			if err != nil {
+				fmt.Printf("error getting folder: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = newClient(cmd).DeleteFolder(folder)
+			if err != nil {
+				handleError(err)
+			}
+
+			fmt.Printf("folder %d deleted successfully\n", folder.ID)
+		},
+	}
+
 	cmdDeleteAllFolders = &cobra.Command{
 		Use:   "delete-all-folders",
 		Short: "deletes all folders",
