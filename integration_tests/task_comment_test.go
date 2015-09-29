@@ -8,26 +8,29 @@ import (
 )
 
 var _ = Describe("basic task comment functionality", func() {
-	It("correctly creates and deletes a task comment", func() {
+	var (
+		newList wundergo.List
+		newTask wundergo.Task
+	)
 
-		By("Creating a task")
-		var lists []wundergo.List
-		Eventually(func() error {
-			l, err := client.Lists()
-			lists = l
-			return err
-		}).Should(Succeed())
-		list := lists[0]
+	BeforeEach(func() {
+		By("Creating a new list")
+		uuid1, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		newListTitle := uuid1.String()
 
+		newList, err = client.CreateList(newListTitle)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("Creating task in new list")
 		uuid, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuid.String()
 
-		var task wundergo.Task
 		Eventually(func() error {
-			task, err = client.CreateTask(
+			newTask, err = client.CreateTask(
 				newTaskTitle,
-				list.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -37,9 +40,37 @@ var _ = Describe("basic task comment functionality", func() {
 			)
 			return err
 		}).ShouldNot(HaveOccurred())
+	})
 
-		By("Creating an associated task comment")
-		taskComment, err := client.CreateTaskComment("someText", task.ID)
+	AfterEach(func() {
+		By("Deleting task")
+		Eventually(func() error {
+			newTask, err = client.Task(newTask.ID)
+			return client.DeleteTask(newTask)
+		}).Should(Succeed())
+
+		var tasks []wundergo.Task
+		Eventually(func() (bool, error) {
+			tasks, err = client.TasksForListID(newList.ID)
+			return taskContains(tasks, newTask), err
+		}).Should(BeFalse())
+
+		By("Deleting new list")
+		Eventually(func() error {
+			newList, err = client.List(newList.ID)
+			return client.DeleteList(newList)
+		}).Should(Succeed())
+
+		var lists []wundergo.List
+		Eventually(func() (bool, error) {
+			lists, err = client.Lists()
+			return listContains(lists, newList), err
+		}).Should(BeFalse())
+	})
+
+	It("correctly creates and deletes a task comment", func() {
+		By("Creating a task comment")
+		taskComment, err := client.CreateTaskComment("someText", newTask.ID)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying task comment is present in all task comments")
@@ -48,12 +79,12 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(taskCommentsContain(taskComments, taskComment)).To(BeTrue())
 
 		By("Verifying task comment is present in task comments for list")
-		taskCommentsForList, err := client.TaskCommentsForListID(list.ID)
+		taskCommentsForList, err := client.TaskCommentsForListID(newList.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeTrue())
 
 		By("Verifying task comment is present in task comments for task")
-		taskCommentsForTask, err := client.TaskCommentsForTaskID(task.ID)
+		taskCommentsForTask, err := client.TaskCommentsForTaskID(newTask.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeTrue())
 
@@ -67,25 +98,25 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying task comment is not present in task comments for list")
-		taskCommentsForList, err = client.TaskCommentsForListID(list.ID)
+		taskCommentsForList, err = client.TaskCommentsForListID(newList.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeFalse())
 
 		By("Verifying task comment is not present in task comments for task")
-		taskCommentsForTask, err = client.TaskCommentsForTaskID(task.ID)
+		taskCommentsForTask, err = client.TaskCommentsForTaskID(newTask.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeFalse())
 
 		By("Deleting task (and hence associated subtasks)")
 		Eventually(func() error {
-			task, err = client.Task(task.ID)
+			task, err = client.Task(newTask.ID)
 			return client.DeleteTask(task)
 		}).Should(Succeed())
 
 		By("Verifying task is not present in tasks for list")
 		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(list.ID)
+			tasks, err = client.TasksForListID(newList.ID)
 			return taskContains(tasks, task), err
 		}).Should(BeFalse())
 	})
