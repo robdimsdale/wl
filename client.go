@@ -91,6 +91,7 @@ type Client interface {
 	RemoveMemberFromList(membership Membership) error
 	AcceptMember(membership Membership) (Membership, error)
 
+	TaskComments() ([]TaskComment, error)
 	TaskCommentsForListID(listID uint) ([]TaskComment, error)
 	TaskCommentsForTaskID(taskID uint) ([]TaskComment, error)
 	CreateTaskComment(text string, taskID uint) (TaskComment, error)

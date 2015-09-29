@@ -42,25 +42,36 @@ var _ = Describe("basic task comment functionality", func() {
 		taskComment, err := client.CreateTaskComment("someText", task.ID)
 		Expect(err).NotTo(HaveOccurred())
 
+		By("Verifying task comment is present in all task comments")
+		taskComments, err := client.TaskComments()
+		Expect(err).NotTo(HaveOccurred())
+		Expect(taskCommentsContain(taskComments, taskComment)).To(BeTrue())
+
+		By("Verifying task comment is present in task comments for list")
 		taskCommentsForList, err := client.TaskCommentsForListID(list.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeTrue())
 
+		By("Verifying task comment is present in task comments for task")
 		taskCommentsForTask, err := client.TaskCommentsForTaskID(task.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeTrue())
 
+		By("Getting task comment")
 		taskCommentAgain, err := client.TaskComment(taskComment.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentAgain.ID).To(Equal(taskComment.ID))
 
+		By("Deleting task comment")
 		err = client.DeleteTaskComment(taskComment)
 		Expect(err).NotTo(HaveOccurred())
 
+		By("Verifying task comment is not present in task comments for list")
 		taskCommentsForList, err = client.TaskCommentsForListID(list.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeFalse())
 
+		By("Verifying task comment is not present in task comments for task")
 		taskCommentsForTask, err = client.TaskCommentsForTaskID(task.ID)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeFalse())
@@ -71,6 +82,7 @@ var _ = Describe("basic task comment functionality", func() {
 			return client.DeleteTask(task)
 		}).Should(Succeed())
 
+		By("Verifying task is not present in tasks for list")
 		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
 			tasks, err = client.TasksForListID(list.ID)

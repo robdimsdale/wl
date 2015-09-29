@@ -133,6 +133,11 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdReminder)
 	WundergoCmd.AddCommand(cmdUpdateReminder)
 	WundergoCmd.AddCommand(cmdDeleteReminder)
+
+	WundergoCmd.AddCommand(cmdTaskComments)
+	WundergoCmd.AddCommand(cmdCreateTaskComment)
+	WundergoCmd.AddCommand(cmdTaskComment)
+	WundergoCmd.AddCommand(cmdDeleteTaskComment)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {

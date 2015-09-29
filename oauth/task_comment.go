@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// TaskComments gets all taskComments for all lists.
+func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"taskComments",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	taskCommentsChan := make(chan []wundergo.TaskComment, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"taskComments - getting taskComments for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			taskComments, err := c.TaskCommentsForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			taskCommentsChan <- taskComments
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"taskComments - error received getting taskComments for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalTaskComments := []wundergo.TaskComment{}
+	for i := 0; i < listCount; i++ {
+		taskComments := <-taskCommentsChan
+		totalTaskComments = append(totalTaskComments, taskComments...)
+	}
+
+	return totalTaskComments, nil
+}
+
 // TaskCommentsForListID returns TaskComments for the provided listID.
 func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment, error) {
 	if listID == 0 {
