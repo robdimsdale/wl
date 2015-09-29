@@ -57,6 +57,7 @@ type Client interface {
 	UpdateSubtask(subtask Subtask) (Subtask, error)
 	DeleteSubtask(subtask Subtask) error
 
+	Reminders() ([]Reminder, error)
 	RemindersForListID(listID uint) ([]Reminder, error)
 	RemindersForTaskID(taskID uint) ([]Reminder, error)
 	Reminder(reminderID uint) (Reminder, error)

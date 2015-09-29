@@ -288,26 +288,6 @@ var _ = Describe("basic task functionality", func() {
 			return client.DeleteSubtask(subtask)
 		}).Should(Succeed())
 	})
-
-	It("can perform reminder CRUD", func() {
-		var reminder wundergo.Reminder
-		reminderDate := "1970-08-30T08:29:46.203Z"
-		createdByDeviceUdid := ""
-		Eventually(func() error {
-			reminder, err = client.CreateReminder(reminderDate, newTask.ID, createdByDeviceUdid)
-			return err
-		}).Should(Succeed())
-
-		reminder.Date = "1971-08-30T08:29:46.203Z"
-		Eventually(func() error {
-			reminder, err = client.UpdateReminder(reminder)
-			return err
-		}).Should(Succeed())
-
-		Eventually(func() error {
-			return client.DeleteReminder(reminder)
-		}).Should(Succeed())
-	})
 })
 
 func subtaskContains(subtasks []wundergo.Subtask, subtask wundergo.Subtask) bool {

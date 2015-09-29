@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Reminders gets all tasks for all lists.
+func (c oauthClient) Reminders() ([]wundergo.Reminder, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	remindersChan := make(chan []wundergo.Reminder, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"tasks - getting tasks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			reminders, err := c.RemindersForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			remindersChan <- reminders
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"tasks - error received getting tasks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalReminders := []wundergo.Reminder{}
+	for i := 0; i < listCount; i++ {
+		reminders := <-remindersChan
+		totalReminders = append(totalReminders, reminders...)
+	}
+
+	return totalReminders, nil
+}
+
 // RemindersForListID returns the Reminders for the List associated with the
 // provided listID.
 func (c oauthClient) RemindersForListID(listID uint) ([]wundergo.Reminder, error) {

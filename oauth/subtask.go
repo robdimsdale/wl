@@ -18,7 +18,7 @@ func (c oauthClient) Subtasks() ([]wundergo.Subtask, error) {
 
 	listCount := len(lists)
 	c.logger.Debug(
-		"tasks",
+		"subtasks",
 		map[string]interface{}{"listCount": listCount},
 	)
 
@@ -27,7 +27,7 @@ func (c oauthClient) Subtasks() ([]wundergo.Subtask, error) {
 	for _, l := range lists {
 		go func(list wundergo.List) {
 			c.logger.Debug(
-				"tasks - getting tasks for list",
+				"subtasks - getting subtasks for list",
 				map[string]interface{}{"listID": list.ID},
 			)
 			subtasks, err := c.SubtasksForListID(list.ID)
@@ -41,7 +41,7 @@ func (c oauthClient) Subtasks() ([]wundergo.Subtask, error) {
 		idErr := <-idErrChan
 		if idErr.err != nil {
 			c.logger.Debug(
-				"tasks - error received getting tasks for list",
+				"subtasks - error received getting subtasks for list",
 				map[string]interface{}{"listID": idErr.id, "err": err},
 			)
 			e.addError(idErr)
