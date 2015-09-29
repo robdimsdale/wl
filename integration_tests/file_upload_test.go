@@ -161,9 +161,11 @@ var _ = Describe("basic upload and file functionality", func() {
 			By("Validating the file is present in a list of all files")
 			Expect(file.TaskID).To(Equal(task.ID))
 
-			Eventually(func() (bool, error) {
-				allFiles, err := client.Files()
-				return fileContains(allFiles, file), err
+			Eventually(func() bool {
+				// It is statistically probable that one of the lists will
+				// be deleted, so we ignore error here.
+				allFiles, _ := client.Files()
+				return fileContains(allFiles, file)
 			}).Should(BeTrue())
 
 			By("Validating the file can be destroyed successfully")
