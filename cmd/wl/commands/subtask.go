@@ -67,6 +67,30 @@ var (
 			))
 		},
 	}
+
+	cmdUpdateSubtask = &cobra.Command{
+		Use:   "update-subtask",
+		Short: "updates a subtask with the specified args",
+		Long: `update-subtask obtains the current state of the subtask,
+and updates fields with the provided flags.
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			subtask, err := subtask(cmd, args)
+			if err != nil {
+				handleError(err)
+			}
+
+			if cmd.Flags().Changed(titleLongFlag) {
+				subtask.Title = title
+			}
+
+			if cmd.Flags().Changed(completedLongFlag) {
+				subtask.Completed = completed
+			}
+
+			renderOutput(newClient(cmd).UpdateSubtask(subtask))
+		},
+	}
 )
 
 func init() {
@@ -77,6 +101,9 @@ func init() {
 	cmdCreateSubtask.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "id of task to which subtask belongs")
 	cmdCreateSubtask.Flags().BoolVar(&completed, completedLongFlag, false, "whether subtask is completed")
 	cmdCreateSubtask.Flags().StringVar(&title, titleLongFlag, "", "subtask title")
+
+	cmdUpdateSubtask.Flags().BoolVar(&completed, completedLongFlag, false, "whether subtask is completed")
+	cmdUpdateSubtask.Flags().StringVar(&title, titleLongFlag, "", "subtask title")
 }
 
 func subtask(cmd *cobra.Command, args []string) (wundergo.Subtask, error) {
