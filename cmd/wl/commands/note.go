@@ -36,6 +36,28 @@ var (
 			renderOutput(note(cmd, args))
 		},
 	}
+
+	cmdDeleteNote = &cobra.Command{
+		Use:   "delete-note <note-id>",
+		Short: "deletes the note for the provided note id",
+		Long: `delete-note deletes the note specified by <note-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			note, err := note(cmd, args)
+			if err != nil {
+				fmt.Printf("error getting note: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = newClient(cmd).DeleteNote(note)
+			if err != nil {
+				handleError(err)
+			}
+
+			fmt.Printf("note %d deleted successfully\n", note.ID)
+		},
+	}
 )
 
 func init() {

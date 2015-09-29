@@ -110,6 +110,7 @@ func addCommands() {
 
 	WundergoCmd.AddCommand(cmdNotes)
 	WundergoCmd.AddCommand(cmdNote)
+	WundergoCmd.AddCommand(cmdDeleteNote)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {
