@@ -1,6 +1,13 @@
 package commands
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"os"
+	"strconv"
+
+	"github.com/robdimsdale/wundergo"
+	"github.com/spf13/cobra"
+)
 
 var (
 	// Commands
@@ -37,6 +44,16 @@ var (
 		},
 	}
 
+	cmdSubtask = &cobra.Command{
+		Use:   "subtask <subtask-id>",
+		Short: "gets the subtask for the provided subtask id",
+		Long: `subtask gets a subtask specified by <subtask-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			renderOutput(subtask(cmd, args))
+		},
+	}
+
 	cmdCreateSubtask = &cobra.Command{
 		Use:   "create-subtask",
 		Short: "creates a subtask with the specified args",
@@ -60,4 +77,22 @@ func init() {
 	cmdCreateSubtask.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "id of task to which subtask belongs")
 	cmdCreateSubtask.Flags().BoolVar(&completed, completedLongFlag, false, "whether subtask is completed")
 	cmdCreateSubtask.Flags().StringVar(&title, titleLongFlag, "", "subtask title")
+}
+
+func subtask(cmd *cobra.Command, args []string) (wundergo.Subtask, error) {
+	if len(args) != 1 {
+		fmt.Printf("incorrect number of arguments provided\n\n")
+		cmd.Usage()
+		os.Exit(2)
+	}
+
+	idInt, err := strconv.Atoi(args[0])
+	if err != nil {
+		fmt.Printf("error parsing subtaskID: %v\n\n", err)
+		cmd.Usage()
+		os.Exit(2)
+	}
+	id := uint(idInt)
+
+	return newClient(cmd).Subtask(id)
 }
