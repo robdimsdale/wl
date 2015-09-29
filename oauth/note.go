@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Notes gets all tasks for all lists.
+func (c oauthClient) Notes() ([]wundergo.Note, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"tasks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	notesChan := make(chan []wundergo.Note, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"notes - getting notes for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			notes, err := c.NotesForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			notesChan <- notes
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"notes - error received getting notes for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalNotes := []wundergo.Note{}
+	for i := 0; i < listCount; i++ {
+		notes := <-notesChan
+		totalNotes = append(totalNotes, notes...)
+	}
+
+	return totalNotes, nil
+}
+
 // NotesForListID returns Notes for the provided listID.
 func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
 	if listID == 0 {

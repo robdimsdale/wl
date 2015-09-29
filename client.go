@@ -15,6 +15,7 @@ type Client interface {
 	DeleteAllLists() error
 	Inbox() (List, error)
 
+	Notes() ([]Note, error)
 	NotesForListID(listID uint) ([]Note, error)
 	NotesForTaskID(taskID uint) ([]Note, error)
 	Note(noteID uint) (Note, error)
