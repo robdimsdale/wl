@@ -45,25 +45,29 @@ var _ = Describe("basic task comment functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			newTask, err = client.Task(newTask.ID)
+			newTask, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
 			return client.DeleteTask(newTask)
 		}).Should(Succeed())
 
-		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(newList.ID)
+			tasks, err := client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
 		}).Should(BeFalse())
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
+			newList, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
 		Eventually(func() (bool, error) {
-			lists, err = client.Lists()
+			lists, err := client.Lists()
 			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
@@ -74,19 +78,20 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying task comment is present in all task comments")
-		taskComments, err := client.TaskComments()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentsContain(taskComments, taskComment)).To(BeTrue())
+		Eventually(func() (bool, error) {
+			taskComments, err := client.TaskComments()
+			return taskCommentContains(taskComments, taskComment), err
+		}).Should(BeTrue())
 
 		By("Verifying task comment is present in task comments for list")
 		taskCommentsForList, err := client.TaskCommentsForListID(newList.ID)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeTrue())
+		Expect(taskCommentContains(taskCommentsForList, taskComment)).To(BeTrue())
 
 		By("Verifying task comment is present in task comments for task")
 		taskCommentsForTask, err := client.TaskCommentsForTaskID(newTask.ID)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeTrue())
+		Expect(taskCommentContains(taskCommentsForTask, taskComment)).To(BeTrue())
 
 		By("Getting task comment")
 		taskCommentAgain, err := client.TaskComment(taskComment.ID)
@@ -100,24 +105,20 @@ var _ = Describe("basic task comment functionality", func() {
 		By("Verifying task comment is not present in task comments for list")
 		taskCommentsForList, err = client.TaskCommentsForListID(newList.ID)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentsContain(taskCommentsForList, taskComment)).To(BeFalse())
+		Expect(taskCommentContains(taskCommentsForList, taskComment)).To(BeFalse())
 
 		By("Verifying task comment is not present in task comments for task")
 		taskCommentsForTask, err = client.TaskCommentsForTaskID(newTask.ID)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentsContain(taskCommentsForTask, taskComment)).To(BeFalse())
-
-		By("Deleting task (and hence associated subtasks)")
-		Eventually(func() error {
-			task, err = client.Task(newTask.ID)
-			return client.DeleteTask(task)
-		}).Should(Succeed())
-
-		By("Verifying task is not present in tasks for list")
-		var tasks []wundergo.Task
-		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(newList.ID)
-			return taskContains(tasks, task), err
-		}).Should(BeFalse())
+		Expect(taskCommentContains(taskCommentsForTask, taskComment)).To(BeFalse())
 	})
 })
+
+func taskCommentContains(taskComments []wundergo.TaskComment, taskComment wundergo.TaskComment) bool {
+	for _, t := range taskComments {
+		if t.ID == taskComment.ID {
+			return true
+		}
+	}
+	return false
+}

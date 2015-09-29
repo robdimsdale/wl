@@ -75,15 +75,6 @@ func positionContainsValue(position wundergo.Position, id uint) bool {
 	return false
 }
 
-func taskCommentsContain(taskComments []wundergo.TaskComment, taskComment wundergo.TaskComment) bool {
-	for _, t := range taskComments {
-		if t.ID == taskComment.ID {
-			return true
-		}
-	}
-	return false
-}
-
 var _ = BeforeSuite(func() {
 	By("Compiling binary")
 	var err error

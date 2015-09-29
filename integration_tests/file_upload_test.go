@@ -20,17 +20,20 @@ var _ = Describe("basic upload and file functionality", func() {
 		contentType    string
 		md5sum         string
 
-		firstList wundergo.List
-		task      wundergo.Task
+		newList wundergo.List
+		task    wundergo.Task
 	)
 
 	BeforeEach(func() {
 		var err error
 
-		By("Creating random remote file name")
+		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
-		remoteFileName = uuid1.String()
+		newListTitle := uuid1.String()
+
+		newList, err = client.CreateList(newListTitle)
+		Expect(err).NotTo(HaveOccurred())
 
 		By("Creating a task")
 		var lists []wundergo.List
@@ -38,7 +41,6 @@ var _ = Describe("basic upload and file functionality", func() {
 			lists, err = client.Lists()
 			return err
 		}).Should(Succeed())
-		firstList = lists[0]
 
 		uuid2, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
@@ -47,7 +49,7 @@ var _ = Describe("basic upload and file functionality", func() {
 		Eventually(func() error {
 			task, err = client.CreateTask(
 				newTaskTitle,
-				firstList.ID,
+				newList.ID,
 				0,
 				false,
 				"",
@@ -57,21 +59,40 @@ var _ = Describe("basic upload and file functionality", func() {
 			)
 			return err
 		}).ShouldNot(HaveOccurred())
+
+		By("Creating random remote file name")
+		uuid3, err := uuid.NewV4()
+		Expect(err).NotTo(HaveOccurred())
+		remoteFileName = uuid3.String()
 	})
 
 	AfterEach(func() {
-		var err error
-
 		By("Deleting task")
 		Eventually(func() error {
-			task, err = client.Task(task.ID)
+			task, err := client.Task(task.ID)
+			if err != nil {
+				return err
+			}
 			return client.DeleteTask(task)
 		}).Should(Succeed())
 
-		var tasks []wundergo.Task
 		Eventually(func() (bool, error) {
-			tasks, err = client.TasksForListID(firstList.ID)
+			tasks, err := client.TasksForListID(newList.ID)
 			return taskContains(tasks, task), err
+		}).Should(BeFalse())
+
+		By("Deleting new list")
+		Eventually(func() error {
+			list, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(list)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			lists, err := client.Lists()
+			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
 
@@ -133,7 +154,7 @@ var _ = Describe("basic upload and file functionality", func() {
 
 			By("Validating the file is correctly associated with the list")
 			Eventually(func() (bool, error) {
-				filesForFirstList, err := client.FilesForListID(firstList.ID)
+				filesForFirstList, err := client.FilesForListID(newList.ID)
 				return fileContains(filesForFirstList, file), err
 			}).Should(BeTrue())
 
