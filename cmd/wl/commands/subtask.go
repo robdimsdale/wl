@@ -91,6 +91,28 @@ and updates fields with the provided flags.
 			renderOutput(newClient(cmd).UpdateSubtask(subtask))
 		},
 	}
+
+	cmdDeleteSubtask = &cobra.Command{
+		Use:   "delete-subtask <subtask-id>",
+		Short: "deletes the subtask for the provided subtask id",
+		Long: `delete-subtask deletes the subtask specified by <subtask-id>
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			subtask, err := subtask(cmd, args)
+			if err != nil {
+				fmt.Printf("error getting subtask: %v\n\n", err)
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			err = newClient(cmd).DeleteSubtask(subtask)
+			if err != nil {
+				handleError(err)
+			}
+
+			fmt.Printf("subtask %d deleted successfully\n", subtask.ID)
+		},
+	}
 )
 
 func init() {
