@@ -44,6 +44,7 @@ type folderCreateConfig struct {
 }
 
 // CreateFolder creates a new folder with the provided parameters.
+// title and listIDs must both be non-empty
 func (c oauthClient) CreateFolder(
 	title string,
 	listIDs []uint,
@@ -52,8 +53,8 @@ func (c oauthClient) CreateFolder(
 		return wundergo.Folder{}, errors.New("title must be non-empty")
 	}
 
-	if listIDs == nil {
-		return wundergo.Folder{}, errors.New("listIDs must be non-nil")
+	if listIDs == nil || len(listIDs) == 0 {
+		return wundergo.Folder{}, errors.New("listIDs must be non-nil and non-empty")
 	}
 
 	fcc := folderCreateConfig{

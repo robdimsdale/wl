@@ -208,6 +208,21 @@ var _ = Describe("client - Folder operations", func() {
 			})
 		})
 
+		Context("when listIDs is empty", func() {
+			BeforeEach(func() {
+				listIDs = []uint{}
+			})
+
+			It("returns an error", func() {
+				_, err := client.CreateFolder(
+					title,
+					listIDs,
+				)
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
 		Context("when creating request fails with error", func() {
 			BeforeEach(func() {
 				client = oauth.NewClient("", "", "", testLogger)

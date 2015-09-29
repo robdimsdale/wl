@@ -4,12 +4,21 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
+const (
+	listIDsLongFlag = "listIDs"
+)
+
 var (
+	// Flags
+	listIDs string
+
+	// Commands
 	cmdFolders = &cobra.Command{
 		Use:   "folders",
 		Short: "gets all folders",
@@ -30,6 +39,37 @@ var (
 		},
 	}
 
+	cmdCreateFolder = &cobra.Command{
+		Use:   "create-folder",
+		Short: "creates a folder with the specified args",
+		Long: `create-folder creates a folder with the specified args
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			if listIDs == "" {
+				cmd.Usage()
+				os.Exit(2)
+			}
+
+			splitListIDs := strings.Split(listIDs, ",")
+			listIDsUints := make([]uint, len(splitListIDs))
+
+			for i, s := range splitListIDs {
+				idInt, err := strconv.Atoi(s)
+				if err != nil {
+					fmt.Printf("error parsing listIDs: %v at index %d\n\n", err, i)
+					cmd.Usage()
+					os.Exit(2)
+				}
+				listIDsUints[i] = uint(idInt)
+			}
+
+			renderOutput(newClient(cmd).CreateFolder(
+				title,
+				listIDsUints,
+			))
+		},
+	}
+
 	cmdDeleteAllFolders = &cobra.Command{
 		Use:   "delete-all-folders",
 		Short: "deletes all folders",
@@ -45,6 +85,11 @@ var (
 		},
 	}
 )
+
+func init() {
+	cmdCreateFolder.Flags().StringVar(&title, titleLongFlag, "", "title of folder (required)")
+	cmdCreateFolder.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
+}
 
 func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
 	if len(args) != 1 {
