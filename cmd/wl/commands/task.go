@@ -127,7 +127,6 @@ and updates fields with the provided flags.
 			}
 
 			if cmd.Flags().Changed(starredLongFlag) {
-				fmt.Printf("starred changing from %t to %t\n", task.Starred, starred)
 				task.Starred = starred
 			}
 
