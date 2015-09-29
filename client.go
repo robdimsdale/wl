@@ -98,9 +98,11 @@ type Client interface {
 
 	AvatarURL(userID uint, size int, fallback bool) (string, error)
 
+	Webhooks() ([]Webhook, error)
+	WebhooksForListID(listID uint) ([]Webhook, error)
+	Webhook(webhookID uint) (Webhook, error)
 	CreateWebhook(listID uint, url string, processorType string, configuration string) (Webhook, error)
 	DeleteWebhook(webhook Webhook) error
-	WebhooksForListID(listID uint) ([]Webhook, error)
 
 	Folders() ([]Folder, error)
 	CreateFolder(title string, listIDs []uint) (Folder, error)

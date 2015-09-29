@@ -122,6 +122,11 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdSubtask)
 	WundergoCmd.AddCommand(cmdUpdateSubtask)
 	WundergoCmd.AddCommand(cmdDeleteSubtask)
+
+	WundergoCmd.AddCommand(cmdWebhooks)
+	WundergoCmd.AddCommand(cmdWebhook)
+	WundergoCmd.AddCommand(cmdCreateWebhook)
+	WundergoCmd.AddCommand(cmdDeleteWebhook)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {

@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// Webhooks gets all webhooks for all lists.
+func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"webhooks",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	webhooksChan := make(chan []wundergo.Webhook, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"webhooks - getting webhooks for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			webhooks, err := c.WebhooksForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			webhooksChan <- webhooks
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"webhooks - error received getting webhooks for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	if len(e.errors()) > 0 {
+		return nil, e
+	}
+
+	totalWebhooks := []wundergo.Webhook{}
+	for i := 0; i < listCount; i++ {
+		webhooks := <-webhooksChan
+		totalWebhooks = append(totalWebhooks, webhooks...)
+	}
+
+	return totalWebhooks, nil
+}
+
 // WebhooksForListID returns Webhooks for the provided listID.
 func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) {
 	if listID == 0 {
@@ -41,6 +93,21 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 		return nil, err
 	}
 	return webhooks, nil
+}
+
+// Webhook returns the Webhook for the corresponding webhookID.
+func (c oauthClient) Webhook(webhookID uint) (wundergo.Webhook, error) {
+	allWebhooks, err := c.Webhooks()
+	if err != nil {
+		return wundergo.Webhook{}, err
+	}
+	for _, w := range allWebhooks {
+		if w.ID == webhookID {
+			return w, nil
+		}
+	}
+
+	return wundergo.Webhook{}, fmt.Errorf("webhook not found")
 }
 
 // CreateWebhook creates a new webhook with the provided parameters.
