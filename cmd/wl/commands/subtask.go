@@ -36,10 +36,28 @@ var (
 			}
 		},
 	}
+
+	cmdCreateSubtask = &cobra.Command{
+		Use:   "create-subtask",
+		Short: "creates a subtask with the specified args",
+		Long: `create-subtask creates a subtask with the specified args
+        `,
+		Run: func(cmd *cobra.Command, args []string) {
+			renderOutput(newClient(cmd).CreateSubtask(
+				title,
+				taskID,
+				completed,
+			))
+		},
+	}
 )
 
 func init() {
 	cmdSubtasks.Flags().UintVarP(&listID, listIDLongFlag, listIDShortFlag, 0, "filter by listID")
 	cmdSubtasks.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "filter by taskID")
 	cmdSubtasks.Flags().BoolVar(&completed, completedLongFlag, false, "filter for completed tasks")
+
+	cmdCreateSubtask.Flags().UintVarP(&taskID, taskIDLongFlag, taskIDShortFlag, 0, "id of task to which subtask belongs")
+	cmdCreateSubtask.Flags().BoolVar(&completed, completedLongFlag, false, "whether subtask is completed")
+	cmdCreateSubtask.Flags().StringVar(&title, titleLongFlag, "", "subtask title")
 }
