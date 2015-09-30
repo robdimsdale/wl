@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// SubtaskPositions gets all subtask positions for all lists.
+func (c oauthClient) SubtaskPositions() ([]wundergo.Position, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"subtaskPositions",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	subtaskPositionsChan := make(chan []wundergo.Position, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"subtaskPositions - getting subtaskPositions for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			subtaskPositions, err := c.SubtaskPositionsForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			subtaskPositionsChan <- subtaskPositions
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"subtaskPositions - error received getting subtaskPositions for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	totalSubtaskPositions := []wundergo.Position{}
+	for i := 0; i < listCount; i++ {
+		subtaskPositions := <-subtaskPositionsChan
+		totalSubtaskPositions = append(totalSubtaskPositions, subtaskPositions...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalSubtaskPositions, e
+	}
+
+	return totalSubtaskPositions, nil
+}
+
 // SubtaskPositionsForListID returns the positions of all Subtasks in the List
 // associated with the provided listID.
 // The returned SubtaskPosition.Values might be empty if the Subtasks have never been reordered.

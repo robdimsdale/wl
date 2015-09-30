@@ -78,6 +78,7 @@ type Client interface {
 	TaskPosition(taskPositionID uint) (Position, error)
 	UpdateTaskPosition(taskPosition Position) (Position, error)
 
+	SubtaskPositions() ([]Position, error)
 	SubtaskPositionsForListID(listID uint) ([]Position, error)
 	SubtaskPositionsForTaskID(taskID uint) ([]Position, error)
 	SubtaskPosition(subtaskPositionID uint) (Position, error)

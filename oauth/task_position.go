@@ -9,7 +9,7 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
-// TaskPositions gets all tasks for all lists.
+// TaskPositions gets all task positions for all lists.
 func (c oauthClient) TaskPositions() ([]wundergo.Position, error) {
 	lists, err := c.Lists()
 	if err != nil {
