@@ -232,6 +232,7 @@ func splitStringToUints(input string) ([]uint, error) {
 	splitUints := make([]uint, len(split))
 
 	for i, s := range split {
+		s = strings.TrimSpace(s)
 		idInt, err := strconv.Atoi(s)
 		if err != nil {
 			return nil, fmt.Errorf("%v at index %d", err, i)
