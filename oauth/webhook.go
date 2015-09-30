@@ -98,12 +98,9 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 // Webhook returns the Webhook for the corresponding webhookID.
 func (c oauthClient) Webhook(webhookID uint) (wundergo.Webhook, error) {
 	allWebhooks, err := c.Webhooks()
-	if err != nil {
-		return wundergo.Webhook{}, err
-	}
 	for _, w := range allWebhooks {
 		if w.ID == webhookID {
-			return w, nil
+			return w, err
 		}
 	}
 
