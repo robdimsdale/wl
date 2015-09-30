@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 
@@ -39,6 +41,8 @@ const (
 	titleLongFlag = "title"
 
 	completedLongFlag = "completed"
+
+	listIDsLongFlag = "listIDs"
 )
 
 var (
@@ -53,6 +57,7 @@ var (
 	listID    uint
 	title     string
 	completed bool
+	listIDs   string
 
 	// WundergoCmd is the root command. All other commands are subcommands of it.
 	WundergoCmd = &cobra.Command{Use: "wl"}
@@ -145,6 +150,10 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdAcceptMembership)
 	WundergoCmd.AddCommand(cmdRemoveMembership)
 	WundergoCmd.AddCommand(cmdInviteMember)
+
+	WundergoCmd.AddCommand(cmdListPositions)
+	WundergoCmd.AddCommand(cmdListPosition)
+	WundergoCmd.AddCommand(cmdUpdateListPosition)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {
@@ -208,4 +217,19 @@ func renderOutput(output interface{}, err error) {
 	data = bytes.Replace(data, []byte("\\u0026"), []byte("&"), -1)
 
 	fmt.Printf("%s", string(data))
+}
+
+func splitStringToUints(input string) ([]uint, error) {
+	split := strings.Split(input, ",")
+	splitUints := make([]uint, len(split))
+
+	for i, s := range split {
+		idInt, err := strconv.Atoi(s)
+		if err != nil {
+			return nil, fmt.Errorf("%v at index %d", err, i)
+		}
+		splitUints[i] = uint(idInt)
+	}
+
+	return splitUints, nil
 }

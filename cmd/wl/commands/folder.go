@@ -4,20 +4,12 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
-const (
-	listIDsLongFlag = "listIDs"
-)
-
 var (
-	// Flags
-	listIDs string
-
 	// Commands
 	cmdFolders = &cobra.Command{
 		Use:   "folders",
@@ -155,19 +147,4 @@ func folder(cmd *cobra.Command, args []string) (wundergo.Folder, error) {
 	id := uint(idInt)
 
 	return newClient(cmd).Folder(id)
-}
-
-func splitStringToUints(input string) ([]uint, error) {
-	split := strings.Split(input, ",")
-	splitUints := make([]uint, len(split))
-
-	for i, s := range split {
-		idInt, err := strconv.Atoi(s)
-		if err != nil {
-			return nil, fmt.Errorf("%v at index %d", err, i)
-		}
-		splitUints[i] = uint(idInt)
-	}
-
-	return splitUints, nil
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/robdimsdale/wundergo"
 	"github.com/spf13/cobra"
 )
 
@@ -26,23 +27,7 @@ var (
 		Long: `list gets a list specified by <list-id>
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing listID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			renderOutput(newClient(cmd).List(
-				id,
-			))
+			renderOutput(list(cmd, args))
 		},
 	}
 
@@ -73,22 +58,7 @@ var (
 and updates fields with the provided flags.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing listID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			client := newClient(cmd)
-			list, err := client.List(id)
+			list, err := list(cmd, args)
 			if err != nil {
 				fmt.Printf("error getting list: %v\n\n", err)
 				cmd.Usage()
@@ -98,7 +68,8 @@ and updates fields with the provided flags.
 			if title != "" {
 				list.Title = title
 			}
-			renderOutput(client.UpdateList(list))
+
+			renderOutput(newClient(cmd).UpdateList(list))
 		},
 	}
 
@@ -108,34 +79,19 @@ and updates fields with the provided flags.
 		Long: `delete-list deletes the list specified by <list-id>
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing listID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			client := newClient(cmd)
-			list, err := client.List(id)
+			list, err := list(cmd, args)
 			if err != nil {
 				fmt.Printf("error getting list: %v\n\n", err)
 				cmd.Usage()
 				os.Exit(2)
 			}
 
-			err = client.DeleteList(list)
+			err = newClient(cmd).DeleteList(list)
 			if err != nil {
 				handleError(err)
 			}
 
-			fmt.Printf("list %d deleted successfully\n", id)
+			fmt.Printf("list %d deleted successfully\n", list.ID)
 		},
 	}
 
@@ -159,4 +115,22 @@ and updates fields with the provided flags.
 
 func init() {
 	cmdUpdateList.Flags().StringVar(&title, titleLongFlag, "", "title of list")
+}
+
+func list(cmd *cobra.Command, args []string) (wundergo.List, error) {
+	if len(args) != 1 {
+		fmt.Printf("incorrect number of arguments provided\n\n")
+		cmd.Usage()
+		os.Exit(2)
+	}
+
+	idInt, err := strconv.Atoi(args[0])
+	if err != nil {
+		fmt.Printf("error parsing list ID: %v\n\n", err)
+		cmd.Usage()
+		os.Exit(2)
+	}
+	id := uint(idInt)
+
+	return newClient(cmd).List(id)
 }
