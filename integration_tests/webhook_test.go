@@ -80,12 +80,12 @@ var _ = Describe("basic webhook functionality", func() {
 
 		By("Validating the new webhook can be retrieved")
 		var aWebhook wundergo.Webhook
-		Eventually(func() error {
-			aWebhook, err = client.Webhook(newWebhook.ID)
-			return err
-		}).Should(Succeed())
-
-		Expect(aWebhook.ID).To(Equal(newWebhook.ID))
+		Eventually(func() uint {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			aWebhook, _ = client.Webhook(newWebhook.ID)
+			return aWebhook.ID
+		}).Should(Equal(newWebhook.ID))
 		Expect(aWebhook.URL).To(Equal(newWebhook.URL))
 
 		By("Deleting the new webhook")
@@ -93,9 +93,11 @@ var _ = Describe("basic webhook functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Validating the new webhook is not present in list")
-		Eventually(func() (bool, error) {
-			webhooks, err := client.WebhooksForListID(newList.ID)
-			return webhooksContain(webhooks, newWebhook), err
+		Eventually(func() bool {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			webhooks, _ := client.WebhooksForListID(newList.ID)
+			return webhooksContain(webhooks, newWebhook)
 		}).Should(BeFalse())
 	})
 })
