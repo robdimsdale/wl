@@ -154,6 +154,10 @@ func addCommands() {
 	WundergoCmd.AddCommand(cmdListPositions)
 	WundergoCmd.AddCommand(cmdListPosition)
 	WundergoCmd.AddCommand(cmdUpdateListPosition)
+
+	WundergoCmd.AddCommand(cmdTaskPositions)
+	WundergoCmd.AddCommand(cmdTaskPosition)
+	WundergoCmd.AddCommand(cmdUpdateTaskPosition)
 }
 
 func newClient(cmd *cobra.Command) wundergo.Client {

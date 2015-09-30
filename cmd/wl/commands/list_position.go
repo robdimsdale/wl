@@ -27,21 +27,7 @@ var (
 		Long: `list-position gets a list-position specified by <list-position-id>
         `,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) != 1 {
-				fmt.Printf("incorrect number of arguments provided\n\n")
-				cmd.Usage()
-				os.Exit(2)
-			}
-
-			idInt, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Printf("error parsing listID: %v\n\n", err)
-				cmd.Usage()
-				os.Exit(2)
-			}
-			id := uint(idInt)
-
-			renderOutput(newClient(cmd).ListPosition(id))
+			renderOutput(listPosition(cmd, args))
 		},
 	}
 

@@ -73,6 +73,7 @@ type Client interface {
 	ListPosition(listPositionID uint) (Position, error)
 	UpdateListPosition(listPosition Position) (Position, error)
 
+	TaskPositions() ([]Position, error)
 	TaskPositionsForListID(listID uint) ([]Position, error)
 	TaskPosition(taskPositionID uint) (Position, error)
 	UpdateTaskPosition(taskPosition Position) (Position, error)

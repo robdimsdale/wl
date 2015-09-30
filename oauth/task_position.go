@@ -9,6 +9,58 @@ import (
 	"github.com/robdimsdale/wundergo"
 )
 
+// TaskPositions gets all tasks for all lists.
+func (c oauthClient) TaskPositions() ([]wundergo.Position, error) {
+	lists, err := c.Lists()
+	if err != nil {
+		return nil, err
+	}
+
+	listCount := len(lists)
+	c.logger.Debug(
+		"taskPositions",
+		map[string]interface{}{"listCount": listCount},
+	)
+
+	taskPositionsChan := make(chan []wundergo.Position, listCount)
+	idErrChan := make(chan idErr, listCount)
+	for _, l := range lists {
+		go func(list wundergo.List) {
+			c.logger.Debug(
+				"taskPositions - getting taskPositions for list",
+				map[string]interface{}{"listID": list.ID},
+			)
+			taskPositions, err := c.TaskPositionsForListID(list.ID)
+			idErrChan <- idErr{idType: "list", id: list.ID, err: err}
+			taskPositionsChan <- taskPositions
+		}(l)
+	}
+
+	e := multiIDErr{}
+	for i := 0; i < listCount; i++ {
+		idErr := <-idErrChan
+		if idErr.err != nil {
+			c.logger.Debug(
+				"taskPositions - error received getting taskPositions for list",
+				map[string]interface{}{"listID": idErr.id, "err": err},
+			)
+			e.addError(idErr)
+		}
+	}
+
+	totalTaskPositions := []wundergo.Position{}
+	for i := 0; i < listCount; i++ {
+		taskPositions := <-taskPositionsChan
+		totalTaskPositions = append(totalTaskPositions, taskPositions...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalTaskPositions, e
+	}
+
+	return totalTaskPositions, nil
+}
+
 // TaskPositionsForListID returns the positions of all Tasks in the List
 // associated with the provided listID.
 // The returned TaskPosition.Values might be empty if the Tasks have never been reordered.
