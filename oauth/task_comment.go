@@ -48,14 +48,14 @@ func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
 		}
 	}
 
-	if len(e.errors()) > 0 {
-		return nil, e
-	}
-
 	totalTaskComments := []wundergo.TaskComment{}
 	for i := 0; i < listCount; i++ {
 		taskComments := <-taskCommentsChan
 		totalTaskComments = append(totalTaskComments, taskComments...)
+	}
+
+	if len(e.errors()) > 0 {
+		return totalTaskComments, e
 	}
 
 	return totalTaskComments, nil
