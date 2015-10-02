@@ -1,16 +1,16 @@
 ---
 resources:
-- name: wundergo
+- name: wl
   type: git
   source:
-    uri: git@github.com:robdimsdale/wundergo
+    uri: git@github.com:robdimsdale/wl
     branch: develop
     private_key: {{private-key}}
 
-- name: wundergo-master
+- name: wl-master
   type: git
   source:
-    uri: git@github.com:robdimsdale/wundergo
+    uri: git@github.com:robdimsdale/wl
     branch: master
     private_key: {{private-key}}
 
@@ -21,10 +21,10 @@ resources:
     branch: master
     private_key: {{homebrew-tap-private-key}}
 
-- name: wundergo-develop-docker
+- name: wl-develop-docker
   type: git
   source:
-    uri: git@github.com:robdimsdale/wundergo
+    uri: git@github.com:robdimsdale/wl
     branch: develop
     private_key: {{private-key}}
     paths:
@@ -52,7 +52,7 @@ resources:
 - name: version
   type: semver
   source:
-    bucket: wundergo-releases
+    bucket: wl-releases
     key: current-version
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
@@ -60,24 +60,24 @@ resources:
 - name: wl-release-linux-amd64
   type: s3
   source:
-    bucket: wundergo-releases
-    regexp: wundergo-linux-amd64-(.*)
+    bucket: wl-releases
+    regexp: wl-linux-amd64-(.*)
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
 - name: wl-release-darwin-amd64
   type: s3
   source:
-    bucket: wundergo-releases
-    regexp: wundergo-darwin-amd64-(.*)
+    bucket: wl-releases
+    regexp: wl-darwin-amd64-(.*)
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
 - name: wl-release-windows-amd64
   type: s3
   source:
-    bucket: wundergo-releases
-    regexp: wundergo-windows-amd64-(.*)
+    bucket: wl-releases
+    regexp: wl-windows-amd64-(.*)
     access_key_id: {{pipeline-bucket-access-key}}
     secret_access_key: {{pipeline-bucket-secret-key}}
 
@@ -85,37 +85,37 @@ resources:
   type: github-release
   source:
     access_token: {{github-release-access-token}}
-    repository: wundergo
+    repository: wl
     user: robdimsdale
 
-- name: docker-wundergo-1.2
+- name: docker-wl-1.2
   type: docker-image
   source:
-    repository: robdimsdale/wundergo-1.2
+    repository: robdimsdale/wl-1.2
     username: {{docker-username}}
     password: {{docker-password}}
     email: {{docker-email}}
 
-- name: docker-wundergo-1.3
+- name: docker-wl-1.3
   type: docker-image
   source:
-    repository: robdimsdale/wundergo-1.3
+    repository: robdimsdale/wl-1.3
     username: {{docker-username}}
     password: {{docker-password}}
     email: {{docker-email}}
 
-- name: docker-wundergo-1.4
+- name: docker-wl-1.4
   type: docker-image
   source:
-    repository: robdimsdale/wundergo-1.4
+    repository: robdimsdale/wl-1.4
     username: {{docker-username}}
     password: {{docker-password}}
     email: {{docker-email}}
 
-- name: docker-wundergo-1.5
+- name: docker-wl-1.5
   type: docker-image
   source:
-    repository: robdimsdale/wundergo-1.5
+    repository: robdimsdale/wl-1.5
     username: {{docker-username}}
     password: {{docker-password}}
     email: {{docker-email}}
@@ -126,16 +126,16 @@ jobs:
   plan:
   - do:
     - aggregate:
-      - get: wundergo
+      - get: wl
         trigger: true
       - get: time-trigger
         trigger: true
-      - get: docker-wundergo-1.2
+      - get: docker-wl-1.2
         trigger: true
-        passed: [docker-wundergo-1.2]
+        passed: [docker-wl-1.2]
         params: {skip_download: true}
     - task: unit-integration-tests
-      file: wundergo/scripts/ci/golang-1.2/unit-integration-tests.yml
+      file: wl/scripts/ci/golang-1.2/unit-integration-tests.yml
       config:
         params:
           WL_ACCESS_TOKEN: {{wl-access-token}}
@@ -153,16 +153,16 @@ jobs:
   plan:
   - do:
     - aggregate:
-      - get: wundergo
+      - get: wl
         trigger: true
       - get: time-trigger
         trigger: true
-      - get: docker-wundergo-1.3
+      - get: docker-wl-1.3
         trigger: true
-        passed: [docker-wundergo-1.3]
+        passed: [docker-wl-1.3]
         params: {skip_download: true}
     - task: unit-integration-tests
-      file: wundergo/scripts/ci/golang-1.3/unit-integration-tests.yml
+      file: wl/scripts/ci/golang-1.3/unit-integration-tests.yml
       config:
         params:
           WL_ACCESS_TOKEN: {{wl-access-token}}
@@ -180,16 +180,16 @@ jobs:
   plan:
   - do:
     - aggregate:
-      - get: wundergo
+      - get: wl
         trigger: true
       - get: time-trigger
         trigger: true
-      - get: docker-wundergo-1.4
+      - get: docker-wl-1.4
         trigger: true
-        passed: [docker-wundergo-1.4]
+        passed: [docker-wl-1.4]
         params: {skip_download: true}
     - task: unit-integration-tests
-      file: wundergo/scripts/ci/golang-1.4/unit-integration-tests.yml
+      file: wl/scripts/ci/golang-1.4/unit-integration-tests.yml
       config:
         params:
           WL_ACCESS_TOKEN: {{wl-access-token}}
@@ -207,16 +207,16 @@ jobs:
   plan:
   - do:
     - aggregate:
-      - get: wundergo
+      - get: wl
         trigger: true
       - get: time-trigger
         trigger: true
-      - get: docker-wundergo-1.5
+      - get: docker-wl-1.5
         trigger: true
-        passed: [docker-wundergo-1.5]
+        passed: [docker-wl-1.5]
         params: {skip_download: true}
     - task: unit-integration-tests
-      file: wundergo/scripts/ci/golang-1.5/unit-integration-tests.yml
+      file: wl/scripts/ci/golang-1.5/unit-integration-tests.yml
       config:
         params:
           WL_ACCESS_TOKEN: {{wl-access-token}}
@@ -235,7 +235,7 @@ jobs:
   plan:
   - do:
     - aggregate:
-      - get: wundergo
+      - get: wl
         passed: [golang-1.2,golang-1.3,golang-1.4,golang-1.5]
         trigger: true
       - get: version
@@ -243,15 +243,15 @@ jobs:
         trigger: true
     - aggregate:
       - task: create-wl-release-candidate-linux-amd64
-        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        file: wl/scripts/ci/create-wl-release-candidate.yml
         config:
           params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
       - task: create-wl-release-candidate-darwin-amd64
-        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        file: wl/scripts/ci/create-wl-release-candidate.yml
         config:
           params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
       - task: create-wl-release-candidate-windows-amd64
-        file: wundergo/scripts/ci/create-wl-release-candidate.yml
+        file: wl/scripts/ci/create-wl-release-candidate.yml
         config:
           params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
     - aggregate:
@@ -259,7 +259,7 @@ jobs:
         params: {file: version/number}
       - put: tracker
         params:
-          repos: [wundergo]
+          repos: [wl]
       - put: wl-release-linux-amd64
         params: {from: create-wl-release-candidate-linux-amd64/wl-linux-(.*)}
       - put: wl-release-darwin-amd64
@@ -286,7 +286,7 @@ jobs:
   public: false
   plan:
   - aggregate:
-    - get: wundergo
+    - get: wl
       passed: [rc]
     - get: version
       passed: [rc]
@@ -299,23 +299,23 @@ jobs:
       passed: [rc]
   - aggregate:
     - task: finalize-wl-release-linux-amd64
-      file: wundergo/scripts/ci/finalize-wl-release.yml
+      file: wl/scripts/ci/finalize-wl-release.yml
       config:
         params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
     - task: finalize-wl-release-darwin-amd64
-      file: wundergo/scripts/ci/finalize-wl-release.yml
+      file: wl/scripts/ci/finalize-wl-release.yml
       config:
         params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
     - task: finalize-wl-release-windows-amd64
-      file: wundergo/scripts/ci/finalize-wl-release.yml
+      file: wl/scripts/ci/finalize-wl-release.yml
       config:
         params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
   - aggregate:
     - put: version
       params: {file: version/number}
-    - put: wundergo-master
+    - put: wl-master
       params:
-        repository: wundergo
+        repository: wl
         tag: version/number
         tag_prefix: v
     - put: wl-release-linux-amd64
@@ -328,10 +328,10 @@ jobs:
 - name: github-release
   plan:
   - aggregate:
-    - get: wundergo
+    - get: wl
       passed: [shipit]
       trigger: true
-    - get: wundergo-master
+    - get: wl-master
       passed: [shipit]
       trigger: true
     - get: wl-release-linux-amd64
@@ -344,7 +344,7 @@ jobs:
       passed: [shipit]
       trigger: true
   - task: most-recent-tag
-    file: wundergo/scripts/ci/most-recent-tag.yml
+    file: wl/scripts/ci/most-recent-tag.yml
   - put: github-release
     params:
       name: most-recent-tag/tagname
@@ -357,7 +357,7 @@ jobs:
 - name: homebrew
   plan:
   - aggregate:
-    - get: wundergo
+    - get: wl
       passed: [github-release]
       trigger: true
     - get: homebrew-tap
@@ -365,7 +365,7 @@ jobs:
       passed: [github-release]
       trigger: true
   - task: create-homebrew-formula
-    file: wundergo/scripts/ci/create-homebrew-formula.yml
+    file: wl/scripts/ci/create-homebrew-formula.yml
   - put: homebrew-tap
     params:
       repository: create-homebrew-formula/homebrew-tap
@@ -399,15 +399,15 @@ jobs:
   - put: version
     params: {file: version/number}
 
-- name: docker-wundergo-1.2
+- name: docker-wl-1.2
   plan:
   - do:
-    - get: wundergo
-      resource: wundergo-develop-docker
+    - get: wl
+      resource: wl-develop-docker
       trigger: true
-    - put: docker-wundergo-1.2
+    - put: docker-wl-1.2
       params:
-        build: wundergo/scripts/ci/golang-1.2
+        build: wl/scripts/ci/golang-1.2
         cache: true
     on_failure:
       put: slack-alert
@@ -417,15 +417,15 @@ jobs:
         channel: {{slack-channel}}
         text: {{docker-1-2-slack-failure-text}}
 
-- name: docker-wundergo-1.3
+- name: docker-wl-1.3
   plan:
   - do:
-    - get: wundergo
-      resource: wundergo-develop-docker
+    - get: wl
+      resource: wl-develop-docker
       trigger: true
-    - put: docker-wundergo-1.3
+    - put: docker-wl-1.3
       params:
-        build: wundergo/scripts/ci/golang-1.3
+        build: wl/scripts/ci/golang-1.3
         cache: true
     on_failure:
       put: slack-alert
@@ -435,15 +435,15 @@ jobs:
         channel: {{slack-channel}}
         text: {{docker-1-3-slack-failure-text}}
 
-- name: docker-wundergo-1.4
+- name: docker-wl-1.4
   plan:
   - do:
-    - get: wundergo
-      resource: wundergo-develop-docker
+    - get: wl
+      resource: wl-develop-docker
       trigger: true
-    - put: docker-wundergo-1.4
+    - put: docker-wl-1.4
       params:
-        build: wundergo/scripts/ci/golang-1.4
+        build: wl/scripts/ci/golang-1.4
         cache: true
     on_failure:
       put: slack-alert
@@ -453,15 +453,15 @@ jobs:
         channel: {{slack-channel}}
         text: {{docker-1-4-slack-failure-text}}
 
-- name: docker-wundergo-1.5
+- name: docker-wl-1.5
   plan:
   - do:
-    - get: wundergo
-      resource: wundergo-develop-docker
+    - get: wl
+      resource: wl-develop-docker
       trigger: true
-    - put: docker-wundergo-1.5
+    - put: docker-wl-1.5
       params:
-        build: wundergo/scripts/ci/golang-1.5
+        build: wl/scripts/ci/golang-1.5
         cache: true
     on_failure:
       put: slack-alert
@@ -472,7 +472,7 @@ jobs:
         text: {{docker-1-5-slack-failure-text}}
 
 groups:
-- name: wundergo
+- name: wl
   jobs:
   - golang-1.2
   - golang-1.3
@@ -487,7 +487,7 @@ groups:
   - patch
 - name: images
   jobs:
-  - docker-wundergo-1.2
-  - docker-wundergo-1.3
-  - docker-wundergo-1.4
-  - docker-wundergo-1.5
+  - docker-wl-1.2
+  - docker-wl-1.3
+  - docker-wl-1.4
+  - docker-wl-1.5

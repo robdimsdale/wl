@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // FolderRevision contains information about the revision of folder.
 type FolderRevision struct {

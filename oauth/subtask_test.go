@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Subtask operations", func() {
@@ -38,7 +38,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wl.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -164,7 +164,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wl.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -294,7 +294,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wl.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -424,7 +424,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtasks := []wundergo.Subtask{{ID: 2345}}
+				expectedSubtasks := []wl.Subtask{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -550,7 +550,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := wundergo.Subtask{ID: 2345}
+				expectedSubtask := wl.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -690,7 +690,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := wundergo.Subtask{ID: 2345}
+				expectedSubtask := wl.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -792,10 +792,10 @@ var _ = Describe("client - Subtask operations", func() {
 	})
 
 	Describe("updating a subtask", func() {
-		var subtask wundergo.Subtask
+		var subtask wl.Subtask
 
 		BeforeEach(func() {
-			subtask = wundergo.Subtask{ID: 1234, Revision: 23}
+			subtask = wl.Subtask{ID: 1234, Revision: 23}
 		})
 
 		It("performs GET requests with correct headers to /subtasks", func() {
@@ -816,7 +816,7 @@ var _ = Describe("client - Subtask operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedSubtask := wundergo.Subtask{ID: 2345}
+				expectedSubtask := wl.Subtask{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -906,10 +906,10 @@ var _ = Describe("client - Subtask operations", func() {
 	})
 
 	Describe("deleting a subtask", func() {
-		var subtask wundergo.Subtask
+		var subtask wl.Subtask
 
 		BeforeEach(func() {
-			subtask = wundergo.Subtask{ID: 1234, Revision: 23}
+			subtask = wl.Subtask{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /subtask/:id", func() {

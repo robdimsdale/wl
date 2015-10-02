@@ -1,16 +1,16 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic membership functionality", func() {
 	muted := true
 
 	It("can add members via userID", func() {
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() error {
 			l, err := client.Lists()
 			lists = l
@@ -18,7 +18,7 @@ var _ = Describe("basic membership functionality", func() {
 		}).Should(Succeed())
 		list := lists[0]
 
-		var user wundergo.User
+		var user wl.User
 		Eventually(func() error {
 			u, err := client.User()
 			user = u
@@ -35,7 +35,7 @@ var _ = Describe("basic membership functionality", func() {
 	})
 
 	It("can add members via emailAddress", func() {
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() error {
 			l, err := client.Lists()
 			lists = l
@@ -43,7 +43,7 @@ var _ = Describe("basic membership functionality", func() {
 		}).Should(Succeed())
 		list := lists[0]
 
-		var user wundergo.User
+		var user wl.User
 		Eventually(func() error {
 			u, err := client.User()
 			user = u

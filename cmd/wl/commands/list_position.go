@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -64,7 +64,7 @@ func init() {
 	cmdUpdateListPosition.Flags().StringVar(&listIDs, listIDsLongFlag, "", "comma-separated list IDs (required)")
 }
 
-func listPosition(cmd *cobra.Command, args []string) (wundergo.Position, error) {
+func listPosition(cmd *cobra.Command, args []string) (wl.Position, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

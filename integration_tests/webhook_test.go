@@ -1,10 +1,10 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 
 var _ = Describe("basic webhook functionality", func() {
 	var (
-		newList wundergo.List
+		newList wl.List
 	)
 
 	BeforeEach(func() {
@@ -38,7 +38,7 @@ var _ = Describe("basic webhook functionality", func() {
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() (bool, error) {
 			lists, err = client.Lists()
 			return listContains(lists, newList), err
@@ -79,7 +79,7 @@ var _ = Describe("basic webhook functionality", func() {
 		}).Should(BeTrue())
 
 		By("Validating the new webhook can be retrieved")
-		var aWebhook wundergo.Webhook
+		var aWebhook wl.Webhook
 		Eventually(func() uint {
 			// It is statistically probable that one of the lists will
 			// be deleted, so we ignore error here.
@@ -102,7 +102,7 @@ var _ = Describe("basic webhook functionality", func() {
 	})
 })
 
-func webhooksContain(webhooks []wundergo.Webhook, webhook wundergo.Webhook) bool {
+func webhooksContain(webhooks []wl.Webhook, webhook wl.Webhook) bool {
 	for _, w := range webhooks {
 		if w.ID == webhook.ID {
 			return true

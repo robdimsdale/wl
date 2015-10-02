@@ -1,10 +1,10 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic user functionality", func() {
@@ -19,7 +19,7 @@ var _ = Describe("basic user functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Updating user")
-		var updatedUser wundergo.User
+		var updatedUser wl.User
 		user.Name = "test-" + newUserName
 		Eventually(func() error {
 			updatedUser, err = client.UpdateUser(user)

@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/logger"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/logger"
 )
 
-// oauthClient is an implementation of wundergo.Client.
+// oauthClient is an implementation of wl.Client.
 type oauthClient struct {
 	apiURL      string
 	accessToken string
@@ -26,7 +26,7 @@ func NewClient(
 	clientID string,
 	apiURL string,
 	logger logger.Logger,
-) wundergo.Client {
+) wl.Client {
 	return &oauthClient{
 		apiURL:      apiURL,
 		accessToken: accessToken,

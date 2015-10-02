@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"strings"
@@ -6,7 +6,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic list position functionality", func() {
@@ -21,13 +21,13 @@ var _ = Describe("basic list position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle2 := uuid2.String()
 
-		var newList1 wundergo.List
+		var newList1 wl.List
 		Eventually(func() error {
 			newList1, err = client.CreateList(newListTitle1)
 			return err
 		}).Should(Succeed())
 
-		var newList2 wundergo.List
+		var newList2 wl.List
 		Eventually(func() error {
 			newList2, err = client.CreateList(newListTitle2)
 			return err
@@ -37,7 +37,7 @@ var _ = Describe("basic list position functionality", func() {
 		// returned response. This seems like a bug in Wunderlist API
 
 		By("Reordering lists")
-		var listPosition wundergo.Position
+		var listPosition wl.Position
 
 		for {
 			Eventually(func() error {

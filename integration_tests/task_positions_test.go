@@ -1,10 +1,10 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic task position functionality", func() {
@@ -27,7 +27,7 @@ var _ = Describe("basic task position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle2 := uuid3.String()
 
-		var newTask1 wundergo.Task
+		var newTask1 wl.Task
 		Eventually(func() error {
 			newTask1, err = client.CreateTask(
 				newTaskTitle1,
@@ -42,7 +42,7 @@ var _ = Describe("basic task position functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		var newTask2 wundergo.Task
+		var newTask2 wl.Task
 		Eventually(func() error {
 			newTask2, err = client.CreateTask(
 				newTaskTitle2,
@@ -63,7 +63,7 @@ var _ = Describe("basic task position functionality", func() {
 		// Assume tasks are in first TaskPosition
 
 		By("Reordering tasks")
-		var taskPosition wundergo.Position
+		var taskPosition wl.Position
 
 		Eventually(func() error {
 			taskPositions, err := client.TaskPositionsForListID(newList.ID)

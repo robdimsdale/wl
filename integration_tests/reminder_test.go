@@ -1,16 +1,16 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic reminder functionality", func() {
 	var (
-		newList wundergo.List
-		newTask wundergo.Task
+		newList wl.List
+		newTask wl.Task
 		err     error
 	)
 
@@ -50,7 +50,7 @@ var _ = Describe("basic reminder functionality", func() {
 			return client.DeleteTask(newTask)
 		}).Should(Succeed())
 
-		var tasks []wundergo.Task
+		var tasks []wl.Task
 		Eventually(func() (bool, error) {
 			tasks, err = client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
@@ -62,7 +62,7 @@ var _ = Describe("basic reminder functionality", func() {
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() (bool, error) {
 			lists, err = client.Lists()
 			return listContains(lists, newList), err
@@ -71,7 +71,7 @@ var _ = Describe("basic reminder functionality", func() {
 
 	It("can perform reminder CRUD", func() {
 		By("Creating reminder")
-		var reminder wundergo.Reminder
+		var reminder wl.Reminder
 		reminderDate := "1970-08-30T08:29:46.203Z"
 		createdByDeviceUdid := ""
 		Eventually(func() error {
@@ -107,7 +107,7 @@ var _ = Describe("basic reminder functionality", func() {
 		}).Should(Succeed())
 
 		By("Getting reminder")
-		var aReminder wundergo.Reminder
+		var aReminder wl.Reminder
 		Eventually(func() error {
 			aReminder, err = client.Reminder(reminder.ID)
 			return err
@@ -123,7 +123,7 @@ var _ = Describe("basic reminder functionality", func() {
 	})
 })
 
-func reminderContains(reminders []wundergo.Reminder, reminder wundergo.Reminder) bool {
+func reminderContains(reminders []wl.Reminder, reminder wl.Reminder) bool {
 	for _, n := range reminders {
 		if n.ID == reminder.ID {
 			return true

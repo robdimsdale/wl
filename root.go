@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // Root contains information about the root of the object hierarchy.
 type Root struct {

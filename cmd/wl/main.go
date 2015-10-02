@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/robdimsdale/wundergo/cmd/wl/commands"
+	"github.com/robdimsdale/wl/cmd/wl/commands"
 
 	"github.com/spf13/cobra"
 )
@@ -30,6 +30,6 @@ func main() {
 		version = "dev"
 	}
 
-	commands.WundergoCmd.AddCommand(cmdVersion)
+	commands.WLCmd.AddCommand(cmdVersion)
 	commands.Execute()
 }

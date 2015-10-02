@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // Notes gets all tasks for all lists.
-func (c oauthClient) Notes() ([]wundergo.Note, error) {
+func (c oauthClient) Notes() ([]wl.Note, error) {
 	lists, err := c.Lists()
 	if err != nil {
 		return nil, err
@@ -22,10 +22,10 @@ func (c oauthClient) Notes() ([]wundergo.Note, error) {
 		map[string]interface{}{"listCount": listCount},
 	)
 
-	notesChan := make(chan []wundergo.Note, listCount)
+	notesChan := make(chan []wl.Note, listCount)
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug(
 				"notes - getting notes for list",
 				map[string]interface{}{"listID": list.ID},
@@ -48,7 +48,7 @@ func (c oauthClient) Notes() ([]wundergo.Note, error) {
 		}
 	}
 
-	totalNotes := []wundergo.Note{}
+	totalNotes := []wl.Note{}
 	for i := 0; i < listCount; i++ {
 		notes := <-notesChan
 		totalNotes = append(totalNotes, notes...)
@@ -62,7 +62,7 @@ func (c oauthClient) Notes() ([]wundergo.Note, error) {
 }
 
 // NotesForListID returns Notes for the provided listID.
-func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
+func (c oauthClient) NotesForListID(listID uint) ([]wl.Note, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -87,7 +87,7 @@ func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	notes := []wundergo.Note{}
+	notes := []wl.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&notes)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (c oauthClient) NotesForListID(listID uint) ([]wundergo.Note, error) {
 }
 
 // NotesForTaskID returns Notes for the provided taskID.
-func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
+func (c oauthClient) NotesForTaskID(taskID uint) ([]wl.Note, error) {
 	if taskID == 0 {
 		return nil, errors.New("taskID must be > 0")
 	}
@@ -121,7 +121,7 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	notes := []wundergo.Note{}
+	notes := []wl.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&notes)
 	if err != nil {
 		return nil, err
@@ -130,9 +130,9 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wundergo.Note, error) {
 }
 
 // Note returns the Note for the corresponding noteID.
-func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
+func (c oauthClient) Note(noteID uint) (wl.Note, error) {
 	if noteID == 0 {
-		return wundergo.Note{}, errors.New("noteID must be > 0")
+		return wl.Note{}, errors.New("noteID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -143,31 +143,31 @@ func (c oauthClient) Note(noteID uint) (wundergo.Note, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	note := wundergo.Note{}
+	note := wl.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&note)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 	return note, nil
 }
 
 // CreateNote creates a note with the provided content associated with the
 // Task for the corresponding taskID.
-func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, error) {
+func (c oauthClient) CreateNote(content string, taskID uint) (wl.Note, error) {
 	if taskID == 0 {
-		return wundergo.Note{}, errors.New("taskID must be > 0")
+		return wl.Note{}, errors.New("taskID must be > 0")
 	}
 
 	body := []byte(fmt.Sprintf(`{"content":"%s","task_id":%d}`, content, taskID))
@@ -176,32 +176,32 @@ func (c oauthClient) CreateNote(content string, taskID uint) (wundergo.Note, err
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	note := wundergo.Note{}
+	note := wl.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&note)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 	return note, nil
 }
 
 // UpdateNote updates the provided Note.
 // Notes cannot be moved between tasks; note.TaskID is ignored
-func (c oauthClient) UpdateNote(note wundergo.Note) (wundergo.Note, error) {
+func (c oauthClient) UpdateNote(note wl.Note) (wl.Note, error) {
 	body, err := json.Marshal(note)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -212,28 +212,28 @@ func (c oauthClient) UpdateNote(note wundergo.Note) (wundergo.Note, error) {
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Note{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedNote := wundergo.Note{}
+	returnedNote := wl.Note{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedNote)
 	if err != nil {
-		return wundergo.Note{}, err
+		return wl.Note{}, err
 	}
 	return returnedNote, nil
 }
 
 // DeleteNote deletes the provided note.
-func (c oauthClient) DeleteNote(note wundergo.Note) error {
+func (c oauthClient) DeleteNote(note wl.Note) error {
 	url := fmt.Sprintf(
 		"%s/notes/%d?revision=%d",
 		c.apiURL,

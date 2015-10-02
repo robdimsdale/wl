@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Note operations", func() {
@@ -37,7 +37,7 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNotes := []wundergo.Note{{ID: 2345}}
+				expectedNotes := []wl.Note{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -163,7 +163,7 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNotes := []wundergo.Note{{ID: 2345}}
+				expectedNotes := []wl.Note{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -289,7 +289,7 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := wundergo.Note{ID: 2345}
+				expectedNote := wl.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -419,7 +419,7 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := wundergo.Note{ID: 2345}
+				expectedNote := wl.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -521,10 +521,10 @@ var _ = Describe("client - Note operations", func() {
 	})
 
 	Describe("updating a note", func() {
-		var note wundergo.Note
+		var note wl.Note
 
 		BeforeEach(func() {
-			note = wundergo.Note{ID: 1234}
+			note = wl.Note{ID: 1234}
 		})
 
 		It("performs PUT requests with correct headers to /notes/1234", func() {
@@ -545,7 +545,7 @@ var _ = Describe("client - Note operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedNote := wundergo.Note{ID: 2345}
+				expectedNote := wl.Note{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -635,10 +635,10 @@ var _ = Describe("client - Note operations", func() {
 	})
 
 	Describe("deleting a note", func() {
-		var note wundergo.Note
+		var note wl.Note
 
 		BeforeEach(func() {
-			note = wundergo.Note{ID: 1234, Revision: 23}
+			note = wl.Note{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /notes/1234", func() {

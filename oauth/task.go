@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // Tasks gets all tasks for all lists.
-func (c oauthClient) Tasks() ([]wundergo.Task, error) {
+func (c oauthClient) Tasks() ([]wl.Task, error) {
 	lists, err := c.Lists()
 	if err != nil {
 		return nil, err
@@ -22,10 +22,10 @@ func (c oauthClient) Tasks() ([]wundergo.Task, error) {
 		map[string]interface{}{"listCount": listCount},
 	)
 
-	tasksChan := make(chan []wundergo.Task, listCount)
+	tasksChan := make(chan []wl.Task, listCount)
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug(
 				"tasks - getting tasks for list",
 				map[string]interface{}{"listID": list.ID},
@@ -48,7 +48,7 @@ func (c oauthClient) Tasks() ([]wundergo.Task, error) {
 		}
 	}
 
-	totalTasks := []wundergo.Task{}
+	totalTasks := []wl.Task{}
 	for i := 0; i < listCount; i++ {
 		tasks := <-tasksChan
 		totalTasks = append(totalTasks, tasks...)
@@ -62,7 +62,7 @@ func (c oauthClient) Tasks() ([]wundergo.Task, error) {
 }
 
 // CompletedTasks returns all tasks filtered by whether they are completed.
-func (c oauthClient) CompletedTasks(completed bool) ([]wundergo.Task, error) {
+func (c oauthClient) CompletedTasks(completed bool) ([]wl.Task, error) {
 	lists, err := c.Lists()
 	if err != nil {
 		return nil, err
@@ -74,10 +74,10 @@ func (c oauthClient) CompletedTasks(completed bool) ([]wundergo.Task, error) {
 		map[string]interface{}{"listCount": listCount},
 	)
 
-	tasksChan := make(chan []wundergo.Task, listCount)
+	tasksChan := make(chan []wl.Task, listCount)
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug(
 				"tasks - getting tasks for list",
 				map[string]interface{}{"listID": list.ID},
@@ -100,7 +100,7 @@ func (c oauthClient) CompletedTasks(completed bool) ([]wundergo.Task, error) {
 		}
 	}
 
-	totalTasks := []wundergo.Task{}
+	totalTasks := []wl.Task{}
 	for i := 0; i < listCount; i++ {
 		tasks := <-tasksChan
 		totalTasks = append(totalTasks, tasks...)
@@ -114,7 +114,7 @@ func (c oauthClient) CompletedTasks(completed bool) ([]wundergo.Task, error) {
 }
 
 // TasksForListID returns Tasks for the provided listID.
-func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
+func (c oauthClient) TasksForListID(listID uint) ([]wl.Task, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -138,7 +138,7 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := []wundergo.Task{}
+	tasks := []wl.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		return nil, err
@@ -147,7 +147,7 @@ func (c oauthClient) TasksForListID(listID uint) ([]wundergo.Task, error) {
 }
 
 // CompletedTasksForListID returns tasks filtered by whether they are completed.
-func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wundergo.Task, error) {
+func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wl.Task, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -173,7 +173,7 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wun
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := []wundergo.Task{}
+	tasks := []wl.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wun
 }
 
 // Task returns the Task for the corresponding taskID.
-func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
+func (c oauthClient) Task(taskID uint) (wl.Task, error) {
 	url := fmt.Sprintf(
 		"%s/tasks/%d",
 		c.apiURL,
@@ -191,22 +191,22 @@ func (c oauthClient) Task(taskID uint) (wundergo.Task, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	task := wundergo.Task{}
+	task := wl.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 	return task, nil
 }
@@ -246,15 +246,15 @@ func (c oauthClient) CreateTask(
 	recurrenceCount uint,
 	dueDate string,
 	starred bool,
-) (wundergo.Task, error) {
+) (wl.Task, error) {
 
 	if listID == 0 {
-		return wundergo.Task{}, errors.New("listID must be > 0")
+		return wl.Task{}, errors.New("listID must be > 0")
 	}
 
 	err := c.validateRecurrence(recurrenceType, recurrenceCount)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	tcc := taskCreateConfig{
@@ -270,43 +270,43 @@ func (c oauthClient) CreateTask(
 
 	body, err := json.Marshal(tcc)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	url := fmt.Sprintf("%s/tasks", c.apiURL)
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	task := wundergo.Task{}
+	task := wl.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 	return task, nil
 }
 
 // UpdateTask updates the provided Task.
-func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
+func (c oauthClient) UpdateTask(task wl.Task) (wl.Task, error) {
 	err := c.validateRecurrence(task.RecurrenceType, task.RecurrenceCount)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	origTask, err := c.Task(task.ID)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	tuc := TaskUpdateConfig{
@@ -355,7 +355,7 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 
 	body, err := json.Marshal(tuc)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -366,28 +366,28 @@ func (c oauthClient) UpdateTask(task wundergo.Task) (wundergo.Task, error) {
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedTask := wundergo.Task{}
+	returnedTask := wl.Task{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedTask)
 	if err != nil {
-		return wundergo.Task{}, err
+		return wl.Task{}, err
 	}
 	return returnedTask, nil
 }
 
 // DeleteTask deletes the provided Task.
-func (c oauthClient) DeleteTask(task wundergo.Task) error {
+func (c oauthClient) DeleteTask(task wl.Task) error {
 	url := fmt.Sprintf(
 		"%s/tasks/%d?revision=%d",
 		c.apiURL,
@@ -428,7 +428,7 @@ func (c oauthClient) DeleteAllTasks() error {
 
 	idErrChan := make(chan idErr, taskCount)
 	for _, f := range tasks {
-		go func(task wundergo.Task) {
+		go func(task wl.Task) {
 			c.logger.Debug(
 				"delete-all-tasks - deleting task",
 				map[string]interface{}{"taskID": task.ID},

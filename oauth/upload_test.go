@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Upload operations", func() {
@@ -31,7 +31,7 @@ var _ = Describe("client - Upload operations", func() {
 			Expect(err).NotTo(HaveOccurred())
 			remoteFileName = uuid1.String()
 
-			tempDirPath, err = ioutil.TempDir(os.TempDir(), "wundergo-integration-test")
+			tempDirPath, err = ioutil.TempDir(os.TempDir(), "wl-integration-test")
 			Expect(err).NotTo(HaveOccurred())
 
 			localFilePath = filepath.Join(tempDirPath, "test-file")

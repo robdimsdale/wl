@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"fmt"

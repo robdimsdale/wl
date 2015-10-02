@@ -1,16 +1,16 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic task functionality", func() {
 	var (
-		newList wundergo.List
-		newTask wundergo.Task
+		newList wl.List
+		newTask wl.Task
 		err     error
 	)
 
@@ -50,7 +50,7 @@ var _ = Describe("basic task functionality", func() {
 			return client.DeleteTask(newTask)
 		}).Should(Succeed())
 
-		var tasks []wundergo.Task
+		var tasks []wl.Task
 		Eventually(func() (bool, error) {
 			tasks, err = client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
@@ -62,7 +62,7 @@ var _ = Describe("basic task functionality", func() {
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() (bool, error) {
 			lists, err = client.Lists()
 			return listContains(lists, newList), err
@@ -70,7 +70,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	Describe("moving a tasks between lists", func() {
-		var secondList wundergo.List
+		var secondList wl.List
 
 		BeforeEach(func() {
 			By("Creating a second list")
@@ -89,7 +89,7 @@ var _ = Describe("basic task functionality", func() {
 				return client.DeleteList(secondList)
 			}).Should(Succeed())
 
-			var lists []wundergo.List
+			var lists []wl.List
 			Eventually(func() (bool, error) {
 				lists, err = client.Lists()
 				return listContains(lists, secondList), err
@@ -105,7 +105,7 @@ var _ = Describe("basic task functionality", func() {
 			}).Should(Succeed())
 
 			By("Verifying task appears in tasks for second list")
-			var completedTasksForSecondList []wundergo.Task
+			var completedTasksForSecondList []wl.Task
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
 				completedTasksForSecondList, err = client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
@@ -113,7 +113,7 @@ var _ = Describe("basic task functionality", func() {
 			}).Should(BeTrue())
 
 			By("Verifying task does not appear in tasks for first list")
-			var completedTasksForFirstList []wundergo.Task
+			var completedTasksForFirstList []wl.Task
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
 				completedTasksForFirstList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
@@ -144,7 +144,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 
 	It("can complete tasks", func() {
-		var completedTasksForList []wundergo.Task
+		var completedTasksForList []wl.Task
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
 			completedTasksForList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
@@ -165,7 +165,7 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(BeTrue())
 
 		By("Verifying task appears in completed tasks")
-		var completedTasks []wundergo.Task
+		var completedTasks []wl.Task
 		Eventually(func() bool {
 			// It is statistically probable that one of the lists will
 			// be deleted, so we ignore error here.
@@ -189,7 +189,7 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		By("Getting task again")
-		var taskAgain wundergo.Task
+		var taskAgain wl.Task
 		Eventually(func() error {
 			taskAgain, err = client.Task(newTask.ID)
 			return err
@@ -225,7 +225,7 @@ var _ = Describe("basic task functionality", func() {
 
 	It("can perform subtask CRUD", func() {
 		By("Creating subtask")
-		var subtask wundergo.Subtask
+		var subtask wl.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
 			subtask, err = client.CreateSubtask("mySubtaskTitle", newTask.ID, subtaskComplete)
@@ -233,7 +233,7 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		By("Getting subtask")
-		var aSubtask wundergo.Subtask
+		var aSubtask wl.Subtask
 		Eventually(func() error {
 			aSubtask, err = client.Subtask(subtask.ID)
 			return err
@@ -295,7 +295,7 @@ var _ = Describe("basic task functionality", func() {
 	})
 })
 
-func subtaskContains(subtasks []wundergo.Subtask, subtask wundergo.Subtask) bool {
+func subtaskContains(subtasks []wl.Subtask, subtask wl.Subtask) bool {
 	for _, t := range subtasks {
 		if t.ID == subtask.ID {
 			return true

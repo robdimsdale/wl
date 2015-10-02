@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - List position operations", func() {
@@ -30,7 +30,7 @@ var _ = Describe("client - List position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPositions := []wundergo.Position{{ID: 2345}}
+				expectedListPositions := []wl.Position{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -137,7 +137,7 @@ var _ = Describe("client - List position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPosition := wundergo.Position{ID: 2345}
+				expectedListPosition := wl.Position{ID: 2345}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -220,10 +220,10 @@ var _ = Describe("client - List position operations", func() {
 	})
 
 	Describe("updating a list position", func() {
-		var listPosition wundergo.Position
+		var listPosition wl.Position
 
 		BeforeEach(func() {
-			listPosition = wundergo.Position{
+			listPosition = wl.Position{
 				ID: 1234,
 			}
 		})
@@ -247,7 +247,7 @@ var _ = Describe("client - List position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedListPosition := wundergo.Position{
+				expectedListPosition := wl.Position{
 					ID: listPosition.ID,
 				}
 

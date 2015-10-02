@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"io/ioutil"
@@ -10,7 +10,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic upload and file functionality", func() {
@@ -20,8 +20,8 @@ var _ = Describe("basic upload and file functionality", func() {
 		contentType    string
 		md5sum         string
 
-		newList wundergo.List
-		task    wundergo.Task
+		newList wl.List
+		task    wl.Task
 	)
 
 	BeforeEach(func() {
@@ -36,7 +36,7 @@ var _ = Describe("basic upload and file functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Creating a task")
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() error {
 			lists, err = client.Lists()
 			return err
@@ -106,7 +106,7 @@ var _ = Describe("basic upload and file functionality", func() {
 
 			By("Creating temporary fixtures")
 
-			tempDirPath, err = ioutil.TempDir(os.TempDir(), "wundergo-integration-test")
+			tempDirPath, err = ioutil.TempDir(os.TempDir(), "wl-integration-test")
 			Expect(err).NotTo(HaveOccurred())
 
 			localFilePath = filepath.Join(tempDirPath, "test-file")
@@ -140,7 +140,7 @@ var _ = Describe("basic upload and file functionality", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Validating the file returns correctly")
-			Eventually(func() (wundergo.File, error) {
+			Eventually(func() (wl.File, error) {
 				return client.File(file.ID)
 			}).Should(Equal(file))
 
@@ -206,7 +206,7 @@ var _ = Describe("basic upload and file functionality", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Validating the file returns correctly")
-			Eventually(func() (wundergo.File, error) {
+			Eventually(func() (wl.File, error) {
 				return client.File(file.ID)
 			}).Should(Equal(file))
 
@@ -221,7 +221,7 @@ var _ = Describe("basic upload and file functionality", func() {
 	})
 })
 
-func fileContains(files []wundergo.File, file wundergo.File) bool {
+func fileContains(files []wl.File, file wl.File) bool {
 	for _, f := range files {
 		if f.ID == file.ID {
 			return true

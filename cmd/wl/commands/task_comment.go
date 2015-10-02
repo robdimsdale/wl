@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -93,7 +93,7 @@ func init() {
 	cmdCreateTaskComment.Flags().StringVar(&text, textLongFlag, "", "task-comment text")
 }
 
-func taskComment(cmd *cobra.Command, args []string) (wundergo.TaskComment, error) {
+func taskComment(cmd *cobra.Command, args []string) (wl.TaskComment, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

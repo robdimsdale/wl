@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -80,7 +80,7 @@ func init() {
 	cmdUpdateSubtaskPosition.Flags().StringVar(&subtaskIDs, subtaskIDsLongFlag, "", "comma-separated subtask IDs (required)")
 }
 
-func subtaskPosition(cmd *cobra.Command, args []string) (wundergo.Position, error) {
+func subtaskPosition(cmd *cobra.Command, args []string) (wl.Position, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

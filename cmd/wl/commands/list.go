@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -117,7 +117,7 @@ func init() {
 	cmdUpdateList.Flags().StringVar(&title, titleLongFlag, "", "title of list")
 }
 
-func list(cmd *cobra.Command, args []string) (wundergo.List, error) {
+func list(cmd *cobra.Command, args []string) (wl.List, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

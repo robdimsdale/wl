@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // UploadFile uploads the local file to Wunderlist.
@@ -19,10 +19,10 @@ func (c oauthClient) UploadFile(
 	remoteFileName string,
 	contentType string,
 	md5sum string,
-) (wundergo.Upload, error) {
+) (wl.Upload, error) {
 	fileContents, err := c.readLocalFile(localFilePath)
 	if err != nil {
-		return wundergo.Upload{}, err
+		return wl.Upload{}, err
 	}
 
 	initialUploadResp, err := c.createUpload(remoteFileName, contentType, len(fileContents), md5sum)
@@ -32,7 +32,7 @@ func (c oauthClient) UploadFile(
 	// Do not worry about multi-part upload for now
 	err = c.uploadAPart(initialUploadResp.Part, fileContents)
 	if err != nil {
-		return wundergo.Upload{}, err
+		return wl.Upload{}, err
 	}
 
 	return c.finishUpload(uploadID)
@@ -138,29 +138,29 @@ func (c oauthClient) uploadAPart(part uploadPart, fileContents []byte) error {
 	return nil
 }
 
-func (c oauthClient) finishUpload(uploadID uint) (wundergo.Upload, error) {
+func (c oauthClient) finishUpload(uploadID uint) (wl.Upload, error) {
 	// Mark upload as finished
 	c.logger.Debug(" - marking upload as finished", map[string]interface{}{"uploadID": uploadID})
 	url := fmt.Sprintf("%s/uploads/%d", c.apiURL, uploadID)
 	body := []byte(`{"state":"finished"}`)
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return wundergo.Upload{}, err
+		return wl.Upload{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Upload{}, err
+		return wl.Upload{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Upload{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Upload{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedUpload := wundergo.Upload{}
+	returnedUpload := wl.Upload{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedUpload)
 	if err != nil {
-		return wundergo.Upload{}, err
+		return wl.Upload{}, err
 	}
 
 	return returnedUpload, nil

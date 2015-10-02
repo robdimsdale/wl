@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // Position contains an ordered list of IDs of Lists, Tasks or Subtasks.
 type Position struct {

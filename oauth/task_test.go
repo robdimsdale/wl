@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Task operations", func() {
@@ -40,7 +40,7 @@ var _ = Describe("client - Task operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTasks := []wundergo.Task{{ID: 2345}}
+				expectedTasks := []wl.Task{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -169,7 +169,7 @@ var _ = Describe("client - Task operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTasks := []wundergo.Task{{ID: 2345}}
+				expectedTasks := []wl.Task{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -295,7 +295,7 @@ var _ = Describe("client - Task operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTask := wundergo.Task{
+				expectedTask := wl.Task{
 					ID: taskID,
 				}
 
@@ -458,7 +458,7 @@ var _ = Describe("client - Task operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTask := wundergo.Task{ID: 2345}
+				expectedTask := wl.Task{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -625,10 +625,10 @@ var _ = Describe("client - Task operations", func() {
 
 	Describe("updating a task", func() {
 		var (
-			originalTask wundergo.Task
-			expectedTask wundergo.Task
+			originalTask wl.Task
+			expectedTask wl.Task
 
-			task   wundergo.Task
+			task   wl.Task
 			taskID uint
 
 			title           string
@@ -654,7 +654,7 @@ var _ = Describe("client - Task operations", func() {
 			dueDate = "1970-01-01"
 			starred = false
 
-			task = wundergo.Task{
+			task = wl.Task{
 				ID:              taskID,
 				Title:           title,
 				Revision:        revision,
@@ -1295,10 +1295,10 @@ var _ = Describe("client - Task operations", func() {
 	})
 
 	Describe("deleting a task", func() {
-		var task wundergo.Task
+		var task wl.Task
 
 		BeforeEach(func() {
-			task = wundergo.Task{ID: 1234, Revision: 23}
+			task = wl.Task{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /task/:id", func() {

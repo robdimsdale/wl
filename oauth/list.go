@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // Lists returns all lists the client has permission to access.
-func (c oauthClient) Lists() ([]wundergo.List, error) {
+func (c oauthClient) Lists() ([]wl.List, error) {
 	url := fmt.Sprintf(
 		"%s/lists",
 		c.apiURL,
@@ -30,7 +30,7 @@ func (c oauthClient) Lists() ([]wundergo.List, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	lists := []wundergo.List{}
+	lists := []wl.List{}
 	err = json.NewDecoder(resp.Body).Decode(&lists)
 	if err != nil {
 		return lists, err
@@ -39,7 +39,7 @@ func (c oauthClient) Lists() ([]wundergo.List, error) {
 }
 
 // List returns the list for the corresponding listID.
-func (c oauthClient) List(listID uint) (wundergo.List, error) {
+func (c oauthClient) List(listID uint) (wl.List, error) {
 	url := fmt.Sprintf(
 		"%s/lists/%d",
 		c.apiURL,
@@ -48,30 +48,30 @@ func (c oauthClient) List(listID uint) (wundergo.List, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	list := wundergo.List{}
+	list := wl.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 	return list, nil
 }
 
 // CreateList creates a list with the provided title.
-func (c oauthClient) CreateList(title string) (wundergo.List, error) {
+func (c oauthClient) CreateList(title string) (wl.List, error) {
 	if title == "" {
-		return wundergo.List{}, fmt.Errorf("title must be non-empty")
+		return wl.List{}, fmt.Errorf("title must be non-empty")
 	}
 
 	url := fmt.Sprintf("%s/lists", c.apiURL)
@@ -79,31 +79,31 @@ func (c oauthClient) CreateList(title string) (wundergo.List, error) {
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	list := wundergo.List{}
+	list := wl.List{}
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 	return list, nil
 }
 
 // UpdateList updates the provided List.
-func (c oauthClient) UpdateList(list wundergo.List) (wundergo.List, error) {
+func (c oauthClient) UpdateList(list wl.List) (wl.List, error) {
 	body, err := json.Marshal(list)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -114,28 +114,28 @@ func (c oauthClient) UpdateList(list wundergo.List) (wundergo.List, error) {
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.List{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedList := wundergo.List{}
+	returnedList := wl.List{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedList)
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 	return returnedList, nil
 }
 
 // DeleteList deletes the provided list.
-func (c oauthClient) DeleteList(list wundergo.List) error {
+func (c oauthClient) DeleteList(list wl.List) error {
 	url := fmt.Sprintf(
 		"%s/lists/%d?revision=%d",
 		c.apiURL,
@@ -173,7 +173,7 @@ func (c oauthClient) DeleteAllLists() error {
 	c.logger.Debug("delete-all-lists", map[string]interface{}{"listCount": listCount})
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug("delete-all-lists - deleting list", map[string]interface{}{"listID": list.ID})
 			var err error
 			if list.ListType == "inbox" {
@@ -202,10 +202,10 @@ func (c oauthClient) DeleteAllLists() error {
 }
 
 // Inbox returns the inbox list.
-func (c oauthClient) Inbox() (wundergo.List, error) {
+func (c oauthClient) Inbox() (wl.List, error) {
 	lists, err := c.Lists()
 	if err != nil {
-		return wundergo.List{}, err
+		return wl.List{}, err
 	}
 
 	for _, l := range lists {
@@ -214,5 +214,5 @@ func (c oauthClient) Inbox() (wundergo.List, error) {
 		}
 	}
 
-	return wundergo.List{}, errors.New("Inbox not found")
+	return wl.List{}, errors.New("Inbox not found")
 }

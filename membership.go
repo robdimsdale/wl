@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // Membership joins Users and Lists.
 type Membership struct {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -110,7 +110,7 @@ func init() {
 	cmdUpdateNote.Flags().StringVar(&content, contentLongFlag, "", "note content")
 }
 
-func note(cmd *cobra.Command, args []string) (wundergo.Note, error) {
+func note(cmd *cobra.Command, args []string) (wl.Note, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

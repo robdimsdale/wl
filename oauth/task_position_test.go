@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Task position operations", func() {
@@ -37,7 +37,7 @@ var _ = Describe("client - Task position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPositions := []wundergo.Position{{ID: 2345}}
+				expectedTaskPositions := []wl.Position{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -147,7 +147,7 @@ var _ = Describe("client - Task position operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPosition := wundergo.Position{ID: 1234}
+				expectedTaskPosition := wl.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -249,15 +249,15 @@ var _ = Describe("client - Task position operations", func() {
 	})
 
 	Describe("updating a task position", func() {
-		var taskPosition wundergo.Position
+		var taskPosition wl.Position
 
 		BeforeEach(func() {
-			taskPosition = wundergo.Position{ID: 1234}
+			taskPosition = wl.Position{ID: 1234}
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskPosition := wundergo.Position{ID: 1234}
+				expectedTaskPosition := wl.Position{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields

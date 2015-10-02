@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // Folders returns Folders created by the current user.
-func (c oauthClient) Folders() ([]wundergo.Folder, error) {
+func (c oauthClient) Folders() ([]wl.Folder, error) {
 	url := fmt.Sprintf(
 		"%s/folders",
 		c.apiURL,
@@ -30,7 +30,7 @@ func (c oauthClient) Folders() ([]wundergo.Folder, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	folders := []wundergo.Folder{}
+	folders := []wl.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
 		return nil, err
@@ -48,13 +48,13 @@ type folderCreateConfig struct {
 func (c oauthClient) CreateFolder(
 	title string,
 	listIDs []uint,
-) (wundergo.Folder, error) {
+) (wl.Folder, error) {
 	if title == "" {
-		return wundergo.Folder{}, errors.New("title must be non-empty")
+		return wl.Folder{}, errors.New("title must be non-empty")
 	}
 
 	if listIDs == nil || len(listIDs) == 0 {
-		return wundergo.Folder{}, errors.New("listIDs must be non-nil and non-empty")
+		return wl.Folder{}, errors.New("listIDs must be non-nil and non-empty")
 	}
 
 	fcc := folderCreateConfig{
@@ -64,37 +64,37 @@ func (c oauthClient) CreateFolder(
 
 	body, err := json.Marshal(fcc)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	reqURL := fmt.Sprintf("%s/folders", c.apiURL)
 
 	req, err := c.newPostRequest(reqURL, body)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	folder := wundergo.Folder{}
+	folder := wl.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 	return folder, nil
 }
 
 // Folder returns the Folder for the corresponding folderID.
-func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
+func (c oauthClient) Folder(folderID uint) (wl.Folder, error) {
 	if folderID == 0 {
-		return wundergo.Folder{}, errors.New("folderID must be > 0")
+		return wl.Folder{}, errors.New("folderID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -105,31 +105,31 @@ func (c oauthClient) Folder(folderID uint) (wundergo.Folder, error) {
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	folder := wundergo.Folder{}
+	folder := wl.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&folder)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 	return folder, nil
 }
 
 // UpdateFolder updates the provided Folder.
-func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, error) {
+func (c oauthClient) UpdateFolder(folder wl.Folder) (wl.Folder, error) {
 	body, err := json.Marshal(folder)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	url := fmt.Sprintf(
@@ -140,28 +140,28 @@ func (c oauthClient) UpdateFolder(folder wundergo.Folder) (wundergo.Folder, erro
 
 	req, err := c.newPatchRequest(url, body)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.Folder{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedFolder := wundergo.Folder{}
+	returnedFolder := wl.Folder{}
 	err = json.NewDecoder(resp.Body).Decode(&returnedFolder)
 	if err != nil {
-		return wundergo.Folder{}, err
+		return wl.Folder{}, err
 	}
 	return returnedFolder, nil
 }
 
 // DeleteFolder deletes the provided folder.
-func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
+func (c oauthClient) DeleteFolder(folder wl.Folder) error {
 	url := fmt.Sprintf(
 		"%s/folders/%d?revision=%d",
 		c.apiURL,
@@ -187,7 +187,7 @@ func (c oauthClient) DeleteFolder(folder wundergo.Folder) error {
 }
 
 // FolderRevisions returns FolderRevisions created by the current user.
-func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
+func (c oauthClient) FolderRevisions() ([]wl.FolderRevision, error) {
 	url := fmt.Sprintf(
 		"%s/folder_revisions",
 		c.apiURL,
@@ -207,7 +207,7 @@ func (c oauthClient) FolderRevisions() ([]wundergo.FolderRevision, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	folders := []wundergo.FolderRevision{}
+	folders := []wl.FolderRevision{}
 	err = json.NewDecoder(resp.Body).Decode(&folders)
 	if err != nil {
 		return nil, err
@@ -231,7 +231,7 @@ func (c oauthClient) DeleteAllFolders() error {
 
 	idErrChan := make(chan idErr, folderCount)
 	for _, f := range folders {
-		go func(folder wundergo.Folder) {
+		go func(folder wl.Folder) {
 			c.logger.Debug(
 				"delete-all-folders - deleting folder",
 				map[string]interface{}{"folderID": folder.ID},

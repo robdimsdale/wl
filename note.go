@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 import "time"
 

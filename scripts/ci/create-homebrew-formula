@@ -5,22 +5,22 @@ set -eux
 ROOT="$PWD"
 VERSION="$(cat ${ROOT}/github-release/version)"
 SOURCE_TAR="${ROOT}/github-release/v${VERSION}.tar.gz"
-OUTPUT_FILE=${ROOT}/homebrew-tap/wundergo.rb
+OUTPUT_FILE=${ROOT}/homebrew-tap/wl.rb
 
 wget \
   -O "${SOURCE_TAR}" \
-  "https://github.com/robdimsdale/wundergo/archive/v${VERSION}.tar.gz"
+  "https://github.com/robdimsdale/wl/archive/v${VERSION}.tar.gz"
 
 sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
 
 cat << EOF > ${OUTPUT_FILE}
 require "language/go"
 
-class Wundergo < Formula
+class WL < Formula
   desc "golang wunderlist client"
-  homepage "https://github.com/robdimsdale/wundergo"
+  homepage "https://github.com/robdimsdale/wl"
   version "${VERSION}"
-  url "https://github.com/robdimsdale/wundergo/archive/v#{version}.tar.gz"
+  url "https://github.com/robdimsdale/wl/archive/v#{version}.tar.gz"
   sha256 "${sha256}"
 
   depends_on "go" => :build
@@ -32,7 +32,7 @@ class Wundergo < Formula
   def install
     ENV["GOPATH"] = buildpath
     mkdir_p buildpath/"src/github.com/robdimsdale/"
-    ln_sf buildpath, buildpath/"src/github.com/robdimsdale/wundergo"
+    ln_sf buildpath, buildpath/"src/github.com/robdimsdale/wl"
     Language::Go.stage_deps resources, buildpath/"src"
 
     cd "src/github.com/tools/godep" do
@@ -54,7 +54,7 @@ echo "wrote formula successfully"
 echo "creating commit in homebrew-tap"
 pushd "${ROOT}/homebrew-tap"
   git config user.name "Concourse CI"
-  git config user.email "ci@wundergo.io"
+  git config user.email "ci@robdimsdale.com"
   git add -v -A .
-  git commit -v -m"Update wundergo to version ${VERSION}"
+  git commit -v -m"Update wl to version ${VERSION}"
 popd

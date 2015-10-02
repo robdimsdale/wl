@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/robdimsdale/wundergo",
+	"ImportPath": "github.com/robdimsdale/wl",
 	"GoVersion": "go1.5.1",
 	"Packages": [
 		"./..."

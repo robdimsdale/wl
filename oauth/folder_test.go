@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Folder operations", func() {
@@ -31,7 +31,7 @@ var _ = Describe("client - Folder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFolders := []wundergo.Folder{{ID: 2345}}
+				expectedFolders := []wl.Folder{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -153,7 +153,7 @@ var _ = Describe("client - Folder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFolder := wundergo.Folder{ID: 2345}
+				expectedFolder := wl.Folder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -330,7 +330,7 @@ var _ = Describe("client - Folder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFolder := wundergo.Folder{ID: 2345}
+				expectedFolder := wl.Folder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -432,10 +432,10 @@ var _ = Describe("client - Folder operations", func() {
 	})
 
 	Describe("updating a folder", func() {
-		var folder wundergo.Folder
+		var folder wl.Folder
 
 		BeforeEach(func() {
-			folder = wundergo.Folder{ID: 1234}
+			folder = wl.Folder{ID: 1234}
 		})
 
 		It("performs PUT requests with correct headers to /folders/1234", func() {
@@ -456,7 +456,7 @@ var _ = Describe("client - Folder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFolder := wundergo.Folder{ID: 2345}
+				expectedFolder := wl.Folder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -546,10 +546,10 @@ var _ = Describe("client - Folder operations", func() {
 	})
 
 	Describe("deleting a folder", func() {
-		var folder wundergo.Folder
+		var folder wl.Folder
 
 		BeforeEach(func() {
-			folder = wundergo.Folder{ID: 1234, Revision: 23}
+			folder = wl.Folder{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /folders/1234", func() {
@@ -667,7 +667,7 @@ var _ = Describe("client - Folder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFolderRevisions := []wundergo.FolderRevision{{ID: 2345}}
+				expectedFolderRevisions := []wl.FolderRevision{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields

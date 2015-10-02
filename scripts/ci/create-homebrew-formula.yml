@@ -1,12 +1,12 @@
 ---
 platform: linux
 
-image: docker:///robdimsdale/wundergo-1.5
+image: docker:///robdimsdale/wl-1.5
 
 inputs:
-- name: wundergo
+- name: wl
 - name: homebrew-tap
 - name: github-release
 
 run:
-  path: wundergo/scripts/ci/create-homebrew-formula
+  path: wl/scripts/ci/create-homebrew-formula

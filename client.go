@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // Client represents the methods that the API supports.
 type Client interface {

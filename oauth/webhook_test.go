@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Webhook operations", func() {
@@ -37,7 +37,7 @@ var _ = Describe("client - Webhook operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedWebhooks := []wundergo.Webhook{{ID: 2345}}
+				expectedWebhooks := []wl.Webhook{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -177,7 +177,7 @@ var _ = Describe("client - Webhook operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedWebhook := wundergo.Webhook{ID: 2345}
+				expectedWebhook := wl.Webhook{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -314,10 +314,10 @@ var _ = Describe("client - Webhook operations", func() {
 	})
 
 	Describe("deleting a webhook", func() {
-		var webhook wundergo.Webhook
+		var webhook wl.Webhook
 
 		BeforeEach(func() {
-			webhook = wundergo.Webhook{ID: 1234}
+			webhook = wl.Webhook{ID: 1234}
 		})
 
 		It("performs DELETE requests with correct headers to /webhooks/1234", func() {

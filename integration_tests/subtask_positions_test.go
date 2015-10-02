@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic subtask position functionality", func() {
@@ -25,7 +25,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuidTask.String()
 
-		var newTask wundergo.Task
+		var newTask wl.Task
 		Eventually(func() error {
 			newTask, err = client.CreateTask(
 				newTaskTitle,
@@ -49,7 +49,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newSubtaskTitle2 := uuid3.String()
 
-		var newSubtask1 wundergo.Subtask
+		var newSubtask1 wl.Subtask
 		Eventually(func() error {
 			newSubtask1, err = client.CreateSubtask(
 				newSubtaskTitle1,
@@ -59,7 +59,7 @@ var _ = Describe("basic subtask position functionality", func() {
 			return err
 		}).Should(Succeed())
 
-		var newSubtask2 wundergo.Subtask
+		var newSubtask2 wl.Subtask
 		Eventually(func() error {
 			newSubtask2, err = client.CreateSubtask(
 				newSubtaskTitle2,
@@ -73,7 +73,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		// returned response. This seems like a bug in Wunderlist API
 
 		By("Reordering subtasks")
-		var firstListTasks []wundergo.Task
+		var firstListTasks []wl.Task
 		Eventually(func() error {
 			flt, err := client.TasksForListID(newList.ID)
 			firstListTasks = flt
@@ -87,7 +87,7 @@ var _ = Describe("basic subtask position functionality", func() {
 			}
 		}
 
-		var subtaskPosition wundergo.Position
+		var subtaskPosition wl.Position
 
 		Eventually(func() error {
 			subtaskPositions, err := client.SubtaskPositionsForListID(newList.ID)

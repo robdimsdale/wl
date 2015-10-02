@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - List operations", func() {
@@ -31,7 +31,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedLists := []wundergo.List{{ID: 2345}}
+				expectedLists := []wl.List{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -145,7 +145,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := wundergo.List{
+				expectedList := wl.List{
 					ID: listID,
 				}
 
@@ -262,7 +262,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := wundergo.List{ID: 2345}
+				expectedList := wl.List{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -364,10 +364,10 @@ var _ = Describe("client - List operations", func() {
 	})
 
 	Describe("updating a list", func() {
-		var list wundergo.List
+		var list wl.List
 
 		BeforeEach(func() {
-			list = wundergo.List{
+			list = wl.List{
 				ID: 1234,
 			}
 		})
@@ -391,7 +391,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedList := wundergo.List{ID: list.ID}
+				expectedList := wl.List{ID: list.ID}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -481,10 +481,10 @@ var _ = Describe("client - List operations", func() {
 	})
 
 	Describe("deleting a list", func() {
-		var list wundergo.List
+		var list wl.List
 
 		BeforeEach(func() {
-			list = wundergo.List{
+			list = wl.List{
 				ID: 1234,
 			}
 		})
@@ -604,7 +604,7 @@ var _ = Describe("client - List operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns error if inbox not found", func() {
-				allLists := []wundergo.List{{ID: 2345, Title: "some unexpected title"}}
+				allLists := []wl.List{{ID: 2345, Title: "some unexpected title"}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -624,9 +624,9 @@ var _ = Describe("client - List operations", func() {
 			})
 
 			It("returns successfully", func() {
-				inboxList := wundergo.List{ID: 2345, Title: "inbox"}
-				otherList := wundergo.List{ID: 2346, Title: "some other title"}
-				allLists := []wundergo.List{inboxList, otherList}
+				inboxList := wl.List{ID: 2345, Title: "inbox"}
+				otherList := wl.List{ID: 2346, Title: "some other title"}
+				allLists := []wl.List{inboxList, otherList}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields

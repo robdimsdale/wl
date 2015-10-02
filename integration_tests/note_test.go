@@ -1,16 +1,16 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic note functionality", func() {
 	var (
-		newList wundergo.List
-		newTask wundergo.Task
+		newList wl.List
+		newTask wl.Task
 		err     error
 	)
 
@@ -50,7 +50,7 @@ var _ = Describe("basic note functionality", func() {
 			return client.DeleteTask(newTask)
 		}).Should(Succeed())
 
-		var tasks []wundergo.Task
+		var tasks []wl.Task
 		Eventually(func() (bool, error) {
 			tasks, err = client.TasksForListID(newList.ID)
 			return taskContains(tasks, newTask), err
@@ -62,7 +62,7 @@ var _ = Describe("basic note functionality", func() {
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() (bool, error) {
 			lists, err = client.Lists()
 			return listContains(lists, newList), err
@@ -70,7 +70,7 @@ var _ = Describe("basic note functionality", func() {
 	})
 
 	It("can perform note CRUD", func() {
-		var note wundergo.Note
+		var note wl.Note
 		Eventually(func() error {
 			note, err = client.CreateNote("myNoteContent", newTask.ID)
 			return err
@@ -115,7 +115,7 @@ var _ = Describe("basic note functionality", func() {
 	})
 })
 
-func noteContains(notes []wundergo.Note, note wundergo.Note) bool {
+func noteContains(notes []wl.Note, note wl.Note) bool {
 	for _, n := range notes {
 		if n.ID == note.ID {
 			return true

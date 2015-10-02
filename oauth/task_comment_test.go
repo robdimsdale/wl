@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - TaskComment operations", func() {
@@ -39,7 +39,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComments := []wundergo.TaskComment{{ID: 2345}}
+				expectedTaskComments := []wl.TaskComment{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -166,7 +166,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComments := []wundergo.TaskComment{{ID: 2345}}
+				expectedTaskComments := []wl.TaskComment{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -296,7 +296,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComment := wundergo.TaskComment{ID: 1234}
+				expectedTaskComment := wl.TaskComment{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -424,7 +424,7 @@ var _ = Describe("client - TaskComment operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedTaskComment := wundergo.TaskComment{ID: 2345}
+				expectedTaskComment := wl.TaskComment{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -527,11 +527,11 @@ var _ = Describe("client - TaskComment operations", func() {
 
 	Describe("deleting a task comment", func() {
 		var (
-			taskComment wundergo.TaskComment
+			taskComment wl.TaskComment
 		)
 
 		BeforeEach(func() {
-			taskComment = wundergo.TaskComment{ID: 1234, Revision: 23}
+			taskComment = wl.TaskComment{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /task_comments", func() {

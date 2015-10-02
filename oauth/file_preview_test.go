@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - File operations", func() {
@@ -79,7 +79,7 @@ var _ = Describe("client - File operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFilePreview := wundergo.FilePreview{URL: "some-url"}
+				expectedFilePreview := wl.FilePreview{URL: "some-url"}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields

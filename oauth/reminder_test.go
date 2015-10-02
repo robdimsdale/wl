@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Reminder operations", func() {
@@ -37,7 +37,7 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminders := []wundergo.Reminder{{ID: 2345}}
+				expectedReminders := []wl.Reminder{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -163,7 +163,7 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminders := []wundergo.Reminder{{ID: 2345}}
+				expectedReminders := []wl.Reminder{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -289,7 +289,7 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := wundergo.Reminder{ID: 2345}
+				expectedReminder := wl.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -410,7 +410,7 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := wundergo.Reminder{ID: 2345}
+				expectedReminder := wl.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -501,11 +501,11 @@ var _ = Describe("client - Reminder operations", func() {
 
 	Describe("updating a Reminder", func() {
 		var (
-			reminder wundergo.Reminder
+			reminder wl.Reminder
 		)
 
 		BeforeEach(func() {
-			reminder = wundergo.Reminder{ID: 1234}
+			reminder = wl.Reminder{ID: 1234}
 		})
 
 		It("performs GET requests with correct headers to /reminders/:id", func() {
@@ -527,7 +527,7 @@ var _ = Describe("client - Reminder operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedReminder := wundergo.Reminder{ID: 2345}
+				expectedReminder := wl.Reminder{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -618,11 +618,11 @@ var _ = Describe("client - Reminder operations", func() {
 
 	Describe("deleting a Reminder", func() {
 		var (
-			reminder wundergo.Reminder
+			reminder wl.Reminder
 		)
 
 		BeforeEach(func() {
-			reminder = wundergo.Reminder{ID: 1234, Revision: 23}
+			reminder = wl.Reminder{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /reminders/:id", func() {

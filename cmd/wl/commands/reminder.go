@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -116,7 +116,7 @@ func init() {
 	cmdUpdateReminder.Flags().StringVar(&date, dateLongFlag, "", "reminder date")
 }
 
-func reminder(cmd *cobra.Command, args []string) (wundergo.Reminder, error) {
+func reminder(cmd *cobra.Command, args []string) (wl.Reminder, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

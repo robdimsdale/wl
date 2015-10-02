@@ -1,14 +1,14 @@
 ---
 platform: linux
 
-image: docker:///robdimsdale/wundergo-1.5
+image: docker:///robdimsdale/wl-1.5
 
 inputs:
-- name: wundergo
+- name: wl
 - name: version
 
 run:
-  path: wundergo/scripts/ci/create-wl-release-candidate
+  path: wl/scripts/ci/create-wl-release-candidate
 
 params:
   TARGET_GOOS:

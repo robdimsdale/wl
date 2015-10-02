@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // Webhooks gets all webhooks for all lists.
-func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
+func (c oauthClient) Webhooks() ([]wl.Webhook, error) {
 	lists, err := c.Lists()
 	if err != nil {
 		return nil, err
@@ -22,10 +22,10 @@ func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
 		map[string]interface{}{"listCount": listCount},
 	)
 
-	webhooksChan := make(chan []wundergo.Webhook, listCount)
+	webhooksChan := make(chan []wl.Webhook, listCount)
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug(
 				"webhooks - getting webhooks for list",
 				map[string]interface{}{"listID": list.ID},
@@ -48,7 +48,7 @@ func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
 		}
 	}
 
-	totalWebhooks := []wundergo.Webhook{}
+	totalWebhooks := []wl.Webhook{}
 	for i := 0; i < listCount; i++ {
 		webhooks := <-webhooksChan
 		totalWebhooks = append(totalWebhooks, webhooks...)
@@ -62,7 +62,7 @@ func (c oauthClient) Webhooks() ([]wundergo.Webhook, error) {
 }
 
 // WebhooksForListID returns Webhooks for the provided listID.
-func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) {
+func (c oauthClient) WebhooksForListID(listID uint) ([]wl.Webhook, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -87,7 +87,7 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	webhooks := []wundergo.Webhook{}
+	webhooks := []wl.Webhook{}
 	err = json.NewDecoder(resp.Body).Decode(&webhooks)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wundergo.Webhook, error) 
 }
 
 // Webhook returns the Webhook for the corresponding webhookID.
-func (c oauthClient) Webhook(webhookID uint) (wundergo.Webhook, error) {
+func (c oauthClient) Webhook(webhookID uint) (wl.Webhook, error) {
 	allWebhooks, err := c.Webhooks()
 	for _, w := range allWebhooks {
 		if w.ID == webhookID {
@@ -104,7 +104,7 @@ func (c oauthClient) Webhook(webhookID uint) (wundergo.Webhook, error) {
 		}
 	}
 
-	return wundergo.Webhook{}, fmt.Errorf("webhook not found")
+	return wl.Webhook{}, fmt.Errorf("webhook not found")
 }
 
 // CreateWebhook creates a new webhook with the provided parameters.
@@ -114,9 +114,9 @@ func (c oauthClient) CreateWebhook(
 	url string,
 	processorType string,
 	configuration string,
-) (wundergo.Webhook, error) {
+) (wl.Webhook, error) {
 	if listID == 0 {
-		return wundergo.Webhook{}, errors.New("listID must be > 0")
+		return wl.Webhook{}, errors.New("listID must be > 0")
 	}
 
 	body := []byte(fmt.Sprintf(`{
@@ -135,28 +135,28 @@ func (c oauthClient) CreateWebhook(
 
 	req, err := c.newPostRequest(reqURL, body)
 	if err != nil {
-		return wundergo.Webhook{}, err
+		return wl.Webhook{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.Webhook{}, err
+		return wl.Webhook{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.Webhook{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.Webhook{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	webhook := wundergo.Webhook{}
+	webhook := wl.Webhook{}
 	err = json.NewDecoder(resp.Body).Decode(&webhook)
 	if err != nil {
-		return wundergo.Webhook{}, err
+		return wl.Webhook{}, err
 	}
 	return webhook, nil
 }
 
 // DeleteNote deletes the provided webhook.
-func (c oauthClient) DeleteWebhook(webhook wundergo.Webhook) error {
+func (c oauthClient) DeleteWebhook(webhook wl.Webhook) error {
 	url := fmt.Sprintf(
 		"%s/webhooks/%d",
 		c.apiURL,

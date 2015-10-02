@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Avatar operations", func() {

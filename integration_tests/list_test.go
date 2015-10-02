@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic list functionality", func() {
@@ -22,7 +22,7 @@ var _ = Describe("basic list functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying list exists in lists")
-		var newLists []wundergo.List
+		var newLists []wl.List
 		Eventually(func() (bool, error) {
 			newLists, err = client.Lists()
 			return listContains(newLists, newList), err
@@ -34,7 +34,7 @@ var _ = Describe("basic list functionality", func() {
 		newListTitle2 := fmt.Sprintf("%s-updated", uuid2.String())
 
 		newList.Title = newListTitle2
-		var updatedList wundergo.List
+		var updatedList wl.List
 		updatedList, err = client.UpdateList(newList)
 		Expect(err).NotTo(HaveOccurred())
 

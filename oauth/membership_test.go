@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - Membership operations", func() {
@@ -36,7 +36,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMemberships := []wundergo.Membership{{ID: 2345}}
+				expectedMemberships := []wl.Membership{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -149,7 +149,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMemberships := []wundergo.Membership{{ID: 2345}}
+				expectedMemberships := []wl.Membership{{ID: 2345}}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -256,7 +256,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMembership := wundergo.Membership{ID: id}
+				expectedMembership := wl.Membership{ID: id}
 
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -387,7 +387,7 @@ var _ = Describe("client - Membership operations", func() {
 
 			Context("when the request is valid", func() {
 				It("returns successfully", func() {
-					expectedMembership := wundergo.Membership{ID: 3456}
+					expectedMembership := wl.Membership{ID: 3456}
 
 					server.AppendHandlers(
 						ghttp.CombineHandlers(
@@ -519,7 +519,7 @@ var _ = Describe("client - Membership operations", func() {
 
 			Context("when the request is valid", func() {
 				It("returns successfully", func() {
-					expectedMembership := wundergo.Membership{ID: 3456}
+					expectedMembership := wl.Membership{ID: 3456}
 
 					server.AppendHandlers(
 						ghttp.CombineHandlers(
@@ -616,15 +616,15 @@ var _ = Describe("client - Membership operations", func() {
 
 	Describe("marking member as accepted", func() {
 		var (
-			membership wundergo.Membership
+			membership wl.Membership
 		)
 
 		BeforeEach(func() {
-			membership = wundergo.Membership{ID: 1234}
+			membership = wl.Membership{ID: 1234}
 		})
 
 		It("performs POST requests with correct headers to /memberships/:userID", func() {
-			expectedMembership := wundergo.Membership{
+			expectedMembership := wl.Membership{
 				ID:    membership.ID,
 				State: "accepted",
 			}
@@ -646,7 +646,7 @@ var _ = Describe("client - Membership operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedMembership := wundergo.Membership{
+				expectedMembership := wl.Membership{
 					ID: membership.ID,
 				}
 

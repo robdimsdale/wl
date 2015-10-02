@@ -14,7 +14,7 @@ BASE_DIR="$( cd ${MY_DIR}/../.. && pwd )"
 
 pushd ${BASE_DIR}
   mkdir -p $GOPATH/src/github.com/robdimsdale
-  ln -s $PWD $GOPATH/src/github.com/robdimsdale/wundergo
+  ln -s $PWD $GOPATH/src/github.com/robdimsdale/wl
 
   go get -u github.com/tools/godep
   

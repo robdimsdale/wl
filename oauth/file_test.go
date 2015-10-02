@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - File operations", func() {
@@ -39,7 +39,7 @@ var _ = Describe("client - File operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFiles := []wundergo.File{{ID: 2345}}
+				expectedFiles := []wl.File{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -166,7 +166,7 @@ var _ = Describe("client - File operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFiles := []wundergo.File{{ID: 2345}}
+				expectedFiles := []wl.File{{ID: 2345}}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -296,7 +296,7 @@ var _ = Describe("client - File operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFile := wundergo.File{ID: 1234}
+				expectedFile := wl.File{ID: 1234}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -424,7 +424,7 @@ var _ = Describe("client - File operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedFile := wundergo.File{ID: 2345}
+				expectedFile := wl.File{ID: 2345}
 
 				// Marshal and unmarshal to ensure exact object is returned
 				// - this avoids odd behavior with the time fields
@@ -527,11 +527,11 @@ var _ = Describe("client - File operations", func() {
 
 	Describe("deleting a file", func() {
 		var (
-			file wundergo.File
+			file wl.File
 		)
 
 		BeforeEach(func() {
-			file = wundergo.File{ID: 1234, Revision: 23}
+			file = wl.File{ID: 1234, Revision: 23}
 		})
 
 		It("performs DELETE requests with correct headers to /files", func() {

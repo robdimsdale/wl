@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // TaskComments gets all taskComments for all lists.
-func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
+func (c oauthClient) TaskComments() ([]wl.TaskComment, error) {
 	lists, err := c.Lists()
 	if err != nil {
 		return nil, err
@@ -22,10 +22,10 @@ func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
 		map[string]interface{}{"listCount": listCount},
 	)
 
-	taskCommentsChan := make(chan []wundergo.TaskComment, listCount)
+	taskCommentsChan := make(chan []wl.TaskComment, listCount)
 	idErrChan := make(chan idErr, listCount)
 	for _, l := range lists {
-		go func(list wundergo.List) {
+		go func(list wl.List) {
 			c.logger.Debug(
 				"taskComments - getting taskComments for list",
 				map[string]interface{}{"listID": list.ID},
@@ -48,7 +48,7 @@ func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
 		}
 	}
 
-	totalTaskComments := []wundergo.TaskComment{}
+	totalTaskComments := []wl.TaskComment{}
 	for i := 0; i < listCount; i++ {
 		taskComments := <-taskCommentsChan
 		totalTaskComments = append(totalTaskComments, taskComments...)
@@ -62,7 +62,7 @@ func (c oauthClient) TaskComments() ([]wundergo.TaskComment, error) {
 }
 
 // TaskCommentsForListID returns TaskComments for the provided listID.
-func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment, error) {
+func (c oauthClient) TaskCommentsForListID(listID uint) ([]wl.TaskComment, error) {
 	if listID == 0 {
 		return nil, errors.New("listID must be > 0")
 	}
@@ -87,7 +87,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment,
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComments := []wundergo.TaskComment{}
+	taskComments := []wl.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wundergo.TaskComment,
 }
 
 // TaskCommentsForTaskID returns TaskComments for the provided taskID.
-func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment, error) {
+func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wl.TaskComment, error) {
 	if taskID == 0 {
 		return nil, errors.New("taskID must be > 0")
 	}
@@ -121,7 +121,7 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment,
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComments := []wundergo.TaskComment{}
+	taskComments := []wl.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComments)
 	if err != nil {
 		return nil, err
@@ -131,9 +131,9 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wundergo.TaskComment,
 
 // CreateTaskComment creates a TaskComment with the provided content associated with the
 // Task for the corresponding taskID.
-func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskComment, error) {
+func (c oauthClient) CreateTaskComment(text string, taskID uint) (wl.TaskComment, error) {
 	if taskID == 0 {
-		return wundergo.TaskComment{}, errors.New("taskID must be > 0")
+		return wl.TaskComment{}, errors.New("taskID must be > 0")
 	}
 
 	body := []byte(fmt.Sprintf(`{"text":"%s","task_id":%d}`, text, taskID))
@@ -142,30 +142,30 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wundergo.TaskC
 
 	req, err := c.newPostRequest(url, body)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return wundergo.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
+		return wl.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	taskComment := wundergo.TaskComment{}
+	taskComment := wl.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 	return taskComment, nil
 }
 
 // TaskComment returns the TaskComment for the corresponding taskCommentID.
-func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, error) {
+func (c oauthClient) TaskComment(taskCommentID uint) (wl.TaskComment, error) {
 	if taskCommentID == 0 {
-		return wundergo.TaskComment{}, errors.New("taskCommentID must be > 0")
+		return wl.TaskComment{}, errors.New("taskCommentID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -176,28 +176,28 @@ func (c oauthClient) TaskComment(taskCommentID uint) (wundergo.TaskComment, erro
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.TaskComment{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	taskComment := wundergo.TaskComment{}
+	taskComment := wl.TaskComment{}
 	err = json.NewDecoder(resp.Body).Decode(&taskComment)
 	if err != nil {
-		return wundergo.TaskComment{}, err
+		return wl.TaskComment{}, err
 	}
 	return taskComment, nil
 }
 
 // DeleteTaskComment deletes the provided TaskComment.
-func (c oauthClient) DeleteTaskComment(taskComment wundergo.TaskComment) error {
+func (c oauthClient) DeleteTaskComment(taskComment wl.TaskComment) error {
 	url := fmt.Sprintf(
 		"%s/task_comments/%d?revision=%d",
 		c.apiURL,

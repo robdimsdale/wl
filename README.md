@@ -1,9 +1,9 @@
-wundergo
+wl
 ========
 
 Unofficial Wunderlist API client library and CLI, written in golang.
 
-Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wundergo/blob/master/LICENSE).
+Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wl/blob/master/LICENSE).
 
 ## Why?
 
@@ -18,9 +18,9 @@ The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and
 
 ### Getting the code
 
-The [**develop**](https://github.com/robdimsdale/wundergo/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
+The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
 
-The [**master**](https://github.com/robdimsdale/wundergo/tree/master) branch points to a stable commit. All tests should pass.
+The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points to a stable commit. All tests should pass.
 
 ## CLI Binary
 
@@ -28,7 +28,7 @@ A CLI is provided with support for some utility functions (e.g. list all tasks, 
 
 ### Installation
 
-Binaries are available on the [releases](https://github.com/robdimsdale/wundergo/releases) page for various operating systems and architectures.
+Binaries are available on the [releases](https://github.com/robdimsdale/wl/releases) page for various operating systems and architectures.
 
 Download the binary and place in the PATH.
 
@@ -38,7 +38,7 @@ A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; inst
 
 ```
 brew tap robdimsdale/tap
-brew install wundergo
+brew install wl
 ```
 
 ## Development

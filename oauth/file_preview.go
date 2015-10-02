@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 // FilePreview returns the FilePreview for the corresponding fileID.
@@ -16,9 +16,9 @@ func (c oauthClient) FilePreview(
 	fileID uint,
 	platform string,
 	size string,
-) (wundergo.FilePreview, error) {
+) (wl.FilePreview, error) {
 	if fileID == 0 {
-		return wundergo.FilePreview{}, errors.New("fileID must be > 0")
+		return wl.FilePreview{}, errors.New("fileID must be > 0")
 	}
 
 	url := fmt.Sprintf(
@@ -45,22 +45,22 @@ func (c oauthClient) FilePreview(
 
 	req, err := c.newGetRequest(url)
 	if err != nil {
-		return wundergo.FilePreview{}, err
+		return wl.FilePreview{}, err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return wundergo.FilePreview{}, err
+		return wl.FilePreview{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return wundergo.FilePreview{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
+		return wl.FilePreview{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	task := wundergo.FilePreview{}
+	task := wl.FilePreview{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
-		return wundergo.FilePreview{}, err
+		return wl.FilePreview{}, err
 	}
 	return task, nil
 }

@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/logger"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/logger"
+	"github.com/robdimsdale/wl/oauth"
 
 	"testing"
 	"time"
@@ -24,18 +24,18 @@ const (
 
 func TestMain(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Wundergo Integration Test Suite")
+	RunSpecs(t, "WL Integration Test Suite")
 }
 
 var (
-	client    wundergo.Client
+	client    wl.Client
 	wlBinPath string
 
 	wlAccessToken string
 	wlClientID    string
 )
 
-func listContains(lists []wundergo.List, list wundergo.List) bool {
+func listContains(lists []wl.List, list wl.List) bool {
 	for _, l := range lists {
 		if l.ID == list.ID {
 			return true
@@ -44,7 +44,7 @@ func listContains(lists []wundergo.List, list wundergo.List) bool {
 	return false
 }
 
-func taskContains(tasks []wundergo.Task, task wundergo.Task) bool {
+func taskContains(tasks []wl.Task, task wl.Task) bool {
 	for _, t := range tasks {
 		if t.ID == task.ID {
 			return true
@@ -53,7 +53,7 @@ func taskContains(tasks []wundergo.Task, task wundergo.Task) bool {
 	return false
 }
 
-func positionsContainValue(position []wundergo.Position, id uint) bool {
+func positionsContainValue(position []wl.Position, id uint) bool {
 	if position == nil {
 		return false
 	}
@@ -66,7 +66,7 @@ func positionsContainValue(position []wundergo.Position, id uint) bool {
 	return false
 }
 
-func positionContainsValue(position wundergo.Position, id uint) bool {
+func positionContainsValue(position wl.Position, id uint) bool {
 	for _, v := range position.Values {
 		if v == id {
 			return true
@@ -78,7 +78,7 @@ func positionContainsValue(position wundergo.Position, id uint) bool {
 var _ = BeforeSuite(func() {
 	By("Compiling binary")
 	var err error
-	wlBinPath, err = gexec.Build("github.com/robdimsdale/wundergo/cmd/wl", "-race")
+	wlBinPath, err = gexec.Build("github.com/robdimsdale/wl/cmd/wl", "-race")
 	Expect(err).ShouldNot(HaveOccurred())
 
 	SetDefaultEventuallyTimeout(5 * time.Second)

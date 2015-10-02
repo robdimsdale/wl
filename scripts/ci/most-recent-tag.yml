@@ -1,14 +1,14 @@
 ---
 platform: linux
 
-image: docker:///robdimsdale/wundergo-1.5
+image: docker:///robdimsdale/wl-1.5
 
 inputs:
-- name: wundergo-master
+- name: wl-master
 
 run:
   path: sh
   args:
   - -c
   - |
-    git -C wundergo-master tag --sort=version:refname | tail -1 > tagname && cat tagname
+    git -C wl-master tag --sort=version:refname | tail -1 > tagname && cat tagname

@@ -11,9 +11,9 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/logger"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/logger"
+	"github.com/robdimsdale/wl/oauth"
 	"github.com/spf13/cobra"
 )
 
@@ -59,112 +59,112 @@ var (
 	completed bool
 	listIDs   string
 
-	// WundergoCmd is the root command. All other commands are subcommands of it.
-	WundergoCmd = &cobra.Command{Use: "wl"}
+	// WLCmd is the root command. All other commands are subcommands of it.
+	WLCmd = &cobra.Command{Use: "wl"}
 )
 
-// Execute adds all child commands to the root command WundergoCmd,
+// Execute adds all child commands to the root command WLCmd,
 // and executes the root command.
 func Execute() {
 	addCommands()
-	WundergoCmd.Execute()
+	WLCmd.Execute()
 }
 
 // Sets global flags
 func init() {
-	WundergoCmd.PersistentFlags().BoolVarP(&verbose, verboseLongFlag, verboseShortFlag, false, "verbose output")
-	WundergoCmd.PersistentFlags().StringVarP(&accessToken, accessTokenLongFlag, "", "", `Wunderlist access token. 
+	WLCmd.PersistentFlags().BoolVarP(&verbose, verboseLongFlag, verboseShortFlag, false, "verbose output")
+	WLCmd.PersistentFlags().StringVarP(&accessToken, accessTokenLongFlag, "", "", `Wunderlist access token. 
                       	Required, but can be provided via WL_ACCESS_TOKEN environment variable instead.`)
-	WundergoCmd.PersistentFlags().StringVarP(&clientID, clientIDLongFlag, "", "", `Wunderlist client ID. 
+	WLCmd.PersistentFlags().StringVarP(&clientID, clientIDLongFlag, "", "", `Wunderlist client ID. 
                      Required, but can be provided via WL_CLIENT_ID environment variable instead.`)
-	WundergoCmd.PersistentFlags().BoolVarP(&useJSON, useJSONLongFlag, useJSONShortFlag, false, "render output as JSON instead of YAML.")
+	WLCmd.PersistentFlags().BoolVarP(&useJSON, useJSONLongFlag, useJSONShortFlag, false, "render output as JSON instead of YAML.")
 }
 
 func addCommands() {
-	WundergoCmd.AddCommand(cmdInbox)
-	WundergoCmd.AddCommand(cmdRoot)
-	WundergoCmd.AddCommand(cmdLists)
-	WundergoCmd.AddCommand(cmdList)
-	WundergoCmd.AddCommand(cmdCreateList)
-	WundergoCmd.AddCommand(cmdUpdateList)
-	WundergoCmd.AddCommand(cmdDeleteList)
-	WundergoCmd.AddCommand(cmdDeleteAllLists)
+	WLCmd.AddCommand(cmdInbox)
+	WLCmd.AddCommand(cmdRoot)
+	WLCmd.AddCommand(cmdLists)
+	WLCmd.AddCommand(cmdList)
+	WLCmd.AddCommand(cmdCreateList)
+	WLCmd.AddCommand(cmdUpdateList)
+	WLCmd.AddCommand(cmdDeleteList)
+	WLCmd.AddCommand(cmdDeleteAllLists)
 
-	WundergoCmd.AddCommand(cmdFolders)
-	WundergoCmd.AddCommand(cmdFolder)
-	WundergoCmd.AddCommand(cmdCreateFolder)
-	WundergoCmd.AddCommand(cmdUpdateFolder)
-	WundergoCmd.AddCommand(cmdDeleteFolder)
-	WundergoCmd.AddCommand(cmdDeleteAllFolders)
+	WLCmd.AddCommand(cmdFolders)
+	WLCmd.AddCommand(cmdFolder)
+	WLCmd.AddCommand(cmdCreateFolder)
+	WLCmd.AddCommand(cmdUpdateFolder)
+	WLCmd.AddCommand(cmdDeleteFolder)
+	WLCmd.AddCommand(cmdDeleteAllFolders)
 
-	WundergoCmd.AddCommand(cmdTasks)
-	WundergoCmd.AddCommand(cmdTask)
-	WundergoCmd.AddCommand(cmdCreateTask)
-	WundergoCmd.AddCommand(cmdUpdateTask)
-	WundergoCmd.AddCommand(cmdDeleteTask)
-	WundergoCmd.AddCommand(cmdDeleteAllTasks)
+	WLCmd.AddCommand(cmdTasks)
+	WLCmd.AddCommand(cmdTask)
+	WLCmd.AddCommand(cmdCreateTask)
+	WLCmd.AddCommand(cmdUpdateTask)
+	WLCmd.AddCommand(cmdDeleteTask)
+	WLCmd.AddCommand(cmdDeleteAllTasks)
 
-	WundergoCmd.AddCommand(cmdUploadFile)
-	WundergoCmd.AddCommand(cmdCreateFile)
-	WundergoCmd.AddCommand(cmdFile)
-	WundergoCmd.AddCommand(cmdFiles)
-	WundergoCmd.AddCommand(cmdDestroyFile)
-	WundergoCmd.AddCommand(cmdFilePreview)
+	WLCmd.AddCommand(cmdUploadFile)
+	WLCmd.AddCommand(cmdCreateFile)
+	WLCmd.AddCommand(cmdFile)
+	WLCmd.AddCommand(cmdFiles)
+	WLCmd.AddCommand(cmdDestroyFile)
+	WLCmd.AddCommand(cmdFilePreview)
 
-	WundergoCmd.AddCommand(cmdUsers)
-	WundergoCmd.AddCommand(cmdUser)
-	WundergoCmd.AddCommand(cmdUpdateUser)
-	WundergoCmd.AddCommand(cmdAvatarURL)
+	WLCmd.AddCommand(cmdUsers)
+	WLCmd.AddCommand(cmdUser)
+	WLCmd.AddCommand(cmdUpdateUser)
+	WLCmd.AddCommand(cmdAvatarURL)
 
-	WundergoCmd.AddCommand(cmdNotes)
-	WundergoCmd.AddCommand(cmdNote)
-	WundergoCmd.AddCommand(cmdCreateNote)
-	WundergoCmd.AddCommand(cmdUpdateNote)
-	WundergoCmd.AddCommand(cmdDeleteNote)
+	WLCmd.AddCommand(cmdNotes)
+	WLCmd.AddCommand(cmdNote)
+	WLCmd.AddCommand(cmdCreateNote)
+	WLCmd.AddCommand(cmdUpdateNote)
+	WLCmd.AddCommand(cmdDeleteNote)
 
-	WundergoCmd.AddCommand(cmdSubtasks)
-	WundergoCmd.AddCommand(cmdCreateSubtask)
-	WundergoCmd.AddCommand(cmdSubtask)
-	WundergoCmd.AddCommand(cmdUpdateSubtask)
-	WundergoCmd.AddCommand(cmdDeleteSubtask)
+	WLCmd.AddCommand(cmdSubtasks)
+	WLCmd.AddCommand(cmdCreateSubtask)
+	WLCmd.AddCommand(cmdSubtask)
+	WLCmd.AddCommand(cmdUpdateSubtask)
+	WLCmd.AddCommand(cmdDeleteSubtask)
 
-	WundergoCmd.AddCommand(cmdWebhooks)
-	WundergoCmd.AddCommand(cmdWebhook)
-	WundergoCmd.AddCommand(cmdCreateWebhook)
-	WundergoCmd.AddCommand(cmdDeleteWebhook)
+	WLCmd.AddCommand(cmdWebhooks)
+	WLCmd.AddCommand(cmdWebhook)
+	WLCmd.AddCommand(cmdCreateWebhook)
+	WLCmd.AddCommand(cmdDeleteWebhook)
 
-	WundergoCmd.AddCommand(cmdReminders)
-	WundergoCmd.AddCommand(cmdCreateReminder)
-	WundergoCmd.AddCommand(cmdReminder)
-	WundergoCmd.AddCommand(cmdUpdateReminder)
-	WundergoCmd.AddCommand(cmdDeleteReminder)
+	WLCmd.AddCommand(cmdReminders)
+	WLCmd.AddCommand(cmdCreateReminder)
+	WLCmd.AddCommand(cmdReminder)
+	WLCmd.AddCommand(cmdUpdateReminder)
+	WLCmd.AddCommand(cmdDeleteReminder)
 
-	WundergoCmd.AddCommand(cmdTaskComments)
-	WundergoCmd.AddCommand(cmdCreateTaskComment)
-	WundergoCmd.AddCommand(cmdTaskComment)
-	WundergoCmd.AddCommand(cmdDeleteTaskComment)
+	WLCmd.AddCommand(cmdTaskComments)
+	WLCmd.AddCommand(cmdCreateTaskComment)
+	WLCmd.AddCommand(cmdTaskComment)
+	WLCmd.AddCommand(cmdDeleteTaskComment)
 
-	WundergoCmd.AddCommand(cmdMemberships)
-	WundergoCmd.AddCommand(cmdMembership)
-	WundergoCmd.AddCommand(cmdRejectMembership)
-	WundergoCmd.AddCommand(cmdAcceptMembership)
-	WundergoCmd.AddCommand(cmdRemoveMembership)
-	WundergoCmd.AddCommand(cmdInviteMember)
+	WLCmd.AddCommand(cmdMemberships)
+	WLCmd.AddCommand(cmdMembership)
+	WLCmd.AddCommand(cmdRejectMembership)
+	WLCmd.AddCommand(cmdAcceptMembership)
+	WLCmd.AddCommand(cmdRemoveMembership)
+	WLCmd.AddCommand(cmdInviteMember)
 
-	WundergoCmd.AddCommand(cmdListPositions)
-	WundergoCmd.AddCommand(cmdListPosition)
-	WundergoCmd.AddCommand(cmdUpdateListPosition)
+	WLCmd.AddCommand(cmdListPositions)
+	WLCmd.AddCommand(cmdListPosition)
+	WLCmd.AddCommand(cmdUpdateListPosition)
 
-	WundergoCmd.AddCommand(cmdTaskPositions)
-	WundergoCmd.AddCommand(cmdTaskPosition)
-	WundergoCmd.AddCommand(cmdUpdateTaskPosition)
+	WLCmd.AddCommand(cmdTaskPositions)
+	WLCmd.AddCommand(cmdTaskPosition)
+	WLCmd.AddCommand(cmdUpdateTaskPosition)
 
-	WundergoCmd.AddCommand(cmdSubtaskPositions)
-	WundergoCmd.AddCommand(cmdSubtaskPosition)
-	WundergoCmd.AddCommand(cmdUpdateSubtaskPosition)
+	WLCmd.AddCommand(cmdSubtaskPositions)
+	WLCmd.AddCommand(cmdSubtaskPosition)
+	WLCmd.AddCommand(cmdUpdateSubtaskPosition)
 }
 
-func newClient(cmd *cobra.Command) wundergo.Client {
+func newClient(cmd *cobra.Command) wl.Client {
 	var l logger.Logger
 	if verbose {
 		l = logger.NewLogger(logger.DEBUG)
@@ -194,7 +194,7 @@ func newClient(cmd *cobra.Command) wundergo.Client {
 		os.Exit(2)
 	}
 
-	return oauth.NewClient(accessToken, clientID, wundergo.APIURL, l)
+	return oauth.NewClient(accessToken, clientID, wl.APIURL, l)
 }
 
 func handleError(err error) {

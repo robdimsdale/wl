@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/oauth"
 )
 
 var _ = Describe("client - User operations", func() {
@@ -31,7 +31,7 @@ var _ = Describe("client - User operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUser := wundergo.User{Name: "some user"}
+				expectedUser := wl.User{Name: "some user"}
 				expectedBody, err := json.Marshal(expectedUser)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -122,7 +122,7 @@ var _ = Describe("client - User operations", func() {
 	})
 
 	Describe("updating user", func() {
-		user := wundergo.User{
+		user := wl.User{
 			Name:     "username",
 			Revision: 12,
 		}
@@ -140,14 +140,14 @@ var _ = Describe("client - User operations", func() {
 				),
 			)
 
-			client.UpdateUser(wundergo.User{})
+			client.UpdateUser(wl.User{})
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUser := wundergo.User{Name: "some user"}
+				expectedUser := wl.User{Name: "some user"}
 
 				// Unmarshal to ensure exact object is returned
 				// avoids odd behavior with the time fields
@@ -297,7 +297,7 @@ var _ = Describe("client - User operations", func() {
 
 		Context("when the request is valid", func() {
 			It("returns successfully", func() {
-				expectedUsers := []wundergo.User{{Name: "some user"}}
+				expectedUsers := []wl.User{{Name: "some user"}}
 
 				// Unmarshal to ensure exact object is returned
 				// avoids odd behavior with the time fields

@@ -1,4 +1,4 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic folder functionality", func() {
@@ -30,18 +30,18 @@ var _ = Describe("basic folder functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Verifying folder exists")
-		var folders []wundergo.Folder
+		var folders []wl.Folder
 		Eventually(func() (bool, error) {
 			folders, err = client.Folders()
 			return folderContains(folders, newFolder), err
 		}).Should(BeTrue())
 
-		Eventually(func() (wundergo.Folder, error) {
+		Eventually(func() (wl.Folder, error) {
 			return client.Folder(newFolder.ID)
 		}).Should(Equal(newFolder))
 
 		By("Verifying folder revisions exist")
-		var folderRevisions []wundergo.FolderRevision
+		var folderRevisions []wl.FolderRevision
 		Eventually(func() (bool, error) {
 			folderRevisions, err = client.FolderRevisions()
 			return folderRevisionContainsFolder(folderRevisions, newFolder), err
@@ -53,11 +53,11 @@ var _ = Describe("basic folder functionality", func() {
 		newFolderTitle2 := fmt.Sprintf("%s-updated", uuid3.String())
 
 		newFolder.Title = newFolderTitle2
-		var updatedFolder wundergo.Folder
+		var updatedFolder wl.Folder
 		updatedFolder, err = client.UpdateFolder(newFolder)
 		Expect(err).NotTo(HaveOccurred())
 
-		Eventually(func() (wundergo.Folder, error) {
+		Eventually(func() (wl.Folder, error) {
 			return client.Folder(newFolder.ID)
 		}).Should(Equal(updatedFolder))
 
@@ -78,7 +78,7 @@ var _ = Describe("basic folder functionality", func() {
 			return client.DeleteList(newList)
 		}).Should(Succeed())
 
-		var lists []wundergo.List
+		var lists []wl.List
 		Eventually(func() (bool, error) {
 			lists, err = client.Lists()
 			return listContains(lists, newList), err
@@ -86,7 +86,7 @@ var _ = Describe("basic folder functionality", func() {
 	})
 })
 
-func folderContains(folders []wundergo.Folder, folder wundergo.Folder) bool {
+func folderContains(folders []wl.Folder, folder wl.Folder) bool {
 	for _, f := range folders {
 		if f.ID == folder.ID {
 			return true
@@ -95,7 +95,7 @@ func folderContains(folders []wundergo.Folder, folder wundergo.Folder) bool {
 	return false
 }
 
-func folderRevisionContainsFolder(folderRevisions []wundergo.FolderRevision, folder wundergo.Folder) bool {
+func folderRevisionContainsFolder(folderRevisions []wl.FolderRevision, folder wl.Folder) bool {
 	for _, f := range folderRevisions {
 		if f.ID == folder.ID {
 			return true

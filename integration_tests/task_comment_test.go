@@ -1,16 +1,16 @@
-package wundergo_integration_test
+package wl_integration_test
 
 import (
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 )
 
 var _ = Describe("basic task comment functionality", func() {
 	var (
-		newList wundergo.List
-		newTask wundergo.Task
+		newList wl.List
+		newTask wl.Task
 	)
 
 	BeforeEach(func() {
@@ -116,7 +116,7 @@ var _ = Describe("basic task comment functionality", func() {
 	})
 })
 
-func taskCommentContains(taskComments []wundergo.TaskComment, taskComment wundergo.TaskComment) bool {
+func taskCommentContains(taskComments []wl.TaskComment, taskComment wl.TaskComment) bool {
 	for _, t := range taskComments {
 		if t.ID == taskComment.ID {
 			return true

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/robdimsdale/wundergo"
+	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
 )
 
@@ -190,7 +190,7 @@ func init() {
 	cmdUpdateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
 }
 
-func task(cmd *cobra.Command, args []string) (wundergo.Task, error) {
+func task(cmd *cobra.Command, args []string) (wl.Task, error) {
 	if len(args) != 1 {
 		fmt.Printf("incorrect number of arguments provided\n\n")
 		cmd.Usage()

@@ -1,4 +1,4 @@
-package wundergo
+package wl
 
 // Upload contains information about uploads.
 // Uploads represent uploaded files.

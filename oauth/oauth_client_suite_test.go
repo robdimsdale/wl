@@ -4,9 +4,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/robdimsdale/wundergo"
-	"github.com/robdimsdale/wundergo/logger"
-	"github.com/robdimsdale/wundergo/oauth"
+	"github.com/robdimsdale/wl"
+	"github.com/robdimsdale/wl/logger"
+	"github.com/robdimsdale/wl/oauth"
 
 	"testing"
 )
@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	client wundergo.Client
+	client wl.Client
 
 	server *ghttp.Server
 	apiURL string
@@ -25,9 +25,9 @@ var (
 	testLogger logger.Logger
 )
 
-func TestWundergo(t *testing.T) {
+func TestWL(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Wundergo Suite")
+	RunSpecs(t, "WL Suite")
 }
 
 var _ = BeforeEach(func() {
