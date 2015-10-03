@@ -22,6 +22,18 @@ The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is wher
 
 The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points to a stable commit. All tests should pass.
 
+Install the library with:
+
+```
+go get gopkg.in/robdimsdale/wl.v1
+```
+
+or
+
+```
+go get github.com/robdimsdale/wl
+```
+
 ## CLI Binary
 
 A CLI is provided with support for some utility functions (e.g. list all tasks, delete all folders).
