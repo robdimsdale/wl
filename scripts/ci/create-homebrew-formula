@@ -16,7 +16,7 @@ sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
 cat << EOF > ${OUTPUT_FILE}
 require "language/go"
 
-class WL < Formula
+class Wl < Formula
   desc "golang wunderlist client"
   homepage "https://github.com/robdimsdale/wl"
   version "${VERSION}"
