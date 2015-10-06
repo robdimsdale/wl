@@ -1,5 +1,5 @@
 wl
-========
+==
 
 Unofficial Wunderlist API client library and CLI, written in golang.
 
@@ -12,16 +12,6 @@ Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https:
 
 ## Library
 
-### Supported Golang versions
-
-The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
-
-### Getting the code
-
-The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
-
-The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points to a stable commit. All tests should pass.
-
 Install the library with:
 
 ```
@@ -33,6 +23,44 @@ or
 ```
 go get github.com/robdimsdale/wl
 ```
+
+### Usage
+
+Create an instance of `wl.Client` using e.g. `oauth.NewClient()` as follows:
+
+```
+import (
+  "fmt"
+
+  "github.com/robdimsdale/wl"
+  "github.com/robdimsdale/wl/logger"
+  "github.com/robdimsdale/wl/oauth"
+)
+
+func main() {
+  // Ignore error
+  client, _ := oauth.NewClient(
+    "my_access_token",
+    "my_client_id",
+    wl.APIURL,
+    logger.NewLogger(logger.INFO),
+  )
+
+  // Ignore error
+  inbox, _ := client.Inbox()
+  fmt.Printf("Inbox: %v\n", inbox)
+}
+```
+
+### Supported Golang versions
+
+The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
+
+### Branches
+
+The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
+
+The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points to a stable commit. All tests should pass.
 
 ## CLI Binary
 
@@ -51,6 +79,28 @@ A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; inst
 ```
 brew tap robdimsdale/tap
 brew install wl
+```
+
+### Usage
+
+Access token and client id are required. Provide them via flags (`--accessToken` and `--clientID`) or with environment variables (`WL_ACCESS_TOKEN` or `WL_CLIENT_ID`)
+
+```
+$ wl inbox --accessToken my_access_token --clientID my_client_id
+id: 123456789
+title: inbox
+created_at: 2014-08-29T19:45:34.98Z
+list_type: inbox
+revision: 53538
+type: list
+public: false
+
+$ WL_ACCESS_TOKEN=my_access_token WL_CLIENT_ID=my_client_id wl create-task --list-id 123456789 --title "some new title"
+id: 987654321
+[...]
+list_id: 123456789
+title: some new title
+completed: false
 ```
 
 ## Development
