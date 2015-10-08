@@ -14,7 +14,7 @@ pushd ${BASE_DIR}
   mkdir -p $GOPATH/src/github.com/robdimsdale
   ln -s $PWD $GOPATH/src/github.com/robdimsdale/wl
 
-  go get github.com/onsi/ginkgo/ginkgo
+  go get github.com/robdimsdale/ginkgo/ginkgo
 
   go get -u github.com/tools/godep
   
