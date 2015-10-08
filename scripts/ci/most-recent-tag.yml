@@ -7,4 +7,4 @@ inputs:
 - name: wl-master
 
 run:
-  path: wl/scripts/ci/most-recent-tag
+  path: wl-master/scripts/ci/most-recent-tag
