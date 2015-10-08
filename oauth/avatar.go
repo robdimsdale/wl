@@ -5,8 +5,9 @@ import (
 	"net/http"
 )
 
-// AvatarURL returns the URL of the user associated with userID
-// sized is checked to ensure it is positive, but is not validate otherwise.
+// AvatarURL returns the URL of the user associated with userID.
+// Non-positive sizes are ignored, positive sizes are validated according to
+// the values at https://developer.wunderlist.com/documentation/endpoints/avatar.
 func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, error) {
 	url := fmt.Sprintf(
 		"%s/avatar?user_id=%d",
@@ -15,6 +16,9 @@ func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, er
 	)
 
 	if size > 0 {
+		if !c.validSize(size) {
+			return "", fmt.Errorf("Invalid size: %d", size)
+		}
 		url = fmt.Sprintf(
 			"%s&size=%d",
 			url,
@@ -65,4 +69,16 @@ func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, er
 		return "", err
 	}
 	return location.String(), nil
+}
+
+func (c oauthClient) validSize(size int) bool {
+	validSizes := []int{25, 28, 30, 32, 50, 54, 56, 60, 64, 108, 128, 135, 256, 270, 512}
+
+	for _, s := range validSizes {
+		if s == size {
+			return true
+		}
+	}
+
+	return false
 }

@@ -1,9 +1,11 @@
 package oauth_test
 
 import (
+	"fmt"
 	"net/http"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/robdimsdale/wl/oauth"
@@ -42,7 +44,7 @@ var _ = Describe("client - Avatar operations", func() {
 			})
 		})
 
-		Context("with nonzero size and fallback=true", func() {
+		Context("with valid size and fallback=true", func() {
 			BeforeEach(func() {
 				size = 128
 			})
@@ -63,6 +65,61 @@ var _ = Describe("client - Avatar operations", func() {
 				Expect(server.ReceivedRequests()).Should(HaveLen(1))
 			})
 		})
+
+		DescribeTable("size validation",
+			func(size int, valid bool) {
+				if size <= 0 {
+					server.AppendHandlers(
+						ghttp.CombineHandlers(
+							ghttp.VerifyRequest("GET", "/avatar", "user_id=1234"),
+							ghttp.VerifyHeader(http.Header{
+								"X-Access-Token": []string{dummyAccessToken},
+								"X-Client-ID":    []string{dummyClientID},
+							}),
+						),
+					)
+
+					client.AvatarURL(userID, size, fallback)
+
+					Expect(server.ReceivedRequests()).Should(HaveLen(1))
+				} else if valid {
+					server.AppendHandlers(
+						ghttp.CombineHandlers(
+							ghttp.VerifyRequest("GET", "/avatar", fmt.Sprintf("user_id=1234&size=%d", size)),
+							ghttp.VerifyHeader(http.Header{
+								"X-Access-Token": []string{dummyAccessToken},
+								"X-Client-ID":    []string{dummyClientID},
+							}),
+						),
+					)
+
+					client.AvatarURL(userID, size, fallback)
+
+					Expect(server.ReceivedRequests()).Should(HaveLen(1))
+				} else {
+					_, err := client.AvatarURL(userID, size, fallback)
+					Expect(err).Should(HaveOccurred())
+				}
+			},
+			Entry("negative", -1, false),
+			Entry("0", 0, false),
+			Entry("25", 25, true),
+			Entry("28", 28, true),
+			Entry("30", 30, true),
+			Entry("32", 32, true),
+			Entry("50", 50, true),
+			Entry("54", 54, true),
+			Entry("56", 56, true),
+			Entry("60", 60, true),
+			Entry("64", 64, true),
+			Entry("108", 108, true),
+			Entry("128", 128, true),
+			Entry("135", 135, true),
+			Entry("256", 256, true),
+			Entry("270", 270, true),
+			Entry("512", 512, true),
+			Entry("513", 513, false),
+		)
 
 		Context("with size=0 and fallback=true", func() {
 			BeforeEach(func() {
