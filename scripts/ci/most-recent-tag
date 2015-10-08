@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -eux
+
+git -C wl-master tag --sort=version:refname | tail -1 > tagname && cat tagname
