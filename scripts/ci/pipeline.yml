@@ -283,7 +283,7 @@ jobs:
 
 - name: shipit
   serial_groups: [version]
-  public: false
+  public: true
   plan:
   - aggregate:
     - get: wl
@@ -326,6 +326,7 @@ jobs:
       params: {from: finalize-wl-release-windows-amd64/wl-windows-(.*)}
 
 - name: github-release
+  public: true
   plan:
   - aggregate:
     - get: wl
@@ -355,6 +356,7 @@ jobs:
       - wl-release-windows-amd64/wl-*
 
 - name: homebrew
+  public: true
   plan:
   - aggregate:
     - get: wl
@@ -400,6 +402,7 @@ jobs:
     params: {file: version/number}
 
 - name: docker-wl-1.2
+  public: false
   plan:
   - do:
     - get: wl
@@ -418,6 +421,7 @@ jobs:
         text: {{docker-1-2-slack-failure-text}}
 
 - name: docker-wl-1.3
+  public: false
   plan:
   - do:
     - get: wl
@@ -436,6 +440,7 @@ jobs:
         text: {{docker-1-3-slack-failure-text}}
 
 - name: docker-wl-1.4
+  public: false
   plan:
   - do:
     - get: wl
@@ -454,6 +459,7 @@ jobs:
         text: {{docker-1-4-slack-failure-text}}
 
 - name: docker-wl-1.5
+  public: false
   plan:
   - do:
     - get: wl
