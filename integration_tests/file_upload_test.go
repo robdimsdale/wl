@@ -70,11 +70,11 @@ var _ = Describe("basic upload and file functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			task, err := client.Task(task.ID)
+			t, err := client.Task(task.ID)
 			if err != nil {
 				return err
 			}
-			return client.DeleteTask(task)
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
@@ -84,11 +84,11 @@ var _ = Describe("basic upload and file functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			list, err := client.List(newList.ID)
+			l, err := client.List(newList.ID)
 			if err != nil {
 				return err
 			}
-			return client.DeleteList(list)
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

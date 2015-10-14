@@ -7,56 +7,42 @@ import (
 )
 
 var _ = Describe("basic membership functionality", func() {
-	muted := true
+	const muted = true
+
+	var (
+		inbox wl.List
+		user  wl.User
+	)
+
+	BeforeEach(func() {
+		var err error
+
+		By("Getting inbox")
+
+		Eventually(func() error {
+			inbox, err = client.Inbox()
+			return err
+		}).Should(Succeed())
+
+		By("Getting user")
+
+		Eventually(func() error {
+			user, err = client.User()
+			return err
+		}).Should(Succeed())
+	})
 
 	It("can add members via userID", func() {
-		var lists []wl.List
 		Eventually(func() error {
-			l, err := client.Lists()
-			lists = l
-			return err
-		}).Should(Succeed())
-		list := lists[0]
-
-		var user wl.User
-		Eventually(func() error {
-			u, err := client.User()
-			user = u
-			return err
-		}).Should(Succeed())
-
-		// Adding a member to a list they are already a member of
-		// should return 201. This is odd, but it's the way it works
-
-		Eventually(func() error {
-			_, err := client.AddMemberToListViaUserID(user.ID, list.ID, muted)
+			_, err := client.AddMemberToListViaUserID(user.ID, inbox.ID, muted)
 			return err
 		}).Should(Succeed())
 	})
 
 	It("can add members via emailAddress", func() {
-		var lists []wl.List
 		Eventually(func() error {
-			l, err := client.Lists()
-			lists = l
-			return err
-		}).Should(Succeed())
-		list := lists[0]
-
-		var user wl.User
-		Eventually(func() error {
-			u, err := client.User()
-			user = u
-			return err
-		}).Should(Succeed())
-
-		// Adding a member to a list they are already a member of
-		// should return 201. This is odd, but it's the way it works
-
-		Eventually(func() error {
-			_, err := client.AddMemberToListViaEmailAddress(user.Email, list.ID, muted)
+			_, err := client.AddMemberToListViaEmailAddress(user.Email, inbox.ID, muted)
 			return err
 		}).Should(Succeed())
 	})
-
 })

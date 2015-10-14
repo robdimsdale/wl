@@ -48,8 +48,11 @@ var _ = Describe("basic task functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			newTask, err = client.Task(newTask.ID)
-			return client.DeleteTask(newTask)
+			t, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		var tasks []wl.Task
@@ -60,8 +63,11 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		var lists []wl.List
@@ -80,15 +86,20 @@ var _ = Describe("basic task functionality", func() {
 			Expect(err).NotTo(HaveOccurred())
 			secondListTitle := uuid1.String()
 
-			secondList, err = client.CreateList(secondListTitle)
-			Expect(err).NotTo(HaveOccurred())
+			Eventually(func() error {
+				secondList, err = client.CreateList(secondListTitle)
+				return err
+			}).Should(Succeed())
 		})
 
 		AfterEach(func() {
 			By("Deleting second list")
 			Eventually(func() error {
-				secondList, err = client.List(secondList.ID)
-				return client.DeleteList(secondList)
+				l, err := client.List(secondList.ID)
+				if err != nil {
+					return err
+				}
+				return client.DeleteList(l)
 			}).Should(Succeed())
 
 			var lists []wl.List
@@ -101,16 +112,19 @@ var _ = Describe("basic task functionality", func() {
 		It("can move a task between lists", func() {
 			By("Moving task to second list")
 			newTask.ListID = secondList.ID
+			var t wl.Task
 			Eventually(func() error {
-				newTask, err = client.UpdateTask(newTask)
+				t, err = client.UpdateTask(newTask)
 				return err
 			}).Should(Succeed())
+			newTask = t
 
 			By("Verifying task appears in tasks for second list")
 			var completedTasksForSecondList []wl.Task
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
-				completedTasksForSecondList, err = client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
+				completedTasksForSecondList, err =
+					client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
 				return taskContains(completedTasksForSecondList, newTask), err
 			}).Should(BeTrue())
 
@@ -118,28 +132,32 @@ var _ = Describe("basic task functionality", func() {
 			var completedTasksForFirstList []wl.Task
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
-				completedTasksForFirstList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+				completedTasksForFirstList, err =
+					client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 				return taskContains(completedTasksForFirstList, newTask), err
 			}).Should(BeFalse())
 
 			By("Moving task back to first list")
 			newTask.ListID = newList.ID
 			Eventually(func() error {
-				newTask, err = client.UpdateTask(newTask)
+				t, err = client.UpdateTask(newTask)
 				return err
 			}).Should(Succeed())
+			newTask = t
 
 			By("Verifying task does not appear in tasks for second list")
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
-				completedTasksForSecondList, err = client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
+				completedTasksForSecondList, err =
+					client.CompletedTasksForListID(secondList.ID, showCompletedTasks)
 				return taskContains(completedTasksForSecondList, newTask), err
 			}).Should(BeFalse())
 
 			By("Verifying task does appear in tasks for first list")
 			Eventually(func() (bool, error) {
 				showCompletedTasks := false
-				completedTasksForFirstList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+				completedTasksForFirstList, err =
+					client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 				return taskContains(completedTasksForFirstList, newTask), err
 			}).Should(BeTrue())
 		})
@@ -147,22 +165,27 @@ var _ = Describe("basic task functionality", func() {
 
 	It("can complete tasks", func() {
 		var completedTasksForList []wl.Task
+		By("Ensuring task is not already in completed tasks")
 		showCompletedTasks := true
 		Eventually(func() (bool, error) {
-			completedTasksForList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+			completedTasksForList, err =
+				client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 			return taskContains(completedTasksForList, newTask), err
 		}).Should(BeFalse())
 
 		By("Completing task")
 		newTask.Completed = true
+		var t wl.Task
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(newTask)
+			t, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
+		newTask = t
 
 		By("Verifying task appears in completed tasks for list")
 		Eventually(func() (bool, error) {
-			completedTasksForList, err = client.CompletedTasksForListID(newList.ID, showCompletedTasks)
+			completedTasksForList, err =
+				client.CompletedTasksForListID(newList.ID, showCompletedTasks)
 			return taskContains(completedTasksForList, newTask), err
 		}).Should(BeTrue())
 
@@ -184,10 +207,12 @@ var _ = Describe("basic task functionality", func() {
 		newTask.RecurrenceCount = 2
 
 		By("Updating task")
+		var t wl.Task
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(newTask)
+			t, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
+		newTask = t
 
 		By("Getting task again")
 		var taskAgain wl.Task
@@ -210,9 +235,10 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Updating task")
 		Eventually(func() error {
-			taskAgain, err = client.UpdateTask(taskAgain)
+			t, err = client.UpdateTask(taskAgain)
 			return err
 		}).Should(Succeed())
+		taskAgain = t
 
 		By("Verifying properties are reset")
 		Expect(taskAgain.Starred).Should(BeFalse())
@@ -227,10 +253,12 @@ var _ = Describe("basic task functionality", func() {
 		newTask.DueDate = firstDate
 
 		By("Updating task")
+		var t wl.Task
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(newTask)
+			t, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
+		newTask = t
 
 		By("Ensuring due date is set")
 		Expect(newTask.DueDate).Should(Equal(firstDate))
@@ -241,9 +269,10 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Updating task")
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(newTask)
+			t, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
+		newTask = t
 
 		By("Ensuring due date is set")
 		Expect(newTask.DueDate).Should(Equal(newDate))
@@ -253,9 +282,10 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Updating task")
 		Eventually(func() error {
-			newTask, err = client.UpdateTask(newTask)
+			t, err = client.UpdateTask(newTask)
 			return err
 		}).Should(Succeed())
+		newTask = t
 
 		By("Verifying due date is removed")
 		Expect(newTask.DueDate).Should(Equal(time.Time{}))
@@ -266,17 +296,15 @@ var _ = Describe("basic task functionality", func() {
 		var subtask wl.Subtask
 		subtaskComplete := false
 		Eventually(func() error {
-			subtask, err = client.CreateSubtask("mySubtaskTitle", newTask.ID, subtaskComplete)
+			subtask, err =
+				client.CreateSubtask("mySubtaskTitle", newTask.ID, subtaskComplete)
 			return err
 		}).Should(Succeed())
 
 		By("Getting subtask")
-		var aSubtask wl.Subtask
-		Eventually(func() error {
-			aSubtask, err = client.Subtask(subtask.ID)
-			return err
-		}).Should(Succeed())
-		Expect(aSubtask.ID).To(Equal(subtask.ID))
+		Eventually(func() (wl.Subtask, error) {
+			return client.Subtask(subtask.ID)
+		}).Should(Equal(subtask))
 
 		By("Validating subtask exists in all subtasks")
 		Eventually(func() bool {
@@ -300,10 +328,12 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Completing subtask")
 		subtask.Completed = true
+		var s wl.Subtask
 		Eventually(func() error {
-			subtask, err = client.UpdateSubtask(subtask)
+			s, err = client.UpdateSubtask(subtask)
 			return err
 		}).Should(Succeed())
+		subtask = s
 
 		By("Validating subtask exists in all completed subtasks")
 		showCompletedSubtasks := true
@@ -316,19 +346,25 @@ var _ = Describe("basic task functionality", func() {
 
 		By("Validating subtask exists in completed subtasks for list")
 		Eventually(func() (bool, error) {
-			subtasksForList, err := client.CompletedSubtasksForListID(newList.ID, showCompletedSubtasks)
+			subtasksForList, err :=
+				client.CompletedSubtasksForListID(newList.ID, showCompletedSubtasks)
 			return subtaskContains(subtasksForList, subtask), err
 		}).Should(BeTrue())
 
 		By("Validating subtask exists in completed subtasks for task")
 		Eventually(func() (bool, error) {
-			subtasksForTask, err := client.CompletedSubtasksForTaskID(newTask.ID, showCompletedSubtasks)
+			subtasksForTask, err :=
+				client.CompletedSubtasksForTaskID(newTask.ID, showCompletedSubtasks)
 			return subtaskContains(subtasksForTask, subtask), err
 		}).Should(BeTrue())
 
 		By("Deleting subtask")
 		Eventually(func() error {
-			return client.DeleteSubtask(subtask)
+			s, err := client.Subtask(subtask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteSubtask(s)
 		}).Should(Succeed())
 	})
 })

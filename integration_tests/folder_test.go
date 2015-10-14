@@ -63,8 +63,11 @@ var _ = Describe("basic folder functionality", func() {
 
 		By("Deleting new folder")
 		Eventually(func() error {
-			newFolder, err = client.Folder(newFolder.ID)
-			return client.DeleteFolder(newFolder)
+			n, err := client.Folder(newFolder.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteFolder(n)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
@@ -74,8 +77,11 @@ var _ = Describe("basic folder functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		var lists []wl.List

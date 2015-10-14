@@ -67,31 +67,40 @@ var _ = Describe("basic task position functionality", func() {
 		By("Reordering tasks")
 		var taskPosition wl.Position
 
+		var taskPositions []wl.Position
 		Eventually(func() error {
-			taskPositions, err := client.TaskPositionsForListID(newList.ID)
-			tp := taskPositions
-			taskPosition = tp[0]
+			taskPositions, err = client.TaskPositionsForListID(newList.ID)
 			return err
 		}).Should(Succeed())
+		taskPosition = taskPositions[0]
 
 		taskPosition.Values = append(taskPosition.Values, newTask1.ID, newTask2.ID)
 
 		Eventually(func() (bool, error) {
-			taskPosition, err := client.UpdateTaskPosition(taskPosition)
-			task1Contained := positionContainsValue(taskPosition, newTask1.ID)
-			task2Contained := positionContainsValue(taskPosition, newTask2.ID)
-			return task1Contained && task2Contained, err
+			tp, err := client.UpdateTaskPosition(taskPosition)
+			if err != nil {
+				return false, err
+			}
+			task1Contained := positionContainsValue(tp, newTask1.ID)
+			task2Contained := positionContainsValue(tp, newTask2.ID)
+			return task1Contained && task2Contained, nil
 		}).Should(BeTrue())
 
 		By("Deleting tasks")
 		Eventually(func() error {
-			newTask1, err = client.Task(newTask1.ID)
-			return client.DeleteTask(newTask1)
+			t, err := client.Task(newTask1.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			newTask2, err = client.Task(newTask2.ID)
-			return client.DeleteTask(newTask2)
+			t, err := client.Task(newTask2.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
@@ -106,8 +115,11 @@ var _ = Describe("basic task position functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

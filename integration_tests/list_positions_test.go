@@ -59,6 +59,7 @@ var _ = Describe("basic list position functionality", func() {
 			break // No error
 		}
 		Expect(err).NotTo(HaveOccurred())
+
 		list1Contained := positionContainsValue(listPosition, newList1.ID)
 		list2Contained := positionContainsValue(listPosition, newList2.ID)
 		Expect(list1Contained).To(BeTrue())
@@ -66,13 +67,19 @@ var _ = Describe("basic list position functionality", func() {
 
 		By("Deleting lists")
 		Eventually(func() error {
-			newList1, err = client.List(newList1.ID)
-			return client.DeleteList(newList1)
+			l, err := client.List(newList1.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			newList2, err = client.List(newList2.ID)
-			return client.DeleteList(newList2)
+			l, err := client.List(newList2.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

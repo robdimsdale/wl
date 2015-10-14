@@ -47,11 +47,11 @@ var _ = Describe("basic task comment functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			newTask, err := client.Task(newTask.ID)
+			t, err := client.Task(newTask.ID)
 			if err != nil {
 				return err
 			}
-			return client.DeleteTask(newTask)
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
@@ -61,11 +61,11 @@ var _ = Describe("basic task comment functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err := client.List(newList.ID)
+			l, err := client.List(newList.ID)
 			if err != nil {
 				return err
 			}
-			return client.DeleteList(newList)
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

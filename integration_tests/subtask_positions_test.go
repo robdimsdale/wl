@@ -76,8 +76,7 @@ var _ = Describe("basic subtask position functionality", func() {
 		By("Reordering subtasks")
 		var firstListTasks []wl.Task
 		Eventually(func() error {
-			flt, err := client.TasksForListID(newList.ID)
-			firstListTasks = flt
+			firstListTasks, err = client.TasksForListID(newList.ID)
 			return err
 		}).Should(Succeed())
 
@@ -92,20 +91,27 @@ var _ = Describe("basic subtask position functionality", func() {
 
 		Eventually(func() error {
 			subtaskPositions, err := client.SubtaskPositionsForListID(newList.ID)
+			if err != nil {
+				return err
+			}
+
 			tp := subtaskPositions
 			if len(tp) < index {
 				return errors.New("subtasks not long enough to contain expected subtask")
 			}
 			subtaskPosition = tp[index]
-			return err
+			return nil
 		}).Should(Succeed())
 
 		subtaskPosition.Values = append(subtaskPosition.Values, newSubtask1.ID, newSubtask2.ID)
 
 		Eventually(func() (bool, error) {
-			subtaskPosition, err := client.UpdateSubtaskPosition(subtaskPosition)
-			task1Contained := positionContainsValue(subtaskPosition, newSubtask1.ID)
-			task2Contained := positionContainsValue(subtaskPosition, newSubtask2.ID)
+			sp, err := client.UpdateSubtaskPosition(subtaskPosition)
+			if err != nil {
+				return false, err
+			}
+			task1Contained := positionContainsValue(sp, newSubtask1.ID)
+			task2Contained := positionContainsValue(sp, newSubtask2.ID)
 			return task1Contained && task2Contained, err
 		}).Should(BeTrue())
 
@@ -118,8 +124,11 @@ var _ = Describe("basic subtask position functionality", func() {
 
 		By("Deleting task (and hence associated subtasks)")
 		Eventually(func() error {
-			newTask, err = client.Task(newTask.ID)
-			return client.DeleteTask(newTask)
+			t, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
@@ -129,8 +138,11 @@ var _ = Describe("basic subtask position functionality", func() {
 
 		By("Deleting lists")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {

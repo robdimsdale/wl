@@ -48,8 +48,11 @@ var _ = Describe("basic note functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			newTask, err = client.Task(newTask.ID)
-			return client.DeleteTask(newTask)
+			t, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		var tasks []wl.Task
@@ -60,8 +63,11 @@ var _ = Describe("basic note functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		var lists []wl.List
@@ -100,10 +106,12 @@ var _ = Describe("basic note functionality", func() {
 
 		By("Updating note")
 		note.Content = "newNoteContent"
+		var n wl.Note
 		Eventually(func() error {
-			note, err = client.UpdateNote(note)
+			n, err = client.UpdateNote(note)
 			return err
 		}).Should(Succeed())
+		note = n
 
 		By("Getting note")
 		newNote, err := client.Note(note.ID)
@@ -112,7 +120,11 @@ var _ = Describe("basic note functionality", func() {
 
 		By("Deleting note")
 		Eventually(func() error {
-			return client.DeleteNote(note)
+			n, err := client.Note(note.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteNote(n)
 		}).Should(Succeed())
 	})
 })

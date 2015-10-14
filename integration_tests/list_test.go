@@ -2,7 +2,6 @@ package wl_integration_test
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
@@ -39,15 +38,18 @@ var _ = Describe("basic list functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		newList.Revision = newList.Revision + 1
-		Eventually(func() (bool, error) {
-			aList, err := client.List(newList.ID)
-			return reflect.DeepEqual(updatedList, aList), err
-		}).Should(BeTrue())
+		Eventually(func() (wl.List, error) {
+			return client.List(newList.ID)
+		}).Should(Equal(updatedList))
 
 		By("Deleting a list")
-		newList, err = client.List(newList.ID)
-		err = client.DeleteList(newList)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
+		}).Should(Succeed())
 
 		Eventually(func() (bool, error) {
 			lists, err := client.Lists()

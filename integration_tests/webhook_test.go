@@ -34,8 +34,11 @@ var _ = Describe("basic webhook functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		var lists []wl.List
@@ -46,7 +49,6 @@ var _ = Describe("basic webhook functionality", func() {
 	})
 
 	It("can list, create and delete webhooks", func() {
-
 		By("Listing existing webhooks")
 		webhooks, err := client.WebhooksForListID(newList.ID)
 		Expect(err).NotTo(HaveOccurred())
@@ -80,17 +82,20 @@ var _ = Describe("basic webhook functionality", func() {
 
 		By("Validating the new webhook can be retrieved")
 		var aWebhook wl.Webhook
-		Eventually(func() uint {
+		Eventually(func() wl.Webhook {
 			// It is statistically probable that one of the lists will
 			// be deleted, so we ignore error here.
 			aWebhook, _ = client.Webhook(newWebhook.ID)
-			return aWebhook.ID
-		}).Should(Equal(newWebhook.ID))
-		Expect(aWebhook.URL).To(Equal(newWebhook.URL))
+			return aWebhook
+		}).Should(Equal(newWebhook))
 
 		By("Deleting the new webhook")
-		err = client.DeleteWebhook(newWebhook)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			// It is statistically probable that one of the lists will
+			// be deleted, so we ignore error here.
+			w, _ := client.Webhook(newWebhook.ID)
+			return client.DeleteWebhook(w)
+		}).Should(Succeed())
 
 		By("Validating the new webhook is not present in list")
 		Eventually(func() bool {

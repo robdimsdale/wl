@@ -48,8 +48,11 @@ var _ = Describe("basic reminder functionality", func() {
 	AfterEach(func() {
 		By("Deleting task")
 		Eventually(func() error {
-			newTask, err = client.Task(newTask.ID)
-			return client.DeleteTask(newTask)
+			t, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
 		}).Should(Succeed())
 
 		var tasks []wl.Task
@@ -60,8 +63,11 @@ var _ = Describe("basic reminder functionality", func() {
 
 		By("Deleting new list")
 		Eventually(func() error {
-			newList, err = client.List(newList.ID)
-			return client.DeleteList(newList)
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
 		}).Should(Succeed())
 
 		var lists []wl.List
@@ -77,7 +83,11 @@ var _ = Describe("basic reminder functionality", func() {
 		reminderDate := "1970-08-30T08:29:46.203Z"
 		createdByDeviceUdid := ""
 		Eventually(func() error {
-			reminder, err = client.CreateReminder(reminderDate, newTask.ID, createdByDeviceUdid)
+			reminder, err = client.CreateReminder(
+				reminderDate,
+				newTask.ID,
+				createdByDeviceUdid,
+			)
 			return err
 		}).Should(Succeed())
 
@@ -103,10 +113,12 @@ var _ = Describe("basic reminder functionality", func() {
 
 		By("Updating reminder")
 		reminder.Date = "1971-08-30T08:29:46.203Z"
+		var r wl.Reminder
 		Eventually(func() error {
-			reminder, err = client.UpdateReminder(reminder)
+			r, err = client.UpdateReminder(reminder)
 			return err
 		}).Should(Succeed())
+		reminder = r
 
 		By("Getting reminder")
 		var aReminder wl.Reminder
@@ -120,7 +132,11 @@ var _ = Describe("basic reminder functionality", func() {
 
 		By("Deleting reminder")
 		Eventually(func() error {
-			return client.DeleteReminder(reminder)
+			r, err := client.Reminder(reminder.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteReminder(r)
 		}).Should(Succeed())
 	})
 })

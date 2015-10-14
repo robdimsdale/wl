@@ -3,6 +3,7 @@
 set -eux
 
 NORACE=${NORACE:-false}
+SLOW_SPEC_THRESHOLD=${SLOW_SPEC_THRESHOLD:-10}
 
 MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -16,6 +17,7 @@ pushd ${BASE_DIR}
       -r \
       -randomizeAllSpecs \
       -failOnPending \
+      -slowSpecThreshold="${SLOW_SPEC_THRESHOLD}" \
       "$@" \
       integration_tests
   else
@@ -25,6 +27,7 @@ pushd ${BASE_DIR}
       -race \
       -randomizeAllSpecs \
       -failOnPending \
+      -slowSpecThreshold="${SLOW_SPEC_THRESHOLD}" \
       "$@" \
       integration_tests
   fi
