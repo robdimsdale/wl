@@ -54,8 +54,10 @@ var _ = Describe("basic folder functionality", func() {
 
 		newFolder.Title = newFolderTitle2
 		var updatedFolder wl.Folder
-		updatedFolder, err = client.UpdateFolder(newFolder)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			updatedFolder, err = client.UpdateFolder(newFolder)
+			return err
+		}).Should(Succeed())
 
 		Eventually(func() (wl.Folder, error) {
 			return client.Folder(newFolder.ID)
