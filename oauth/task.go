@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/robdimsdale/wl"
 )
@@ -138,12 +141,12 @@ func (c oauthClient) TasksForListID(listID uint) ([]wl.Task, error) {
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := []wl.Task{}
+	tasks := []transportTask{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		return nil, err
 	}
-	return tasks, nil
+	return tasksFromTransport(tasks)
 }
 
 // CompletedTasksForListID returns tasks filtered by whether they are completed.
@@ -173,12 +176,12 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wl.
 		return nil, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	tasks := []wl.Task{}
+	tasks := []transportTask{}
 	err = json.NewDecoder(resp.Body).Decode(&tasks)
 	if err != nil {
 		return nil, err
 	}
-	return tasks, nil
+	return tasksFromTransport(tasks)
 }
 
 // Task returns the Task for the corresponding taskID.
@@ -203,12 +206,12 @@ func (c oauthClient) Task(taskID uint) (wl.Task, error) {
 		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	task := wl.Task{}
+	task := transportTask{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
 		return wl.Task{}, err
 	}
-	return task, nil
+	return taskFromTransport(task)
 }
 
 type taskCreateConfig struct {
@@ -244,7 +247,7 @@ func (c oauthClient) CreateTask(
 	completed bool,
 	recurrenceType string,
 	recurrenceCount uint,
-	dueDate string,
+	dueDate time.Time,
 	starred bool,
 ) (wl.Task, error) {
 
@@ -264,7 +267,7 @@ func (c oauthClient) CreateTask(
 		Completed:       completed,
 		RecurrenceType:  recurrenceType,
 		RecurrenceCount: recurrenceCount,
-		DueDate:         dueDate,
+		DueDate:         dueDateToString(dueDate),
 		Starred:         starred,
 	}
 
@@ -289,12 +292,12 @@ func (c oauthClient) CreateTask(
 		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusCreated)
 	}
 
-	task := wl.Task{}
+	task := transportTask{}
 	err = json.NewDecoder(resp.Body).Decode(&task)
 	if err != nil {
 		return wl.Task{}, err
 	}
-	return task, nil
+	return taskFromTransport(task)
 }
 
 // UpdateTask updates the provided Task.
@@ -330,12 +333,12 @@ func (c oauthClient) UpdateTask(task wl.Task) (wl.Task, error) {
 	}
 
 	if origTask.DueDate == task.DueDate {
-		tuc.DueDate = origTask.DueDate
+		tuc.DueDate = dueDateToString(origTask.DueDate)
 	} else {
-		if task.DueDate == "" {
+		if task.DueDate.IsZero() {
 			tuc.Remove = append(tuc.Remove, "due_date")
 		} else {
-			tuc.DueDate = task.DueDate
+			tuc.DueDate = dueDateToString(task.DueDate)
 		}
 	}
 
@@ -378,12 +381,12 @@ func (c oauthClient) UpdateTask(task wl.Task) (wl.Task, error) {
 		return wl.Task{}, fmt.Errorf("Unexpected response code %d - expected %d", resp.StatusCode, http.StatusOK)
 	}
 
-	returnedTask := wl.Task{}
-	err = json.NewDecoder(resp.Body).Decode(&returnedTask)
+	transport := transportTask{}
+	err = json.NewDecoder(resp.Body).Decode(&transport)
 	if err != nil {
 		return wl.Task{}, err
 	}
-	return returnedTask, nil
+	return taskFromTransport(transport)
 }
 
 // DeleteTask deletes the provided Task.
@@ -455,4 +458,102 @@ func (c oauthClient) DeleteAllTasks() error {
 	}
 
 	return nil
+}
+
+type transportTask struct {
+	ID              uint      `json:"id" yaml:"id"`
+	AssigneeID      uint      `json:"assignee_id" yaml:"assignee_id"`
+	AssignerID      uint      `json:"assigner_id" yaml:"assigner_id"`
+	CreatedAt       time.Time `json:"created_at" yaml:"created_at"`
+	CreatedByID     uint      `json:"created_by_id" yaml:"created_by_id"`
+	DueDate         string    `json:"due_date" yaml:"due_date"`
+	ListID          uint      `json:"list_id" yaml:"list_id"`
+	Revision        uint      `json:"revision" yaml:"revision"`
+	Starred         bool      `json:"starred" yaml:"starred"`
+	Title           string    `json:"title" yaml:"title"`
+	Completed       bool      `json:"completed" yaml:"completed"`
+	CompletedAt     time.Time `json:"completed_at" yaml:"completed_at"`
+	CompletedByID   uint      `json:"completed_by" yaml:"completed_by"`
+	RecurrenceType  string    `json:"recurrence_type" yaml:"recurrence_type"`
+	RecurrenceCount uint      `json:"recurrence_count" yaml:"recurrence_count"`
+}
+
+func tasksFromTransport(transportTasks []transportTask) ([]wl.Task, error) {
+	tasks := make([]wl.Task, len(transportTasks))
+	var err error
+
+	for i, t := range transportTasks {
+		tasks[i], err = taskFromTransport(t)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return tasks, nil
+}
+
+func taskFromTransport(t transportTask) (wl.Task, error) {
+	dueDate, err := parseDueDate(t.DueDate, t.CreatedAt.Location())
+	if err != nil {
+		return wl.Task{}, err
+	}
+
+	return wl.Task{
+		ID:              t.ID,
+		AssigneeID:      t.AssigneeID,
+		AssignerID:      t.AssignerID,
+		CreatedAt:       t.CreatedAt,
+		CreatedByID:     t.CreatedByID,
+		DueDate:         dueDate,
+		ListID:          t.ListID,
+		Revision:        t.Revision,
+		Starred:         t.Starred,
+		Title:           t.Title,
+		Completed:       t.Completed,
+		CompletedAt:     t.CompletedAt,
+		CompletedByID:   t.CompletedByID,
+		RecurrenceType:  t.RecurrenceType,
+		RecurrenceCount: t.RecurrenceCount,
+	}, nil
+}
+
+func parseDueDate(dueDate string, location *time.Location) (time.Time, error) {
+	if dueDate == "" {
+		return time.Time{}, nil
+	}
+
+	splitDate := strings.Split(dueDate, "-")
+	if len(splitDate) < 3 {
+		return time.Now(), fmt.Errorf("Failed to parse dueDate into expected YYYY-MM-DD format: %s", dueDate)
+	}
+
+	year, err := strconv.Atoi(splitDate[0])
+	if err != nil {
+		return time.Now(), err
+	}
+
+	monthInt, err := strconv.Atoi(splitDate[1])
+	if err != nil {
+		return time.Now(), err
+	}
+	month := time.Month(monthInt)
+
+	day, err := strconv.Atoi(splitDate[2])
+	if err != nil {
+		return time.Now(), err
+	}
+
+	hour := 0
+	minute := 0
+	second := 0
+	nano := 0
+
+	return time.Date(year, month, day, hour, minute, second, nano, location), nil
+}
+
+func dueDateToString(dueDate time.Time) string {
+	if (dueDate == time.Time{}) {
+		return ""
+	}
+	return fmt.Sprintf("%04d-%02d-%02d", dueDate.Year(), dueDate.Month(), dueDate.Day())
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -47,6 +48,10 @@ var _ = Describe("client - Task operations", func() {
 				expectedBody, err := json.Marshal(expectedTasks)
 				Expect(err).NotTo(HaveOccurred())
 				err = json.Unmarshal(expectedBody, &expectedTasks)
+				Expect(err).NotTo(HaveOccurred())
+
+				// Actually marshal into the transport type
+				expectedBody, err = json.Marshal(transportsFromTasks(expectedTasks))
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -178,6 +183,10 @@ var _ = Describe("client - Task operations", func() {
 				err = json.Unmarshal(expectedBody, &expectedTasks)
 				Expect(err).NotTo(HaveOccurred())
 
+				// Actually marshal into the transport type
+				expectedBody, err = json.Marshal(transportsFromTasks(expectedTasks))
+				Expect(err).NotTo(HaveOccurred())
+
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
 						ghttp.RespondWith(http.StatusOK, expectedBody),
@@ -306,6 +315,10 @@ var _ = Describe("client - Task operations", func() {
 				err = json.Unmarshal(expectedBody, &expectedTask)
 				Expect(err).NotTo(HaveOccurred())
 
+				// Actually marshal into the transport type
+				expectedBody, err = json.Marshal(transportFromTask(expectedTask))
+				Expect(err).NotTo(HaveOccurred())
+
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
 						ghttp.RespondWith(http.StatusOK, expectedBody),
@@ -394,7 +407,7 @@ var _ = Describe("client - Task operations", func() {
 			completed       bool
 			recurrenceType  string
 			recurrenceCount uint
-			dueDate         string
+			dueDate         time.Time
 			starred         bool
 		)
 
@@ -406,7 +419,7 @@ var _ = Describe("client - Task operations", func() {
 			completed = true
 			recurrenceType = "day"
 			recurrenceCount = uint(3)
-			dueDate = "1970-01-01"
+			dueDate = time.Date(1968, 1, 2, 0, 0, 0, 0, time.UTC)
 			starred = true
 		})
 
@@ -427,7 +440,7 @@ var _ = Describe("client - Task operations", func() {
 				assigneeID,
 				recurrenceType,
 				recurrenceCount,
-				dueDate,
+				"1968-01-02",
 				starred,
 			)
 
@@ -465,6 +478,10 @@ var _ = Describe("client - Task operations", func() {
 				expectedBody, err := json.Marshal(expectedTask)
 				Expect(err).NotTo(HaveOccurred())
 				err = json.Unmarshal(expectedBody, &expectedTask)
+				Expect(err).NotTo(HaveOccurred())
+
+				// Actually marshal into the transport type
+				expectedBody, err = json.Marshal(transportFromTask(expectedTask))
 				Expect(err).NotTo(HaveOccurred())
 
 				server.AppendHandlers(
@@ -625,8 +642,8 @@ var _ = Describe("client - Task operations", func() {
 
 	Describe("updating a task", func() {
 		var (
-			originalTask wl.Task
-			expectedTask wl.Task
+			originalTask transportTask
+			expectedTask transportTask
 
 			task   wl.Task
 			taskID uint
@@ -637,7 +654,7 @@ var _ = Describe("client - Task operations", func() {
 			completed       bool
 			recurrenceType  string
 			recurrenceCount uint
-			dueDate         string
+			dueDate         time.Time
 			starred         bool
 
 			expectedTaskUpdateConfig oauth.TaskUpdateConfig
@@ -651,7 +668,7 @@ var _ = Describe("client - Task operations", func() {
 			completed = false
 			recurrenceType = "day"
 			recurrenceCount = uint(3)
-			dueDate = "1970-01-01"
+			dueDate = time.Date(1968, 1, 2, 0, 0, 0, 0, time.UTC)
 			starred = false
 
 			task = wl.Task{
@@ -666,8 +683,8 @@ var _ = Describe("client - Task operations", func() {
 				Starred:         starred,
 			}
 
-			originalTask = task
-			expectedTask = task
+			originalTask = transportFromTask(task)
+			expectedTask = transportFromTask(task)
 
 			expectedTaskUpdateConfig = oauth.TaskUpdateConfig{
 				Title:           title,
@@ -676,7 +693,7 @@ var _ = Describe("client - Task operations", func() {
 				Completed:       completed,
 				RecurrenceType:  recurrenceType,
 				RecurrenceCount: recurrenceCount,
-				DueDate:         dueDate,
+				DueDate:         "1968-01-02",
 				Starred:         starred,
 				Remove:          []string{},
 			}
@@ -853,7 +870,7 @@ var _ = Describe("client - Task operations", func() {
 
 				Context("and new task has empty due date", func() {
 					BeforeEach(func() {
-						task.DueDate = ""
+						task.DueDate = time.Time{}
 
 						expectedTaskUpdateConfig.DueDate = ""
 						expectedTaskUpdateConfig.Remove = []string{"due_date"}
@@ -865,7 +882,7 @@ var _ = Describe("client - Task operations", func() {
 						actualTask, err := client.UpdateTask(task)
 						Expect(err).NotTo(HaveOccurred())
 
-						Expect(actualTask.DueDate).To(Equal(""))
+						Expect(actualTask.DueDate).To(Equal(time.Time{}))
 					})
 				})
 
@@ -880,18 +897,18 @@ var _ = Describe("client - Task operations", func() {
 
 				Context("and new task has different due date", func() {
 					BeforeEach(func() {
-						task.DueDate = "2070-01-01"
+						task.DueDate = time.Date(1921, 12, 24, 0, 0, 0, 0, time.UTC)
 
-						expectedTaskUpdateConfig.DueDate = "2070-01-01"
+						expectedTaskUpdateConfig.DueDate = "1921-12-24"
 
-						expectedTask.DueDate = "2070-01-01"
+						expectedTask.DueDate = "1921-12-24"
 					})
 
 					It("changes dueDate", func() {
 						actualTask, err := client.UpdateTask(task)
 						Expect(err).NotTo(HaveOccurred())
 
-						Expect(actualTask.DueDate).To(Equal("2070-01-01"))
+						Expect(actualTask.DueDate).To(Equal(task.DueDate))
 					})
 				})
 			})
@@ -903,35 +920,35 @@ var _ = Describe("client - Task operations", func() {
 
 				Context("and new task has empty due date", func() {
 					BeforeEach(func() {
-						task.DueDate = ""
+						task.DueDate = time.Time{}
 
 						expectedTaskUpdateConfig.DueDate = ""
 
 						expectedTask.DueDate = ""
 					})
 
-					It("removes dueDate", func() {
+					It("retains no dueDate", func() {
 						actualTask, err := client.UpdateTask(task)
 						Expect(err).NotTo(HaveOccurred())
 
-						Expect(actualTask.DueDate).To(Equal(""))
+						Expect(actualTask.DueDate).To(Equal(time.Time{}))
 					})
 				})
 
 				Context("and new task has different due date", func() {
 					BeforeEach(func() {
-						task.DueDate = "2070-01-01"
+						task.DueDate = time.Date(1921, 12, 24, 0, 0, 0, 0, time.UTC)
 
-						expectedTaskUpdateConfig.DueDate = "2070-01-01"
+						expectedTaskUpdateConfig.DueDate = "1921-12-24"
 
-						expectedTask.DueDate = "2070-01-01"
+						expectedTask.DueDate = "1921-12-24"
 					})
 
 					It("changes dueDate", func() {
 						actualTask, err := client.UpdateTask(task)
 						Expect(err).NotTo(HaveOccurred())
 
-						Expect(actualTask.DueDate).To(Equal("2070-01-01"))
+						Expect(actualTask.DueDate).To(Equal(task.DueDate))
 					})
 				})
 			})
@@ -1397,3 +1414,55 @@ var _ = Describe("client - Task operations", func() {
 		})
 	})
 })
+
+type transportTask struct {
+	ID              uint      `json:"id" yaml:"id"`
+	AssigneeID      uint      `json:"assignee_id" yaml:"assignee_id"`
+	AssignerID      uint      `json:"assigner_id" yaml:"assigner_id"`
+	CreatedAt       time.Time `json:"created_at" yaml:"created_at"`
+	CreatedByID     uint      `json:"created_by_id" yaml:"created_by_id"`
+	DueDate         string    `json:"due_date" yaml:"due_date"`
+	ListID          uint      `json:"list_id" yaml:"list_id"`
+	Revision        uint      `json:"revision" yaml:"revision"`
+	Starred         bool      `json:"starred" yaml:"starred"`
+	Title           string    `json:"title" yaml:"title"`
+	Completed       bool      `json:"completed" yaml:"completed"`
+	CompletedAt     time.Time `json:"completed_at" yaml:"completed_at"`
+	CompletedByID   uint      `json:"completed_by" yaml:"completed_by"`
+	RecurrenceType  string    `json:"recurrence_type" yaml:"recurrence_type"`
+	RecurrenceCount uint      `json:"recurrence_count" yaml:"recurrence_count"`
+}
+
+func transportsFromTasks(tasks []wl.Task) []transportTask {
+	transportTasks := make([]transportTask, len(tasks))
+
+	for i, t := range tasks {
+		transportTasks[i] = transportFromTask(t)
+	}
+
+	return transportTasks
+}
+
+func transportFromTask(t wl.Task) transportTask {
+	return transportTask{
+		ID:              t.ID,
+		AssigneeID:      t.AssigneeID,
+		AssignerID:      t.AssignerID,
+		CreatedAt:       t.CreatedAt,
+		CreatedByID:     t.CreatedByID,
+		DueDate:         dueDateToString(t.DueDate),
+		ListID:          t.ListID,
+		Revision:        t.Revision,
+		Starred:         t.Starred,
+		Title:           t.Title,
+		Completed:       t.Completed,
+		CompletedAt:     t.CompletedAt,
+		CompletedByID:   t.CompletedByID,
+		RecurrenceType:  t.RecurrenceType,
+		RecurrenceCount: t.RecurrenceCount,
+	}
+}
+
+func dueDateToString(dueDate time.Time) string {
+	return fmt.Sprintf("%04d-%02d-%02d", dueDate.Year(), dueDate.Month(), dueDate.Day())
+}

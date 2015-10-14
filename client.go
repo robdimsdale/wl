@@ -1,5 +1,7 @@
 package wl
 
+import "time"
+
 // Client represents the methods that the API supports.
 type Client interface {
 	User() (User, error)
@@ -35,7 +37,7 @@ type Client interface {
 		completed bool,
 		recurrenceType string,
 		recurrenceCount uint,
-		dueDate string,
+		dueDate time.Time,
 		starred bool,
 	) (Task, error)
 	UpdateTask(task Task) (Task, error)

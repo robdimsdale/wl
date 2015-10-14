@@ -1,6 +1,8 @@
 package wl_integration_test
 
 import (
+	"time"
+
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +38,7 @@ var _ = Describe("basic note functionality", func() {
 				false,
 				"",
 				0,
-				"1970-01-01",
+				time.Date(1971, 12, 31, 0, 0, 0, 0, time.UTC),
 				false,
 			)
 			return err

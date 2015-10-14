@@ -10,7 +10,7 @@ type Task struct {
 	AssignerID      uint      `json:"assigner_id" yaml:"assigner_id"`
 	CreatedAt       time.Time `json:"created_at" yaml:"created_at"`
 	CreatedByID     uint      `json:"created_by_id" yaml:"created_by_id"`
-	DueDate         string    `json:"due_date" yaml:"due_date"`
+	DueDate         time.Time `json:"due_date" yaml:"due_date"`
 	ListID          uint      `json:"list_id" yaml:"list_id"`
 	Revision        uint      `json:"revision" yaml:"revision"`
 	Starred         bool      `json:"starred" yaml:"starred"`

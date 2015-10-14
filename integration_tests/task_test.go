@@ -1,6 +1,8 @@
 package wl_integration_test
 
 import (
+	"time"
+
 	"github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -36,7 +38,7 @@ var _ = Describe("basic task functionality", func() {
 				false,
 				"",
 				0,
-				"1970-01-01",
+				time.Date(1971, 12, 31, 0, 0, 0, 0, time.UTC),
 				false,
 			)
 			return err
@@ -176,7 +178,6 @@ var _ = Describe("basic task functionality", func() {
 
 	It("can update tasks", func() {
 		By("Setting properties")
-		newTask.DueDate = "1971-01-01"
 		newTask.Starred = true
 		newTask.Completed = true
 		newTask.RecurrenceType = "week"
@@ -196,14 +197,12 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		By("Ensuring properties are set")
-		Expect(taskAgain.DueDate).Should(Equal("1971-01-01"))
 		Expect(taskAgain.Starred).Should(BeTrue())
 		Expect(taskAgain.Completed).Should(BeTrue())
 		Expect(taskAgain.RecurrenceType).Should(Equal("week"))
 		Expect(taskAgain.RecurrenceCount).Should(Equal(uint(2)))
 
 		By("Resetting properties")
-		taskAgain.DueDate = ""
 		taskAgain.Starred = false
 		taskAgain.Completed = false
 		taskAgain.RecurrenceType = ""
@@ -216,11 +215,50 @@ var _ = Describe("basic task functionality", func() {
 		}).Should(Succeed())
 
 		By("Verifying properties are reset")
-		Expect(taskAgain.DueDate).Should(Equal(""))
 		Expect(taskAgain.Starred).Should(BeFalse())
 		Expect(taskAgain.Completed).Should(BeFalse())
 		Expect(taskAgain.RecurrenceType).Should(Equal(""))
 		Expect(taskAgain.RecurrenceCount).Should(Equal(uint(0)))
+	})
+
+	It("can update the due date", func() {
+		By("Setting properties")
+		firstDate := time.Date(1968, 1, 2, 0, 0, 0, 0, time.UTC)
+		newTask.DueDate = firstDate
+
+		By("Updating task")
+		Eventually(func() error {
+			newTask, err = client.UpdateTask(newTask)
+			return err
+		}).Should(Succeed())
+
+		By("Ensuring due date is set")
+		Expect(newTask.DueDate).Should(Equal(firstDate))
+
+		By("Updating properties")
+		newDate := time.Date(1972, 2, 3, 0, 0, 0, 0, time.UTC)
+		newTask.DueDate = newDate
+
+		By("Updating task")
+		Eventually(func() error {
+			newTask, err = client.UpdateTask(newTask)
+			return err
+		}).Should(Succeed())
+
+		By("Ensuring due date is set")
+		Expect(newTask.DueDate).Should(Equal(newDate))
+
+		By("Removing due date")
+		newTask.DueDate = time.Time{}
+
+		By("Updating task")
+		Eventually(func() error {
+			newTask, err = client.UpdateTask(newTask)
+			return err
+		}).Should(Succeed())
+
+		By("Verifying due date is removed")
+		Expect(newTask.DueDate).Should(Equal(time.Time{}))
 	})
 
 	It("can perform subtask CRUD", func() {

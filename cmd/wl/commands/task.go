@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/robdimsdale/wl"
 	"github.com/spf13/cobra"
@@ -69,6 +71,11 @@ var (
 		Long: `create-task creates a task with the specified args
         `,
 		Run: func(cmd *cobra.Command, args []string) {
+			parsedDueDate, err := parseDueDate(dueDate)
+			if err != nil {
+				handleError(err)
+			}
+
 			renderOutput(newClient(cmd).CreateTask(
 				title,
 				listID,
@@ -76,7 +83,7 @@ var (
 				completed,
 				recurrenceType,
 				recurrenceCount,
-				dueDate,
+				parsedDueDate,
 				starred,
 			))
 		},
@@ -89,6 +96,15 @@ var (
 and updates fields with the provided flags.
         `,
 		Run: func(cmd *cobra.Command, args []string) {
+			var parsedDueDate time.Time
+			if cmd.Flags().Changed(dueDateLongFlag) {
+				var err error
+				parsedDueDate, err = parseDueDate(dueDate)
+				if err != nil {
+					handleError(err)
+				}
+			}
+
 			task, err := task(cmd, args)
 			if err != nil {
 				handleError(err)
@@ -119,7 +135,7 @@ and updates fields with the provided flags.
 			}
 
 			if cmd.Flags().Changed(dueDateLongFlag) {
-				task.DueDate = dueDate
+				task.DueDate = parsedDueDate
 			}
 
 			if cmd.Flags().Changed(starredLongFlag) {
@@ -206,4 +222,34 @@ func task(cmd *cobra.Command, args []string) (wl.Task, error) {
 	id := uint(idInt)
 
 	return newClient(cmd).Task(id)
+}
+
+func parseDueDate(dueDate string) (time.Time, error) {
+	splitDate := strings.Split(dueDate, "-")
+	if len(splitDate) < 3 {
+		return time.Now(), fmt.Errorf("Failed to parse dueDate into expected YYYY-MM-DD format: %s", dueDate)
+	}
+
+	year, err := strconv.Atoi(splitDate[0])
+	if err != nil {
+		return time.Now(), err
+	}
+
+	monthInt, err := strconv.Atoi(splitDate[1])
+	if err != nil {
+		return time.Now(), err
+	}
+	month := time.Month(monthInt)
+
+	day, err := strconv.Atoi(splitDate[2])
+	if err != nil {
+		return time.Now(), err
+	}
+
+	hour := 0
+	minute := 0
+	second := 0
+	nano := 0
+
+	return time.Date(year, month, day, hour, minute, second, nano, time.Local), nil
 }
