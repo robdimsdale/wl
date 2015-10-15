@@ -32,7 +32,6 @@ var _ = Describe("basic subtask position functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newTaskTitle := uuidTask.String()
 
-		var newTask wl.Task
 		Eventually(func() error {
 			newTask, err = client.CreateTask(
 				newTaskTitle,

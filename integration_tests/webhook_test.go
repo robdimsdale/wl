@@ -23,7 +23,6 @@ var _ = Describe("basic webhook functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		var newList wl.List
 		Eventually(func() error {
 			newList, err = client.CreateList(newListTitle)
 			return err
@@ -31,8 +30,6 @@ var _ = Describe("basic webhook functionality", func() {
 	})
 
 	AfterEach(func() {
-		var err error
-
 		By("Deleting new list")
 		Eventually(func() error {
 			l, err := client.List(newList.ID)
@@ -42,9 +39,8 @@ var _ = Describe("basic webhook functionality", func() {
 			return client.DeleteList(l)
 		}).Should(Succeed())
 
-		var lists []wl.List
 		Eventually(func() (bool, error) {
-			lists, err = client.Lists()
+			lists, err := client.Lists()
 			return listContains(lists, newList), err
 		}).Should(BeFalse())
 	})
