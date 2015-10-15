@@ -10,15 +10,20 @@ import (
 )
 
 var _ = Describe("basic task position functionality", func() {
-	It("reorders task positions", func() {
+	var (
+		newList wl.List
+	)
 
+	It("reorders task positions", func() {
 		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err := client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating new tasks")
 		uuid2, err := uuid.NewV4()

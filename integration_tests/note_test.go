@@ -22,8 +22,10 @@ var _ = Describe("basic note functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err = client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating task in new list")
 		uuid, err := uuid.NewV4()
@@ -114,8 +116,11 @@ var _ = Describe("basic note functionality", func() {
 		note = n
 
 		By("Getting note")
-		newNote, err := client.Note(note.ID)
-		Expect(err).NotTo(HaveOccurred())
+		var newNote wl.Note
+		Eventually(func() error {
+			newNote, err = client.Note(note.ID)
+			return err
+		}).Should(Succeed())
 		Expect(newNote.Content).To(Equal("newNoteContent"))
 
 		By("Deleting note")

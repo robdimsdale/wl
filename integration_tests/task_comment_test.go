@@ -21,8 +21,10 @@ var _ = Describe("basic task comment functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err = client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating task in new list")
 		uuid, err := uuid.NewV4()
@@ -76,8 +78,12 @@ var _ = Describe("basic task comment functionality", func() {
 
 	It("correctly creates and deletes a task comment", func() {
 		By("Creating a task comment")
-		taskComment, err := client.CreateTaskComment("someText", newTask.ID)
-		Expect(err).NotTo(HaveOccurred())
+		var err error
+		var taskComment wl.TaskComment
+		Eventually(func() error {
+			taskComment, err = client.CreateTaskComment("someText", newTask.ID)
+			return err
+		}).Should(Succeed())
 
 		By("Verifying task comment is present in all task comments")
 		Eventually(func() bool {
@@ -88,33 +94,41 @@ var _ = Describe("basic task comment functionality", func() {
 		}).Should(BeTrue())
 
 		By("Verifying task comment is present in task comments for list")
-		taskCommentsForList, err := client.TaskCommentsForListID(newList.ID)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentContains(taskCommentsForList, taskComment)).To(BeTrue())
+		Eventually(func() (bool, error) {
+			taskCommentsForList, err := client.TaskCommentsForListID(newList.ID)
+			return taskCommentContains(taskCommentsForList, taskComment), err
+		}).Should(BeTrue())
 
 		By("Verifying task comment is present in task comments for task")
-		taskCommentsForTask, err := client.TaskCommentsForTaskID(newTask.ID)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentContains(taskCommentsForTask, taskComment)).To(BeTrue())
+		Eventually(func() (bool, error) {
+			taskCommentsForTask, err := client.TaskCommentsForTaskID(newTask.ID)
+			return taskCommentContains(taskCommentsForTask, taskComment), err
+		}).Should(BeTrue())
 
 		By("Getting task comment")
-		taskCommentAgain, err := client.TaskComment(taskComment.ID)
-		Expect(err).NotTo(HaveOccurred())
+		var taskCommentAgain wl.TaskComment
+		Eventually(func() error {
+			taskCommentAgain, err = client.TaskComment(taskComment.ID)
+			return err
+		}).Should(Succeed())
 		Expect(taskCommentAgain.ID).To(Equal(taskComment.ID))
 
 		By("Deleting task comment")
-		err = client.DeleteTaskComment(taskComment)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			return client.DeleteTaskComment(taskComment)
+		}).Should(Succeed())
 
 		By("Verifying task comment is not present in task comments for list")
-		taskCommentsForList, err = client.TaskCommentsForListID(newList.ID)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentContains(taskCommentsForList, taskComment)).To(BeFalse())
+		Eventually(func() (bool, error) {
+			taskCommentsForList, err := client.TaskCommentsForListID(newList.ID)
+			return taskCommentContains(taskCommentsForList, taskComment), err
+		}).Should(BeFalse())
 
 		By("Verifying task comment is not present in task comments for task")
-		taskCommentsForTask, err = client.TaskCommentsForTaskID(newTask.ID)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(taskCommentContains(taskCommentsForTask, taskComment)).To(BeFalse())
+		Eventually(func() (bool, error) {
+			taskCommentsForTask, err := client.TaskCommentsForTaskID(newTask.ID)
+			return taskCommentContains(taskCommentsForTask, taskComment), err
+		}).Should(BeFalse())
 	})
 })
 

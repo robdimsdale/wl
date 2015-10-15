@@ -22,8 +22,10 @@ var _ = Describe("basic task functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err = client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating task in new list")
 		uuid, err := uuid.NewV4()

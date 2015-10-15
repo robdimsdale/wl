@@ -33,8 +33,10 @@ var _ = Describe("basic upload and file functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err = client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating a task")
 		var lists []wl.List
@@ -127,18 +129,24 @@ var _ = Describe("basic upload and file functionality", func() {
 
 		It("can upload a text file", func() {
 			By("Uploading a local file")
-			upload, err := client.UploadFile(
-				localFilePath,
-				remoteFileName,
-				contentType,
-				md5sum,
-			)
-
-			Expect(err).NotTo(HaveOccurred())
+			var err error
+			var upload wl.Upload
+			Eventually(func() error {
+				upload, err = client.UploadFile(
+					localFilePath,
+					remoteFileName,
+					contentType,
+					md5sum,
+				)
+				return err
+			}).Should(Succeed())
 
 			By("Creating a file to bind the upload to a task")
-			file, err := client.CreateFile(upload.ID, task.ID)
-			Expect(err).NotTo(HaveOccurred())
+			var file wl.File
+			Eventually(func() error {
+				file, err = client.CreateFile(upload.ID, task.ID)
+				return err
+			}).Should(Succeed())
 
 			By("Validating the file returns correctly")
 			Eventually(func() (wl.File, error) {
@@ -160,8 +168,6 @@ var _ = Describe("basic upload and file functionality", func() {
 			}).Should(BeTrue())
 
 			By("Validating the file is present in a list of all files")
-			Expect(file.TaskID).To(Equal(task.ID))
-
 			Eventually(func() bool {
 				// It is statistically probable that one of the lists will
 				// be deleted, so we ignore error here.
@@ -170,10 +176,10 @@ var _ = Describe("basic upload and file functionality", func() {
 			}).Should(BeTrue())
 
 			By("Validating the file can be destroyed successfully")
-			err = client.DestroyFile(file)
-			Expect(err).NotTo(HaveOccurred())
+			Eventually(func() error {
+				return client.DestroyFile(file)
+			}).Should(Succeed())
 
-			By("Validating the new file is not present in list of files")
 			Eventually(func() (bool, error) {
 				filesForTask, err := client.FilesForTaskID(task.ID)
 				return fileContains(filesForTask, file), err
@@ -193,18 +199,24 @@ var _ = Describe("basic upload and file functionality", func() {
 
 		It("can upload an image file", func() {
 			By("Uploading a local file")
-			upload, err := client.UploadFile(
-				localFilePath,
-				remoteFileName,
-				contentType,
-				md5sum,
-			)
-
-			Expect(err).NotTo(HaveOccurred())
+			var err error
+			var upload wl.Upload
+			Eventually(func() error {
+				upload, err = client.UploadFile(
+					localFilePath,
+					remoteFileName,
+					contentType,
+					md5sum,
+				)
+				return err
+			}).Should(Succeed())
 
 			By("Creating a file to bind the upload to a task")
-			file, err := client.CreateFile(upload.ID, task.ID)
-			Expect(err).NotTo(HaveOccurred())
+			var file wl.File
+			Eventually(func() error {
+				file, err = client.CreateFile(upload.ID, task.ID)
+				return err
+			}).Should(Succeed())
 
 			By("Validating the file returns correctly")
 			Eventually(func() (wl.File, error) {

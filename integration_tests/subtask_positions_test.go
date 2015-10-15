@@ -11,15 +11,21 @@ import (
 )
 
 var _ = Describe("basic subtask position functionality", func() {
-	It("reorders subtask positions", func() {
+	var (
+		newList wl.List
+		newTask wl.Task
+	)
 
+	BeforeEach(func() {
 		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle1 := uuid1.String()
 
-		newList, err := client.CreateList(newListTitle1)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle1)
+			return err
+		}).Should(Succeed())
 
 		By("Creating a new task")
 		uuidTask, err := uuid.NewV4()
@@ -40,7 +46,39 @@ var _ = Describe("basic subtask position functionality", func() {
 			)
 			return err
 		}).Should(Succeed())
+	})
 
+	AfterEach(func() {
+		By("Deleting task (and hence associated subtasks)")
+		Eventually(func() error {
+			t, err := client.Task(newTask.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteTask(t)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			tasks, err := client.TasksForListID(newList.ID)
+			return taskContains(tasks, newTask), err
+		}).Should(BeFalse())
+
+		By("Deleting lists")
+		Eventually(func() error {
+			l, err := client.List(newList.ID)
+			if err != nil {
+				return err
+			}
+			return client.DeleteList(l)
+		}).Should(Succeed())
+
+		Eventually(func() (bool, error) {
+			lists, err := client.Lists()
+			return listContains(lists, newList), err
+		}).Should(BeFalse())
+	})
+
+	It("reorders subtask positions", func() {
 		By("Creating associated subtasks")
 		uuid2, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
@@ -121,33 +159,5 @@ var _ = Describe("basic subtask position functionality", func() {
 			task2Contained := positionsContainValue(firstListSubtaskPositions, newSubtask2.ID)
 			return task1Contained && task2Contained, err
 		}).Should(BeTrue())
-
-		By("Deleting task (and hence associated subtasks)")
-		Eventually(func() error {
-			t, err := client.Task(newTask.ID)
-			if err != nil {
-				return err
-			}
-			return client.DeleteTask(t)
-		}).Should(Succeed())
-
-		Eventually(func() (bool, error) {
-			tasks, err := client.TasksForListID(newList.ID)
-			return taskContains(tasks, newTask), err
-		}).Should(BeFalse())
-
-		By("Deleting lists")
-		Eventually(func() error {
-			l, err := client.List(newList.ID)
-			if err != nil {
-				return err
-			}
-			return client.DeleteList(l)
-		}).Should(Succeed())
-
-		Eventually(func() (bool, error) {
-			lists, err := client.Lists()
-			return listContains(lists, newList), err
-		}).Should(BeFalse())
 	})
 })

@@ -18,14 +18,12 @@ var _ = Describe("basic membership functionality", func() {
 		var err error
 
 		By("Getting inbox")
-
 		Eventually(func() error {
 			inbox, err = client.Inbox()
 			return err
 		}).Should(Succeed())
 
 		By("Getting user")
-
 		Eventually(func() error {
 			user, err = client.User()
 			return err

@@ -11,14 +11,17 @@ import (
 
 var _ = Describe("basic list functionality", func() {
 	It("performs CRUD for lists", func() {
-
 		By("Creating a new list")
+		var newList wl.List
+
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle1 := uuid1.String()
 
-		newList, err := client.CreateList(newListTitle1)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle1)
+			return err
+		}).Should(Succeed())
 
 		By("Verifying list exists in lists")
 		var newLists []wl.List
@@ -34,8 +37,10 @@ var _ = Describe("basic list functionality", func() {
 
 		newList.Title = newListTitle2
 		var updatedList wl.List
-		updatedList, err = client.UpdateList(newList)
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() error {
+			updatedList, err = client.UpdateList(newList)
+			return err
+		}).Should(Succeed())
 
 		newList.Revision = newList.Revision + 1
 		Eventually(func() (wl.List, error) {
@@ -58,8 +63,13 @@ var _ = Describe("basic list functionality", func() {
 	})
 
 	It("retrieves inbox", func() {
-		inboxList, err := client.Inbox()
-		Expect(err).NotTo(HaveOccurred())
+		var err error
+
+		var inboxList wl.List
+		Eventually(func() error {
+			inboxList, err = client.Inbox()
+			return err
+		}).Should(Succeed())
 
 		Expect(inboxList.Title).To(Equal("inbox"))
 	})

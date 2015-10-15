@@ -15,8 +15,11 @@ var _ = Describe("basic user functionality", func() {
 		newUserName := uuid1.String()
 
 		By("Getting user")
-		user, err := client.User()
-		Expect(err).NotTo(HaveOccurred())
+		var user wl.User
+		Eventually(func() error {
+			user, err = client.User()
+			return err
+		}).Should(Succeed())
 
 		By("Updating user")
 		var updatedUser wl.User

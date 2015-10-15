@@ -13,9 +13,13 @@ var _ = Describe("avatar functionality", func() {
 
 		expectedURL := "https://avatars.wunderlist.io/uploads/user/avatar/0058/0058_64_4F7DDE.png"
 
-		url, err := client.AvatarURL(userID, size, fallback)
+		var err error
+		var url string
+		Eventually(func() error {
+			url, err = client.AvatarURL(userID, size, fallback)
+			return err
+		}).Should(Succeed())
 
-		Expect(err).NotTo(HaveOccurred())
 		Expect(url).To(Equal(expectedURL))
 	})
 })

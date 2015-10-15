@@ -17,8 +17,11 @@ var _ = Describe("basic folder functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err := client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		var newList wl.List
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 
 		By("Creating a new folder")
 		uuid2, err := uuid.NewV4()
@@ -26,8 +29,11 @@ var _ = Describe("basic folder functionality", func() {
 		newFolderTitle := uuid2.String()
 
 		folderListIDs := []uint{newList.ID}
-		newFolder, err := client.CreateFolder(newFolderTitle, folderListIDs)
-		Expect(err).NotTo(HaveOccurred())
+		var newFolder wl.Folder
+		Eventually(func() error {
+			newFolder, err = client.CreateFolder(newFolderTitle, folderListIDs)
+			return err
+		}).Should(Succeed())
 
 		By("Verifying folder exists")
 		var folders []wl.Folder

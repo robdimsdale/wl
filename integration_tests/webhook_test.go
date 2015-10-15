@@ -18,15 +18,16 @@ var _ = Describe("basic webhook functionality", func() {
 	)
 
 	BeforeEach(func() {
-		var err error
-
 		By("Creating a new list")
 		uuid1, err := uuid.NewV4()
 		Expect(err).NotTo(HaveOccurred())
 		newListTitle := uuid1.String()
 
-		newList, err = client.CreateList(newListTitle)
-		Expect(err).NotTo(HaveOccurred())
+		var newList wl.List
+		Eventually(func() error {
+			newList, err = client.CreateList(newListTitle)
+			return err
+		}).Should(Succeed())
 	})
 
 	AfterEach(func() {
@@ -49,21 +50,29 @@ var _ = Describe("basic webhook functionality", func() {
 	})
 
 	It("can list, create and delete webhooks", func() {
+		var err error
+
 		By("Listing existing webhooks")
-		webhooks, err := client.WebhooksForListID(newList.ID)
-		Expect(err).NotTo(HaveOccurred())
+		var webhooks []wl.Webhook
+		Eventually(func() error {
+			webhooks, err = client.WebhooksForListID(newList.ID)
+			return err
+		}).Should(Succeed())
 		Expect(len(webhooks)).To(BeZero())
 
 		By("Creating a new webhook")
 		url := "https://some-fake-url.com"
 
-		newWebhook, err := client.CreateWebhook(
-			newList.ID,
-			url,
-			processorType,
-			configuration,
-		)
-		Expect(err).NotTo(HaveOccurred())
+		var newWebhook wl.Webhook
+		Eventually(func() error {
+			newWebhook, err = client.CreateWebhook(
+				newList.ID,
+				url,
+				processorType,
+				configuration,
+			)
+			return err
+		}).Should(Succeed())
 		Expect(newWebhook.URL).To(Equal(url))
 
 		By("Validating the new webhook is present in all webhooks")
