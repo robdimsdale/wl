@@ -76,12 +76,9 @@ func positionContainsValue(position wl.Position, id uint) bool {
 }
 
 var _ = BeforeSuite(func() {
-	By("Compiling binary")
-	var err error
-	wlBinPath, err = gexec.Build("github.com/robdimsdale/wl/cmd/wl", "-race")
-	Expect(err).ShouldNot(HaveOccurred())
-
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	By("Setting Eventually defaults")
+	SetDefaultEventuallyTimeout(10 * time.Second)
+	SetDefaultEventuallyPollingInterval(100 * time.Millisecond)
 
 	By("Obtaining credentials from environment")
 	wlAccessToken = os.Getenv(wlAccessTokenEnvKey)
@@ -94,6 +91,11 @@ var _ = BeforeSuite(func() {
 	if wlClientID == "" {
 		Fail(fmt.Sprintf("Error - %s must be provided", wlClientIDEnvKey))
 	}
+
+	By("Compiling binary")
+	var err error
+	wlBinPath, err = gexec.Build("github.com/robdimsdale/wl/cmd/wl", "-race")
+	Expect(err).ShouldNot(HaveOccurred())
 
 	By("Creating client")
 	testLogger := logger.NewTestLogger(GinkgoWriter)

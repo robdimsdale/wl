@@ -214,8 +214,11 @@ var _ = Describe("basic upload and file functionality", func() {
 			By("Getting the preview of the uploaded image")
 			platform := ""
 			size := ""
-			imagePreview, err := client.FilePreview(file.ID, platform, size)
-			Expect(err).NotTo(HaveOccurred())
+			var imagePreview wl.FilePreview
+			Eventually(func() error {
+				imagePreview, err = client.FilePreview(file.ID, platform, size)
+				return err
+			}).Should(Succeed())
 
 			Expect(imagePreview.URL).NotTo(BeEmpty())
 		})
