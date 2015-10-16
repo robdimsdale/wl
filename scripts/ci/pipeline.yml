@@ -47,7 +47,7 @@ resources:
 
 - name: time-trigger
   type: time
-  source: {interval: 3h}
+  source: {interval: 1h}
 
 - name: version
   type: semver
