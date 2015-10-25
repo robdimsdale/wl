@@ -8,14 +8,11 @@ my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 base_dir="$( cd "${my_dir}/.." && pwd )"
 
 pushd "${base_dir}"
-  if [ "$#" != "0" ]; then
-    ids=""
-    for id in "$@"; do
-      ids="$ids #${id}"
-    done
-  fi
-
-  echo "[finishes${ids}]" | git ci --file -
-
-  git ci --amend
+  grep \
+    --exclude-dir=Godeps \
+    --exclude-dir=.git \
+    -r \
+    -e 'bin/.*sh' \
+    -l . \
+    | xargs shellcheck
 popd

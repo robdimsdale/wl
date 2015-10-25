@@ -5,12 +5,12 @@ set -eux
 NORACE=${NORACE:-false}
 SLOW_SPEC_THRESHOLD=${SLOW_SPEC_THRESHOLD:-10}
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # This script expects that it lives one directory below the base directory.
-BASE_DIR="$( cd ${MY_DIR}/.. && pwd )"
+base_dir="$( cd "${my_dir}/.." && pwd )"
 
-pushd ${BASE_DIR}
+pushd "${base_dir}"
   if [ "${NORACE}" = "true" ]; then
     ginkgo \
       -p \

@@ -2,19 +2,19 @@
 
 set -eux
 
-ROOT="$PWD"
+root_dir="$PWD"
 VERSION="$(cat version/number)"
 TARGET_GOOS=${TARGET_GOOS:?}
 TARGET_GOARCH=${TARGET_GOARCH:?}
 
-MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # This script expects that it lives two directories below the base directory.
-BASE_DIR="$( cd ${MY_DIR}/../.. && pwd )"
+base_dir="$( cd "${my_dir}/../.." && pwd )"
 
-pushd ${BASE_DIR}
-  mkdir -p $GOPATH/src/github.com/robdimsdale
-  ln -s $PWD $GOPATH/src/github.com/robdimsdale/wl
+pushd "${base_dir}"
+  mkdir -p "${GOPATH}/src/github.com/robdimsdale"
+  ln -s "${PWD}" "${GOPATH}/src/github.com/robdimsdale/wl"
 
   go get -u github.com/tools/godep
   
@@ -27,7 +27,7 @@ pushd ${BASE_DIR}
   GOARCH="${TARGET_GOARCH}" \
   CGO_ENABLED=0 \
   go build \
-    -o "${ROOT}"/wl-"${TARGET_GOOS}-${TARGET_GOARCH}-${VERSION}" \
+    -o "${root_dir}/wl-${TARGET_GOOS}-${TARGET_GOARCH}-${VERSION}" \
     -ldflags "-X main.version=${stripped_version}" \
     ./cmd/wl/main.go
 popd

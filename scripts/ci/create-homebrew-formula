@@ -2,16 +2,16 @@
 
 set -eux
 
-ROOT="$PWD"
-VERSION="$(cat ${ROOT}/github-release/version)"
-SOURCE_TAR="${ROOT}/github-release/v${VERSION}.tar.gz"
-OUTPUT_FILE=${ROOT}/homebrew-tap/wl.rb
+root_dir="$PWD"
+VERSION="$(cat "${root_dir}/github-release/version")"
+SOURCE_TAR="${root_dir}/github-release/v${VERSION}.tar.gz"
+OUTPUT_FILE=${root_dir}/homebrew-tap/wl.rb
 
 wget \
   -O "${SOURCE_TAR}" \
   "https://github.com/robdimsdale/wl/archive/v${VERSION}.tar.gz"
 
-sha256=$( shasum -a 256 ${SOURCE_TAR} | awk '{ print $1}' )
+sha256=$( shasum -a 256 "${SOURCE_TAR}" | awk '{ print $1}' )
 
 cat << EOF > ${OUTPUT_FILE}
 require "language/go"
@@ -52,7 +52,7 @@ EOF
 echo "wrote formula successfully"
 
 echo "creating commit in homebrew-tap"
-pushd "${ROOT}/homebrew-tap"
+pushd "${root_dir}/homebrew-tap"
   git config user.name "Concourse CI"
   git config user.email "ci@robdimsdale.com"
   git add -v -A .
