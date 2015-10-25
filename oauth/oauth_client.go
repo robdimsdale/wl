@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+	"regexp"
 
 	"github.com/robdimsdale/wl"
 	"github.com/robdimsdale/wl/logger"
@@ -73,13 +74,19 @@ func (c oauthClient) do(req *http.Request) (*http.Response, error) {
 
 func (c oauthClient) logRequest(req *http.Request) {
 	reqDump, err := httputil.DumpRequestOut(req, true)
+
+	accessTokenFilter := regexp.MustCompile("X-Access-Token: .*")
+	reqDumpFiltered := accessTokenFilter.ReplaceAll(reqDump, []byte("X-Access-Token: ***"))
+
+	clientIDFilter := regexp.MustCompile("X-Client-Id: .*")
+	reqDumpFiltered = clientIDFilter.ReplaceAll(reqDumpFiltered, []byte("X-Client-Id: ***"))
 	if err != nil {
 		c.logger.Error("received error while dumping HTTP request", err)
 	} else {
 		if reqDump != nil {
 			c.logger.Debug(
 				" - sending request",
-				map[string]interface{}{"request": string(reqDump)})
+				map[string]interface{}{"request": string(reqDumpFiltered)})
 		}
 	}
 }
