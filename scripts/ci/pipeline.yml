@@ -45,7 +45,19 @@ resources:
     project_id: {{tracker-project-id}}
     tracker_url: https://www.pivotaltracker.com
 
-- name: time-trigger
+- name: time-trigger-1.2
+  type: time
+  source: {interval: 1h}
+
+- name: time-trigger-1.3
+  type: time
+  source: {interval: 1h}
+
+- name: time-trigger-1.4
+  type: time
+  source: {interval: 1h}
+
+- name: time-trigger-1.5
   type: time
   source: {interval: 1h}
 
@@ -128,7 +140,7 @@ jobs:
     - aggregate:
       - get: wl
         trigger: true
-      - get: time-trigger
+      - get: time-trigger-1.2
         trigger: true
       - get: docker-wl-1.2
         trigger: true
@@ -156,7 +168,7 @@ jobs:
     - aggregate:
       - get: wl
         trigger: true
-      - get: time-trigger
+      - get: time-trigger-1.3
         trigger: true
       - get: docker-wl-1.3
         trigger: true
@@ -184,7 +196,7 @@ jobs:
     - aggregate:
       - get: wl
         trigger: true
-      - get: time-trigger
+      - get: time-trigger-1.4
         trigger: true
       - get: docker-wl-1.4
         trigger: true
@@ -212,7 +224,7 @@ jobs:
     - aggregate:
       - get: wl
         trigger: true
-      - get: time-trigger
+      - get: time-trigger-1.5
         trigger: true
       - get: docker-wl-1.5
         trigger: true
