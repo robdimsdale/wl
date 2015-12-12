@@ -19,7 +19,7 @@ pushd "${base_dir}"
   go get -u github.com/golang/lint/golint
 
   wget \
-    https://github.com/tools/godep/releases/download/v35/godep_linux_amd64 \
+    https://github.com/tools/godep/releases/download/v32/godep_linux_amd64 \
     -O godep
 
   chmod +x ./godep
