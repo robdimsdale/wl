@@ -16,9 +16,10 @@ pushd "${base_dir}"
 
   go get github.com/onsi/ginkgo/ginkgo
 
-  wget \
+  curl \
+    -L \
     https://github.com/tools/godep/releases/download/v32/godep_linux_amd64 \
-    -O godep
+    > godep
 
   chmod +x ./godep
   ./godep restore
