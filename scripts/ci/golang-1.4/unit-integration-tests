@@ -18,9 +18,11 @@ pushd "${base_dir}"
   go get golang.org/x/tools/cmd/vet
   go get -u github.com/golang/lint/golint
 
-  go get -u github.com/tools/godep
-  
-  godep restore
+  wget \
+    https://github.com/tools/godep/releases/download/v35/godep_linux_amd64 \
+    -O godep
+
+  ./godep restore
 
   set +e
   "${scripts_dir}/go-vet"
