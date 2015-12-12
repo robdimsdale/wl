@@ -20,6 +20,7 @@ pushd "${base_dir}"
     https://github.com/tools/godep/releases/download/v35/godep_linux_amd64 \
     -O godep
 
+  chmod +x ./godep
   ./godep restore
 
   set +e
