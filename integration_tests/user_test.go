@@ -14,17 +14,12 @@ var _ = Describe("basic user functionality", func() {
 		Expect(err).NotTo(HaveOccurred())
 		newUserName := uuid1.String()
 
-		By("Getting user")
+		By("Getting and updating user")
 		var user wl.User
+		var updatedUser wl.User
 		Eventually(func() error {
 			user, err = client.User()
-			return err
-		}).Should(Succeed())
-
-		By("Updating user")
-		var updatedUser wl.User
-		user.Name = "test-" + newUserName
-		Eventually(func() error {
+			user.Name = "test-" + newUserName
 			updatedUser, err = client.UpdateUser(user)
 			return err
 		}).Should(Succeed())
