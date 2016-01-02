@@ -3,7 +3,7 @@ wl
 
 Unofficial Wunderlist API client library and CLI, written in golang.
 
-Copyright © 2014-2015, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wl/blob/master/LICENSE).
+Copyright © 2014-2016, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wl/blob/master/LICENSE).
 
 ## Why?
 
