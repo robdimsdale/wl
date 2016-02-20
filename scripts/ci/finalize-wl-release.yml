@@ -10,9 +10,13 @@ inputs:
 - name: wl
 - name: version
 
+outputs:
+- name: wl-finalized
+
 run:
   path: wl/scripts/ci/finalize-wl-release
 
 params:
   TARGET_GOOS:
   TARGET_GOARCH:
+  FINALIZED_DIR: wl-finalized

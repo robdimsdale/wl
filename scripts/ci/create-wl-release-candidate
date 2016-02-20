@@ -3,6 +3,10 @@
 set -eux
 
 root_dir="$PWD"
+
+# Outputs
+RELEASE_CANDIDATE_DIR="${root_dir}/${RELEASE_CANDIDATE_DIR:?"\$RELEASE_CANDIDATE_DIR not set"}"
+
 VERSION="$(cat version/number)"
 TARGET_GOOS=${TARGET_GOOS:?}
 TARGET_GOARCH=${TARGET_GOARCH:?}
@@ -27,7 +31,7 @@ pushd "${base_dir}"
   GOARCH="${TARGET_GOARCH}" \
   CGO_ENABLED=0 \
   go build \
-    -o "${root_dir}/wl-${TARGET_GOOS}-${TARGET_GOARCH}-${VERSION}" \
+    -o "${RELEASE_CANDIDATE_DIR}/wl-${TARGET_GOOS}-${TARGET_GOARCH}-${VERSION}" \
     -ldflags "-X main.version=${stripped_version}" \
     ./cmd/wl/main.go
 popd

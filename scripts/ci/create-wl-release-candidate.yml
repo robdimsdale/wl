@@ -7,9 +7,13 @@ inputs:
 - name: wl
 - name: version
 
+outputs:
+- name: wl-rc
+
 run:
   path: wl/scripts/ci/create-wl-release-candidate
 
 params:
   TARGET_GOOS:
   TARGET_GOARCH:
+  RELEASE_CANDIDATE_DIR: wl-rc

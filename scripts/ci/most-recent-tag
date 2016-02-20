@@ -2,4 +2,10 @@
 
 set -eux
 
-git -C wl-master tag --sort=version:refname | tail -1 > tagname && cat tagname
+root_dir="$PWD"
+
+# Outputs
+OUTPUT_TAG_DIR="${root_dir}/${OUTPUT_TAG_DIR:?"\$OUTPUT_TAG_DIR not set"}"
+
+git -C wl-master tag --sort=version:refname | tail -1 \
+  > "${OUTPUT_TAG_DIR}/tagname" && cat "${OUTPUT_TAG_DIR}/tagname"
