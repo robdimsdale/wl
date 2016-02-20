@@ -14,7 +14,12 @@ pushd "${base_dir}"
   mkdir -p "${GOPATH}/src/github.com/robdimsdale"
   ln -s "${PWD}" "${GOPATH}/src/github.com/robdimsdale/wl"
 
-  go get github.com/onsi/ginkgo/ginkgo
+  # Ensure we execute a version of ginkgo that works on this version of golang.
+  go get -d github.com/onsi/ginkgo/ginkgo
+  pushd "${GOPATH}/src/github.com/onsi/ginkgo" > /dev/null
+    git checkout 07d85e6b10c4289c7d612f9b13f45ba36f66d55b
+    go install github.com/onsi/ginkgo/ginkgo
+  popd > /dev/null
 
   curl \
     -L \

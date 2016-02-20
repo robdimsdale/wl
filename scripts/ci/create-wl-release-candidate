@@ -17,7 +17,7 @@ pushd "${base_dir}"
   ln -s "${PWD}" "${GOPATH}/src/github.com/robdimsdale/wl"
 
   go get -u github.com/tools/godep
-  
+
   godep restore
 
   IFS='-' read -ra arrVERSION <<< "${VERSION}"
