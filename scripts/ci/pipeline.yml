@@ -32,6 +32,7 @@ resources:
     - scripts/ci/golang-1.3/Dockerfile
     - scripts/ci/golang-1.4/Dockerfile
     - scripts/ci/golang-1.5/Dockerfile
+    - scripts/ci/golang-1.6/Dockerfile
 
 - name: slack-alert
   type: slack-notification
@@ -116,6 +117,14 @@ resources:
   type: docker-image
   source:
     repository: robdimsdale/wl-1.5
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
+
+- name: docker-wl-1.6
+  type: docker-image
+  source:
+    repository: robdimsdale/wl-1.6
     username: {{docker-username}}
     password: {{docker-password}}
     email: {{docker-email}}
@@ -237,6 +246,35 @@ jobs:
         channel: {{slack-channel}}
         text: {{v1-5-slack-failure-text}}
 
+- name: golang-1.6
+  public: true
+  serial_groups: [external-api]
+  plan:
+  - do:
+    - aggregate:
+      - get: wl
+        trigger: true
+      - get: time-trigger
+        trigger: true
+      - get: docker-wl-1.6
+        trigger: true
+        passed: [docker-wl-1.6]
+        params: {skip_download: true}
+    - task: unit-integration-tests
+      file: wl/scripts/ci/golang-1.6/unit-integration-tests.yml
+      config:
+        params:
+          WL_ACCESS_TOKEN: {{wl-access-token}}
+          WL_CLIENT_ID: {{wl-client-id}}
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-6-slack-failure-text}}
+
 - name: rc
   serial_groups: [version]
   public: true
@@ -244,7 +282,7 @@ jobs:
   - do:
     - aggregate:
       - get: wl
-        passed: [golang-1.2,golang-1.3,golang-1.4,golang-1.5]
+        passed: [golang-1.2,golang-1.3,golang-1.4,golang-1.5,golang-1.6]
         trigger: true
       - get: version
         params: {pre: rc}
@@ -491,6 +529,26 @@ jobs:
         channel: {{slack-channel}}
         text: {{docker-1-5-slack-failure-text}}
 
+- name: docker-wl-1.6
+  public: true
+  plan:
+  - do:
+    - get: wl
+      resource: wl-develop-docker
+      trigger: true
+    - put: docker-wl-1.6
+      params:
+        build: wl/scripts/ci/golang-1.6
+        cache: true
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{docker-1-6-slack-failure-text}}
+
 groups:
 - name: wl
   jobs:
@@ -498,6 +556,7 @@ groups:
   - golang-1.3
   - golang-1.4
   - golang-1.5
+  - golang-1.6
   - rc
   - shipit
   - github-release
@@ -511,3 +570,4 @@ groups:
   - docker-wl-1.3
   - docker-wl-1.4
   - docker-wl-1.5
+  - docker-wl-1.6
