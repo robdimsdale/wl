@@ -289,17 +289,11 @@ jobs:
         trigger: true
     - aggregate:
       - task: create-wl-release-candidate-linux-amd64
-        file: wl/scripts/ci/create-wl-release-candidate.yml
-        config:
-          params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
+        file: wl/scripts/ci/create-wl-release-candidate-linux-amd64.yml
       - task: create-wl-release-candidate-darwin-amd64
-        file: wl/scripts/ci/create-wl-release-candidate.yml
-        config:
-          params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
+        file: wl/scripts/ci/create-wl-release-candidate-darwin-amd64.yml
       - task: create-wl-release-candidate-windows-amd64
-        file: wl/scripts/ci/create-wl-release-candidate.yml
-        config:
-          params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
+        file: wl/scripts/ci/create-wl-release-candidate-windows-amd64.yml
     - aggregate:
       - put: version
         params: {file: version/number}
@@ -307,11 +301,11 @@ jobs:
         params:
           repos: [wl]
       - put: wl-release-linux-amd64
-        params: {from: create-wl-release-candidate-linux-amd64/wl-linux-(.*)}
+        params: {from: wl-rc-linux-amd64/wl-linux-(.*)}
       - put: wl-release-darwin-amd64
-        params: {from: create-wl-release-candidate-darwin-amd64/wl-darwin-(.*)}
+        params: {from: wl-rc-darwin-amd64/wl-darwin-(.*)}
       - put: wl-release-windows-amd64
-        params: {from: create-wl-release-candidate-windows-amd64/wl-windows-(.*)}
+        params: {from: wl-rc-windows-amd64/wl-windows-(.*)}
     on_failure:
       put: slack-alert
       params:
@@ -347,17 +341,11 @@ jobs:
       passed: [rc]
   - aggregate:
     - task: finalize-wl-release-linux-amd64
-      file: wl/scripts/ci/finalize-wl-release.yml
-      config:
-        params: {TARGET_GOOS: linux,TARGET_GOARCH: amd64}
+      file: wl/scripts/ci/finalize-wl-release-linux-amd64.yml
     - task: finalize-wl-release-darwin-amd64
-      file: wl/scripts/ci/finalize-wl-release.yml
-      config:
-        params: {TARGET_GOOS: darwin,TARGET_GOARCH: amd64}
+      file: wl/scripts/ci/finalize-wl-release-darwin-amd64.yml
     - task: finalize-wl-release-windows-amd64
-      file: wl/scripts/ci/finalize-wl-release.yml
-      config:
-        params: {TARGET_GOOS: windows,TARGET_GOARCH: amd64}
+      file: wl/scripts/ci/finalize-wl-release-windows-amd64.yml
   - aggregate:
     - put: version
       params: {file: version/number}
@@ -367,11 +355,11 @@ jobs:
         tag: version/number
         tag_prefix: v
     - put: wl-release-linux-amd64
-      params: {from: finalize-wl-release-linux-amd64/wl-linux-(.*)}
+      params: {from: wl-final-linux-amd64/wl-linux-(.*)}
     - put: wl-release-darwin-amd64
-      params: {from: finalize-wl-release-darwin-amd64/wl-darwin-(.*)}
+      params: {from: wl-final-darwin-amd64/wl-darwin-(.*)}
     - put: wl-release-windows-amd64
-      params: {from: finalize-wl-release-windows-amd64/wl-windows-(.*)}
+      params: {from: wl-final-windows-amd64/wl-windows-(.*)}
 
 - name: github-release
   public: true
@@ -396,8 +384,8 @@ jobs:
     file: wl/scripts/ci/most-recent-tag.yml
   - put: github-release
     params:
-      name: most-recent-tag/tagname
-      tag: most-recent-tag/tagname
+      name: tag/tagname
+      tag: tag/tagname
       globs:
       - wl-release-linux-amd64/wl-*
       - wl-release-darwin-amd64/wl-*
@@ -418,7 +406,7 @@ jobs:
     file: wl/scripts/ci/create-homebrew-formula.yml
   - put: homebrew-tap
     params:
-      repository: create-homebrew-formula/homebrew-tap
+      repository: homebrew-tap-updated
 
 - name: major
   public: true
