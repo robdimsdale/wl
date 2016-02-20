@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.5
+
+inputs:
+- name: wl
+- name: version
+
+outputs:
+- name: wl-rc-darwin-amd64
+
+run:
+  path: wl/scripts/ci/create-wl-release-candidate
+
+params:
+  TARGET_GOOS: darwin
+  TARGET_GOARCH: amd64
+  RELEASE_CANDIDATE_DIR: wl-rc-darwin-amd64

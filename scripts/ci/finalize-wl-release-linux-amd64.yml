@@ -11,12 +11,12 @@ inputs:
 - name: version
 
 outputs:
-- name: wl-finalized
+- name: wl-finalized-linux-amd64
 
 run:
   path: wl/scripts/ci/finalize-wl-release
 
 params:
-  TARGET_GOOS:
-  TARGET_GOARCH:
+  TARGET_GOOS: linux
+  TARGET_GOARCH: amd64
   FINALIZED_DIR: wl-finalized

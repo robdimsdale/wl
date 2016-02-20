@@ -8,12 +8,12 @@ inputs:
 - name: version
 
 outputs:
-- name: wl-rc
+- name: wl-rc-linux-amd64
 
 run:
   path: wl/scripts/ci/create-wl-release-candidate
 
 params:
-  TARGET_GOOS:
-  TARGET_GOARCH:
-  RELEASE_CANDIDATE_DIR: wl-rc
+  TARGET_GOOS: linux
+  TARGET_GOARCH: amd64
+  RELEASE_CANDIDATE_DIR: wl-rc-linux-amd64
