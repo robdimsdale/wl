@@ -77,8 +77,8 @@ func positionContainsValue(position wl.Position, id uint) bool {
 
 var _ = BeforeSuite(func() {
 	By("Setting Eventually defaults")
-	SetDefaultEventuallyTimeout(20 * time.Second)
-	SetDefaultEventuallyPollingInterval(500 * time.Millisecond)
+	SetDefaultEventuallyTimeout(1 * time.Minute)
+	SetDefaultEventuallyPollingInterval(1 * time.Second)
 
 	By("Obtaining credentials from environment")
 	wlAccessToken = os.Getenv(wlAccessTokenEnvKey)
