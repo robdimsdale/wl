@@ -38,8 +38,7 @@ import (
 )
 
 func main() {
-  // Ignore error
-  client, _ := oauth.NewClient(
+  client := oauth.NewClient(
     "my_access_token",
     "my_client_id",
     wl.APIURL,
