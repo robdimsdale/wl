@@ -1,0 +1,61 @@
+hash: ccb4b1f7419c084e67bf74503b1e0073aa32306994742081577aa48d9a5ed5c5
+updated: 2016-08-28T07:53:19.352769699-07:00
+imports:
+- name: github.com/cpuguy83/go-md2man
+  version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
+  subpackages:
+  - md2man
+- name: github.com/golang/protobuf
+  version: 3d2510a4dd961caffa2ae781669c628d82db700a
+  subpackages:
+  - proto
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/nu7hatch/gouuid
+  version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
+- name: github.com/onsi/ginkgo
+  version: 921b64f1ba23533e629656e7973741006f4e66ea
+  subpackages:
+  - config
+  - extensions/table
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - types
+- name: github.com/onsi/gomega
+  version: 2152b45fa28a361beba9aab0885972323a444e28
+  subpackages:
+  - format
+  - gbytes
+  - gexec
+  - ghttp
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
+- name: github.com/russross/blackfriday
+  version: 0b647d0506a698cca42caca173e55559b12a69f2
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 244f5ac324cb97e1987ef901a0081a77bfd8e845
+- name: github.com/spf13/cobra
+  version: 53d96508f5c9311f5dade714e1de7bd6a9d2af4a
+- name: github.com/spf13/pflag
+  version: b084184666e02084b8ccb9b704bf0d79c466eb1d
+- name: gopkg.in/yaml.v2
+  version: 49c95bdc21843256fb6c4e0d370a05f24a0bf213
+testImports: []
