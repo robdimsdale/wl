@@ -38,8 +38,7 @@ import (
 )
 
 func main() {
-  // Ignore error
-  client, _ := oauth.NewClient(
+  client := oauth.NewClient(
     "my_access_token",
     "my_client_id",
     wl.APIURL,
@@ -54,7 +53,7 @@ func main() {
 
 ### Supported Golang versions
 
-The code is tested against the latest patch versions of golang 1.2, 1.3, 1.4 and 1.5.
+The code is tested against the latest patch versions of golang 1.5 and 1.6.
 
 ### Branches
 
