@@ -9,7 +9,7 @@ base_dir="$( cd "${my_dir}/.." && pwd )"
 
 pushd "${base_dir}"
   grep \
-    --exclude-dir=Godeps \
+    --exclude-dir=vendor \
     --exclude-dir=.git \
     -r \
     -e 'bin/.*sh' \

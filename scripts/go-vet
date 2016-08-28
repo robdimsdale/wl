@@ -10,6 +10,6 @@ base_dir="$( cd "${my_dir}/.." && pwd )"
 pushd "${base_dir}"
   golint ./...
 
-  ls -d ./*/ | grep -v Godeps | xargs go tool vet -composites=false
+  ls -d ./*/ | grep -v vendor | xargs go tool vet -composites=false
   go tool vet -composites=false ./*.go
 popd

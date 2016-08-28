@@ -3,11 +3,14 @@ wl
 
 Unofficial Wunderlist API client library and CLI, written in golang.
 
-Copyright © 2014-2016, Robert Dimsdale. Licensed under the [MIT License](https://github.com/robdimsdale/wl/blob/master/LICENSE).
+Copyright © 2014-2016, Robert Dimsdale.
+Licensed under the [MIT License](https://github.com/robdimsdale/wl/blob/master/LICENSE).
 
 ## Why?
 
-- The library provides access to all of the endpoints documented in the [official API docs](https://developer.wunderlist.com/documentation/), plus additional useful methods like `inbox` and `delete-all-tasks`.
+- The library provides access to all of the endpoints documented in the
+  [official API docs](https://developer.wunderlist.com/documentation/),
+  plus additional useful methods like `inbox` and `delete-all-tasks`.
 - The CLI is written in golang, which results in an statically-compiled CLI.
 
 ## Library
@@ -53,27 +56,34 @@ func main() {
 
 ### Supported Golang versions
 
-The code is tested against the latest patch versions of golang 1.5 and 1.6.
+The code is tested against the latest patch versions of the most recent minor
+and the previous minor versions of golang.
 
 ### Branches
 
-The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is where active development takes place; it is not guaranteed that any given commit will be stable.
+The [**develop**](https://github.com/robdimsdale/wl/tree/develop) branch is
+where active development takes place; it is not guaranteed that any given
+commit will be stable.
 
-The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points to a stable commit. All tests should pass.
+The [**master**](https://github.com/robdimsdale/wl/tree/master) branch points
+to a stable commit. All tests should pass.
 
 ## CLI Binary
 
-A CLI is provided with support for some utility functions (e.g. list all tasks, delete all folders).
+A CLI is provided with support for some utility functions
+(e.g. list all tasks, delete all folders).
 
 ### Installation
 
-Binaries are available on the [releases](https://github.com/robdimsdale/wl/releases) page for various operating systems and architectures.
+Binaries are available on the [releases](https://github.com/robdimsdale/wl/releases)
+page for various operating systems and architectures.
 
 Download the binary and place in the PATH.
 
 #### OSX
 
-A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available; install the binary with:
+A [homebrew tap](https://github.com/robdimsdale/homebrew-tap) is available;
+install the binary with:
 
 ```
 brew tap robdimsdale/tap
@@ -108,19 +118,8 @@ completed: false
 
 The library has no dependencies.
 
-The CLI binary uses [godep](https://github.com/tools/godep) to manage its dependencies; install it with:
-
-```
-go get -u github.com/tools/godep
-```
-
-And restore the dependencies with:
-
-```
-godep restore
-```
-
-This will also restore the test dependencies
+The CLI binary vendors its dependencies in the `vendor` directory according
+to the golang specification.
 
 ### Running the tests
 
@@ -133,13 +132,16 @@ Execute the unit tests with:
 ```
 
 The integration tests require the following environment variables to be set:
-`WL_CLIENT_ID` and `WL_ACCESS_TOKEN`. Values for these are obtained via the method documented at https://developer.wunderlist.com/documentation/concepts/authorization.
+`WL_CLIENT_ID` and `WL_ACCESS_TOKEN`.
+Values for these are obtained via the method documented at
+https://developer.wunderlist.com/documentation/concepts/authorization.
 
 In the cloned directory run the following command:
 
 ```
 WL_CLIENT_ID=my_client_id WL_ACCESS_TOKEN=my_access_token ./scripts/integration_tests
 ```
+
 ## Project administration
 
 ### Tracker
@@ -148,4 +150,5 @@ WL_CLIENT_ID=my_client_id WL_ACCESS_TOKEN=my_access_token ./scripts/integration_
 
 ### CI
 
-- CI is performed using [Concourse](http://concourse.ci): https://concourse.robdimsdale.com/pipelines/wl
+- CI is performed using [Concourse](http://concourse.ci):
+https://concourse.robdimsdale.com/pipelines/wl
