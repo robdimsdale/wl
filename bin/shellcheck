@@ -1,13 +1,14 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
 my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # This script expects that it lives one directory below the base directory.
 base_dir="$( cd "${my_dir}/.." && pwd )"
 
-pushd "${base_dir}"
+pushd "${base_dir}" > /dev/null
+  echo "Running shellcheck"
   grep \
     --exclude-dir=vendor \
     --exclude-dir=.git \
@@ -15,4 +16,6 @@ pushd "${base_dir}"
     -e 'bin/.*sh' \
     -l . \
     | xargs shellcheck
-popd
+popd > /dev/null
+
+echo "Found no issues"

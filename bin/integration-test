@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -eu
+
+: "${WL_ACCESS_TOKEN:?}"
+: "${WL_CLIENT_ID:?}"
+
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# This script expects that it lives one directory below the base directory.
+base_dir="$( cd "${my_dir}/.." && pwd )"
+
+SLOW_SPEC_THRESHOLD=${SLOW_SPEC_THRESHOLD:-10}
+
+ginkgo \
+  -p \
+  -r \
+  -race \
+  -randomizeAllSpecs \
+  -failOnPending \
+  -randomizeSuites \
+  -slowSpecThreshold="${SLOW_SPEC_THRESHOLD}" \
+  "$@" \
+  "${base_dir}/integration_tests"
