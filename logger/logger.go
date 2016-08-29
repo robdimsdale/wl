@@ -31,12 +31,12 @@ func NewLogger(minLogLevel LogLevel) Logger {
 }
 
 // NewTestLogger returns a logger writing to the provided writer.
-// Its level is fixed at DEBUG
+// Its level is fixed at INFO
 // It is primarily used in testing to write to e.g. the GinkgoWriter
 func NewTestLogger(writer io.Writer) Logger {
 	sink := writerSink{
 		writer:      writer,
-		minLogLevel: DEBUG,
+		minLogLevel: INFO,
 	}
 	return &logger{
 		sinks: []Sink{sink},
