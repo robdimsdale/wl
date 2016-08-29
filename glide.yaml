@@ -13,7 +13,7 @@ import:
 - package: github.com/nu7hatch/gouuid
   version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
 - package: github.com/onsi/ginkgo
-  version: 921b64f1ba23533e629656e7973741006f4e66ea
+  version: 43e2af1f01ace55adbb6d7d0f30416476db1baae
 - package: github.com/onsi/gomega
   version: 2152b45fa28a361beba9aab0885972323a444e28
 - package: github.com/russross/blackfriday

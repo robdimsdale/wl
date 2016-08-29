@@ -1,5 +1,5 @@
-hash: ccb4b1f7419c084e67bf74503b1e0073aa32306994742081577aa48d9a5ed5c5
-updated: 2016-08-28T07:53:19.352769699-07:00
+hash: 3591481e6bf90db55bd7baa5a2a01b8061f81bfa278de27999f9d1829e08c2d5
+updated: 2016-08-28T18:08:46.355984537-07:00
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -14,7 +14,7 @@ imports:
 - name: github.com/nu7hatch/gouuid
   version: 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
 - name: github.com/onsi/ginkgo
-  version: 921b64f1ba23533e629656e7973741006f4e66ea
+  version: 43e2af1f01ace55adbb6d7d0f30416476db1baae
   subpackages:
   - config
   - extensions/table
@@ -58,4 +58,8 @@ imports:
   version: b084184666e02084b8ccb9b704bf0d79c466eb1d
 - name: gopkg.in/yaml.v2
   version: 49c95bdc21843256fb6c4e0d370a05f24a0bf213
-testImports: []
+testImports:
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
