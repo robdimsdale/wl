@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -eu
+
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+"${my_dir}/test-integration"
+"${my_dir}/test-unit"
