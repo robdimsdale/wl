@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	assigneeIDLongFlag      = "assingeeID"
+	assigneeIDLongFlag      = "assigneeID"
 	recurrenceTypeLongFlag  = "recurrenceType"
 	recurrenceCountLongFlag = "recurrenceCount"
 	dueDateLongFlag         = "dueDate"
@@ -192,7 +192,7 @@ func init() {
 	cmdCreateTask.Flags().UintVar(&assigneeID, assigneeIDLongFlag, 0, "id of task assignee")
 	cmdCreateTask.Flags().BoolVar(&completed, completedLongFlag, false, "whether task is completed")
 	cmdCreateTask.Flags().StringVar(&recurrenceType, recurrenceTypeLongFlag, "", "recurrence type")
-	cmdCreateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "id of task assignee")
+	cmdCreateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "recurrence count (frequency)")
 	cmdCreateTask.Flags().StringVar(&dueDate, dueDateLongFlag, "", "due date of task")
 	cmdCreateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
 
@@ -201,7 +201,7 @@ func init() {
 	cmdUpdateTask.Flags().UintVar(&assigneeID, assigneeIDLongFlag, 0, "id of task assignee")
 	cmdUpdateTask.Flags().BoolVar(&completed, completedLongFlag, false, "whether task is completed")
 	cmdUpdateTask.Flags().StringVar(&recurrenceType, recurrenceTypeLongFlag, "", "recurrence type")
-	cmdUpdateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "id of task assignee")
+	cmdUpdateTask.Flags().UintVar(&recurrenceCount, recurrenceCountLongFlag, 0, "recurrence count (frequency)")
 	cmdUpdateTask.Flags().StringVar(&dueDate, dueDateLongFlag, "", "due date of task")
 	cmdUpdateTask.Flags().BoolVar(&starred, starredLongFlag, false, "whether task is starred")
 }
