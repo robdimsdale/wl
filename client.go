@@ -4,6 +4,8 @@ import "time"
 
 // Client represents the methods that the API supports.
 type Client interface {
+	Authed() (bool, error)
+
 	User() (User, error)
 	UpdateUser(user User) (User, error)
 	Users() ([]User, error)
