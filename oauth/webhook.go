@@ -73,12 +73,12 @@ func (c oauthClient) WebhooksForListID(listID uint) ([]wl.Webhook, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -133,12 +133,16 @@ func (c oauthClient) CreateWebhook(
 
 	reqURL := fmt.Sprintf("%s/webhooks", c.apiURL)
 
-	req, err := c.newPostRequest(reqURL, body)
+	req, err := http.NewRequest("POST", reqURL, nil)
 	if err != nil {
 		return wl.Webhook{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Webhook{}, err
 	}
@@ -163,12 +167,12 @@ func (c oauthClient) DeleteWebhook(webhook wl.Webhook) error {
 		webhook.ID,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}

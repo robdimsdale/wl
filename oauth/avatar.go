@@ -35,10 +35,13 @@ func (c oauthClient) AvatarURL(userID uint, size int, fallback bool) (string, er
 
 	}
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return "", err
 	}
+
+	c.addAuthHeaders(req)
+
 	c.logRequest(req)
 
 	resp, err := http.DefaultTransport.RoundTrip(req)

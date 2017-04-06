@@ -127,12 +127,12 @@ func (c oauthClient) TasksForListID(listID uint) ([]wl.Task, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -162,12 +162,12 @@ func (c oauthClient) CompletedTasksForListID(listID uint, completed bool) ([]wl.
 		completed,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -192,12 +192,12 @@ func (c oauthClient) Task(taskID uint) (wl.Task, error) {
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Task{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Task{}, err
 	}
@@ -278,12 +278,15 @@ func (c oauthClient) CreateTask(
 
 	url := fmt.Sprintf("%s/tasks", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Task{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Task{}, err
 	}
@@ -367,12 +370,16 @@ func (c oauthClient) UpdateTask(task wl.Task) (wl.Task, error) {
 		task.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Task{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Task{}, err
 	}
@@ -398,12 +405,12 @@ func (c oauthClient) DeleteTask(task wl.Task) error {
 		task.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}

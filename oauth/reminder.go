@@ -74,12 +74,12 @@ func (c oauthClient) RemindersForListID(listID uint) ([]wl.Reminder, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +109,12 @@ func (c oauthClient) RemindersForTaskID(taskID uint) ([]wl.Reminder, error) {
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -139,12 +139,12 @@ func (c oauthClient) Reminder(reminderID uint) (wl.Reminder, error) {
 		reminderID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
@@ -181,12 +181,16 @@ func (c oauthClient) CreateReminder(
 
 	url := fmt.Sprintf("%s/reminders", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
@@ -216,12 +220,16 @@ func (c oauthClient) UpdateReminder(reminder wl.Reminder) (wl.Reminder, error) {
 		reminder.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Reminder{}, err
 	}
@@ -247,12 +255,12 @@ func (c oauthClient) DeleteReminder(reminder wl.Reminder) error {
 		reminder.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}

@@ -16,12 +16,12 @@ func (c oauthClient) Memberships() ([]wl.Membership, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +51,12 @@ func (c oauthClient) Membership(membershipID uint) (wl.Membership, error) {
 		membershipID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Membership{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Membership{}, err
 	}
@@ -87,12 +87,12 @@ func (c oauthClient) MembershipsForListID(listID uint) ([]wl.Membership, error) 
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -131,12 +131,16 @@ func (c oauthClient) AddMemberToListViaUserID(userID uint, listID uint, muted bo
 		),
 	)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Membership{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Membership{}, err
 	}
@@ -175,12 +179,16 @@ func (c oauthClient) AddMemberToListViaEmailAddress(emailAddress string, listID 
 		),
 	)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Membership{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Membership{}, err
 	}
@@ -213,12 +221,16 @@ func (c oauthClient) AcceptMember(membership wl.Membership) (wl.Membership, erro
 		membership.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Membership{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Membership{}, err
 	}
@@ -245,12 +257,12 @@ func (c oauthClient) RejectInvite(membership wl.Membership) error {
 		membership.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}
@@ -271,12 +283,12 @@ func (c oauthClient) RemoveMemberFromList(membership wl.Membership) error {
 		membership.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}

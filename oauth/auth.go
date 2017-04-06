@@ -17,12 +17,12 @@ func (c oauthClient) Authed() (bool, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return false, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return false, err
 	}

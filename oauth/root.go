@@ -15,12 +15,12 @@ func (c oauthClient) Root() (wl.Root, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Root{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Root{}, err
 	}

@@ -72,12 +72,12 @@ func (c oauthClient) FilesForListID(listID uint) ([]wl.File, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +105,12 @@ func (c oauthClient) FilesForTaskID(taskID uint) ([]wl.File, error) {
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -139,12 +139,12 @@ func (c oauthClient) File(fileID uint) (wl.File, error) {
 		fileID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.File{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.File{}, err
 	}
@@ -175,15 +175,16 @@ func (c oauthClient) CreateFile(uploadID uint, taskID uint) (wl.File, error) {
 
 	url := fmt.Sprintf("%s/files", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.File{}, err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return wl.File{}, err
-	}
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.File{}, err
 	}
@@ -209,12 +210,12 @@ func (c oauthClient) DestroyFile(file wl.File) error {
 		file.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return err
 	}

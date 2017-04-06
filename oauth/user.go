@@ -18,12 +18,12 @@ func (c oauthClient) User() (wl.User, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.User{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.User{}, err
 	}
@@ -51,12 +51,16 @@ func (c oauthClient) UpdateUser(user wl.User) (wl.User, error) {
 	body := []byte(fmt.Sprintf(`{"revision":%d,"name":"%s"}`, user.Revision, user.Name))
 	url := fmt.Sprintf("%s/user", c.apiURL)
 
-	req, err := c.newPutRequest(url, body)
+	req, err := http.NewRequest("PUT", url, nil)
 	if err != nil {
 		return wl.User{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.User{}, err
 	}
@@ -89,12 +93,12 @@ func (c oauthClient) UsersForListID(listID uint) ([]wl.User, error) {
 		url = fmt.Sprintf("%s/users", c.apiURL)
 	}
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}

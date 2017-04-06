@@ -16,12 +16,12 @@ func (c oauthClient) ListPositions() ([]wl.Position, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -46,12 +46,12 @@ func (c oauthClient) ListPosition(listPositionID uint) (wl.Position, error) {
 		listPositionID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
 
-	resp, err := c.do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Position{}, err
 	}
@@ -82,12 +82,16 @@ func (c oauthClient) UpdateListPosition(listPosition wl.Position) (wl.Position, 
 		listPosition.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
 
-	resp, err := c.do(req)
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return wl.Position{}, err
 	}
