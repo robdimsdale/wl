@@ -1,10 +1,15 @@
 package wl
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
 
 // Client represents the methods that the API supports.
 type Client interface {
 	Authed() (bool, error)
+
+	Curl(method string, url string, body []byte) (*http.Response, error)
 
 	User() (User, error)
 	UpdateUser(user User) (User, error)
