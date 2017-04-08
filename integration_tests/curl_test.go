@@ -12,7 +12,7 @@ var _ = Describe("basic curl functionality", func() {
 	It("can get the lists", func() {
 		By("Getting lists")
 		Eventually(func() error {
-			resp, err := client.Curl("GET", "/lists", nil)
+			resp, err := client.Curl("GET", "/lists", nil, nil)
 			if err != nil {
 				return err
 			}

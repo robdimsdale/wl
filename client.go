@@ -9,7 +9,7 @@ import (
 type Client interface {
 	Authed() (bool, error)
 
-	Curl(method string, url string, body []byte) (*http.Response, error)
+	Curl(method string, url string, body []byte, header http.Header) (*http.Response, error)
 
 	User() (User, error)
 	UpdateUser(user User) (User, error)

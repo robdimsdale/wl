@@ -14,15 +14,19 @@ import (
 var _ = Describe("client - Curl operations", func() {
 	Describe("curling a URL", func() {
 		var (
-			method string
-			url    string
-			body   []byte
+			method  string
+			url     string
+			body    []byte
+			headers http.Header
 		)
 
 		BeforeEach(func() {
 			method = "PATCH"
 			url = "/path/to/some/url"
 			body = []byte("some body")
+			headers = http.Header{
+				"some-header": []string{"abc", "123"},
+			}
 		})
 
 		It("performs requests with correct headers to provided url with body", func() {
@@ -32,12 +36,13 @@ var _ = Describe("client - Curl operations", func() {
 					ghttp.VerifyHeader(http.Header{
 						"X-Access-Token": []string{dummyAccessToken},
 						"X-Client-ID":    []string{dummyClientID},
+						"some-header":    []string{"abc", "123"},
 					}),
 					ghttp.VerifyBody(body),
 				),
 			)
 
-			client.Curl(method, url, body)
+			client.Curl(method, url, body, headers)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
@@ -51,7 +56,7 @@ var _ = Describe("client - Curl operations", func() {
 				),
 			)
 
-			client.Curl(method, url, body)
+			client.Curl(method, url, body, headers)
 
 			Expect(server.ReceivedRequests()).Should(HaveLen(1))
 		})
@@ -65,7 +70,7 @@ var _ = Describe("client - Curl operations", func() {
 						ghttp.RespondWith(http.StatusOK, expectedResponse),
 					),
 				)
-				returned, err := client.Curl(method, url, body)
+				returned, err := client.Curl(method, url, body, headers)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(returned.StatusCode).To(Equal(http.StatusOK))
@@ -83,7 +88,7 @@ var _ = Describe("client - Curl operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.Curl(method, url, body)
+				_, err := client.Curl(method, url, body, headers)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -95,7 +100,7 @@ var _ = Describe("client - Curl operations", func() {
 			})
 
 			It("forwards the error", func() {
-				_, err := client.Curl(method, url, body)
+				_, err := client.Curl(method, url, body, headers)
 
 				Expect(err).To(HaveOccurred())
 			})

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (c oauthClient) Curl(method string, url string, body []byte) (*http.Response, error) {
+func (c oauthClient) Curl(method string, url string, body []byte, headers http.Header) (*http.Response, error) {
 	url = strings.TrimPrefix(url, "/")
 
 	reqURL := fmt.Sprintf(
@@ -21,6 +21,12 @@ func (c oauthClient) Curl(method string, url string, body []byte) (*http.Respons
 	}
 
 	c.addBody(req, body)
+
+	for key, values := range headers {
+		for _, v := range values {
+			req.Header.Add(key, v)
+		}
+	}
 
 	resp, err := c.do(req)
 	if err != nil {
