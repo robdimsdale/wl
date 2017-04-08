@@ -125,7 +125,7 @@ func (c oauthClient) SubtasksForListID(listID uint) ([]wl.Subtask, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (c oauthClient) SubtasksForTaskID(taskID uint) ([]wl.Subtask, error) {
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +195,7 @@ func (c oauthClient) CompletedSubtasksForListID(listID uint, completed bool) ([]
 		completed,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func (c oauthClient) CompletedSubtasksForTaskID(taskID uint, completed bool) ([]
 		completed,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +265,7 @@ func (c oauthClient) Subtask(subtaskID uint) (wl.Subtask, error) {
 		subtaskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Subtask{}, err
 	}
@@ -307,10 +307,14 @@ func (c oauthClient) CreateSubtask(
 
 	url := fmt.Sprintf("%s/subtasks", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Subtask{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -342,10 +346,14 @@ func (c oauthClient) UpdateSubtask(subtask wl.Subtask) (wl.Subtask, error) {
 		subtask.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Subtask{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -373,7 +381,7 @@ func (c oauthClient) DeleteSubtask(subtask wl.Subtask) error {
 		subtask.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}

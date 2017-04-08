@@ -73,7 +73,7 @@ func (c oauthClient) NotesForListID(listID uint) ([]wl.Note, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (c oauthClient) NotesForTaskID(taskID uint) ([]wl.Note, error) {
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func (c oauthClient) Note(noteID uint) (wl.Note, error) {
 		noteID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Note{}, err
 	}
@@ -174,10 +174,14 @@ func (c oauthClient) CreateNote(content string, taskID uint) (wl.Note, error) {
 
 	url := fmt.Sprintf("%s/notes", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Note{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -210,10 +214,14 @@ func (c oauthClient) UpdateNote(note wl.Note) (wl.Note, error) {
 		note.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Note{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -241,7 +249,7 @@ func (c oauthClient) DeleteNote(note wl.Note) error {
 		note.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}

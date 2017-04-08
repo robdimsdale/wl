@@ -53,18 +53,12 @@ func (c oauthClient) addAuthHeaders(req *http.Request) {
 	req.Header.Add("X-Client-ID", c.clientID)
 }
 
-func (c oauthClient) newGetRequest(url string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	c.addAuthHeaders(req)
-	return req, nil
-}
-
 func (c oauthClient) do(req *http.Request) (*http.Response, error) {
-	c.logRequest(req)
+	c.addAuthHeaders(req)
+
 	client := &http.Client{}
+	c.logRequest(req)
+
 	resp, err := client.Do(req)
 	if resp != nil {
 		c.logResponse(resp)
@@ -107,56 +101,8 @@ func (c oauthClient) logResponse(resp *http.Response) {
 	}
 }
 
-func (c oauthClient) newPostRequest(url string, body []byte) (*http.Request, error) {
-	req, err := http.NewRequest("POST", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	c.addAuthHeaders(req)
-	c.addBody(req, body)
-
-	req.Header.Add("Content-Type", "application/json")
-	return req, nil
-}
-
 func (c oauthClient) addBody(req *http.Request, body []byte) {
 	if body != nil && len(body) > 0 {
 		req.Body = ioutil.NopCloser(bytes.NewReader(body))
 	}
-}
-
-func (c oauthClient) newPutRequest(url string, body []byte) (*http.Request, error) {
-	req, err := http.NewRequest("PUT", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	c.addAuthHeaders(req)
-	c.addBody(req, body)
-
-	req.Header.Add("Content-Type", "application/json")
-	return req, nil
-}
-
-func (c oauthClient) newPatchRequest(url string, body []byte) (*http.Request, error) {
-	req, err := http.NewRequest("PATCH", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	c.addAuthHeaders(req)
-	c.addBody(req, body)
-
-	req.Header.Add("Content-Type", "application/json")
-	return req, nil
-}
-
-func (c oauthClient) newDeleteRequest(url string) (*http.Request, error) {
-	req, err := http.NewRequest("DELETE", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	c.addAuthHeaders(req)
-	return req, nil
 }

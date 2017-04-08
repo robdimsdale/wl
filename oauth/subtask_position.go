@@ -75,7 +75,7 @@ func (c oauthClient) SubtaskPositionsForListID(listID uint) ([]wl.Position, erro
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (c oauthClient) SubtaskPositionsForTaskID(taskID uint) ([]wl.Position, erro
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func (c oauthClient) SubtaskPosition(subTaskPositionID uint) (wl.Position, error
 		subTaskPositionID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
@@ -181,10 +181,14 @@ func (c oauthClient) UpdateSubtaskPosition(subTaskPosition wl.Position) (wl.Posi
 		subTaskPosition.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {

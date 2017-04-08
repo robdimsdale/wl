@@ -16,7 +16,7 @@ func (c oauthClient) Folders() ([]wl.Folder, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,12 +67,16 @@ func (c oauthClient) CreateFolder(
 		return wl.Folder{}, err
 	}
 
-	reqURL := fmt.Sprintf("%s/folders", c.apiURL)
+	url := fmt.Sprintf("%s/folders", c.apiURL)
 
-	req, err := c.newPostRequest(reqURL, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.Folder{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -103,7 +107,7 @@ func (c oauthClient) Folder(folderID uint) (wl.Folder, error) {
 		folderID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Folder{}, err
 	}
@@ -138,10 +142,14 @@ func (c oauthClient) UpdateFolder(folder wl.Folder) (wl.Folder, error) {
 		folder.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Folder{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -169,7 +177,7 @@ func (c oauthClient) DeleteFolder(folder wl.Folder) error {
 		folder.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}
@@ -193,7 +201,7 @@ func (c oauthClient) FolderRevisions() ([]wl.FolderRevision, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ func (c oauthClient) Lists() ([]wl.List, error) {
 		c.apiURL,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c oauthClient) List(listID uint) (wl.List, error) {
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.List{}, err
 	}
@@ -77,10 +77,14 @@ func (c oauthClient) CreateList(title string) (wl.List, error) {
 	url := fmt.Sprintf("%s/lists", c.apiURL)
 	body := []byte(fmt.Sprintf(`{"title":"%s"}`, title))
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.List{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -112,10 +116,14 @@ func (c oauthClient) UpdateList(list wl.List) (wl.List, error) {
 		list.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.List{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -143,7 +151,7 @@ func (c oauthClient) DeleteList(list wl.List) error {
 		list.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}

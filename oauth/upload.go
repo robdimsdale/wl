@@ -65,10 +65,14 @@ func (c oauthClient) createUpload(
 
 	body := []byte(bodyString)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return uploadResponse{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
@@ -139,14 +143,19 @@ func (c oauthClient) uploadAPart(part uploadPart, fileContents []byte) error {
 }
 
 func (c oauthClient) finishUpload(uploadID uint) (wl.Upload, error) {
-	// Mark upload as finished
 	c.logger.Debug(" - marking upload as finished", map[string]interface{}{"uploadID": uploadID})
+
 	url := fmt.Sprintf("%s/uploads/%d", c.apiURL, uploadID)
 	body := []byte(`{"state":"finished"}`)
-	req, err := c.newPatchRequest(url, body)
+
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Upload{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {

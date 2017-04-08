@@ -73,7 +73,7 @@ func (c oauthClient) TaskCommentsForListID(listID uint) ([]wl.TaskComment, error
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (c oauthClient) TaskCommentsForTaskID(taskID uint) ([]wl.TaskComment, error
 		taskID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -140,11 +140,14 @@ func (c oauthClient) CreateTaskComment(text string, taskID uint) (wl.TaskComment
 
 	url := fmt.Sprintf("%s/task_comments", c.apiURL)
 
-	req, err := c.newPostRequest(url, body)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return wl.TaskComment{}, err
 	}
 
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 	resp, err := c.do(req)
 	if err != nil {
 		return wl.TaskComment{}, err
@@ -174,7 +177,7 @@ func (c oauthClient) TaskComment(taskCommentID uint) (wl.TaskComment, error) {
 		taskCommentID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.TaskComment{}, err
 	}
@@ -205,7 +208,7 @@ func (c oauthClient) DeleteTaskComment(taskComment wl.TaskComment) error {
 		taskComment.Revision,
 	)
 
-	req, err := c.newDeleteRequest(url)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err
 	}

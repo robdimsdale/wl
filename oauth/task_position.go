@@ -75,7 +75,7 @@ func (c oauthClient) TaskPositionsForListID(listID uint) ([]wl.Position, error) 
 		listID,
 	)
 
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -108,8 +108,7 @@ func (c oauthClient) TaskPosition(taskPositionID uint) (wl.Position, error) {
 		c.apiURL,
 		taskPositionID,
 	)
-
-	req, err := c.newGetRequest(url)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
@@ -145,10 +144,14 @@ func (c oauthClient) UpdateTaskPosition(taskPosition wl.Position) (wl.Position, 
 		taskPosition.ID,
 	)
 
-	req, err := c.newPatchRequest(url, body)
+	req, err := http.NewRequest("PATCH", url, nil)
 	if err != nil {
 		return wl.Position{}, err
 	}
+
+	c.addBody(req, body)
+
+	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := c.do(req)
 	if err != nil {
