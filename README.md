@@ -1,3 +1,7 @@
+# DEPRECATED
+
+## This repository is unmaintained and deprecated. Use at your own risk; it is likely no longer functional.
+
 wl
 ==
 
